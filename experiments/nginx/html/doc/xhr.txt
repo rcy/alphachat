@@ -1,0 +1,21 @@
+ The XMLHttpRequest API: A Summary
+
+We've looked at how to achieve typical tasks with XMLHttpRequest, and now here's a quick summary of its properties and methods. It's based on a well-cited Apple Developer Connection article which outlines an API that's supported by IE5+, the Mozilla family (which should include all versions of Firefox), and Safari 1.2+.
+
+XMLHttpRequest has the following properties:
+
+    * onreadystatechange: The callback function that's notified of state changes. (See "Asynchronous Calls" above.)
+    * readyState: State within the request cycle. (See "Asynchronous Calls" above.)
+    * responseText: The response from the server, as a String.
+    * responseXML: The response from the server, as a Document Object Model, provided that the response was valid XML.
+    * status: HTTP response code received from the server, e.g "404".
+    * statusText: HTTP response code description received from the server, e.g. "Not Found". 
+
+And these are XMLHttpRequest's methods:
+
+    * abort(): Stops the request and resets its readyState back to zero. (See "Detecting Errors" above.)
+    * getAllResponseHeaders(): Returns a string of all response headers, separated by a newline as in the original message.
+    * getResponseHeader(headerField): Returns the value for a particular header field.
+    * open(requestMethod, url, asynchronousFlag, username, password): Prepares XMLHttpRequest. Only the first two parameters are required. username and password can be used for authentication. (See Solution introduction above.)
+    * send(bodyContent): Sends the message along with specified body content (null if no body content is to be sent, e.g. for GET requests). (See Solution introduction above.)
+    * setRequestHeader(headerField, headerValue): Sets a request header. (See "Handling POSTs and Other Request Types" above). 

@@ -1,0 +1,13 @@
+built nginx with the push module for this stuff
+
+soooo good.
+
+
+
+listeners:
+
+curl localhost:8088/activity?id=1
+
+publisher:
+
+curl -d"message" localhost:8088/publish?id=1
