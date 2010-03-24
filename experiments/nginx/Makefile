@@ -15,6 +15,7 @@ bootstrap:
 	mkdir -p ./src
 	cd ./src && wget ${nginx_url}
 	cd ./src && wget ${nginx_push_mod_url}
+	cd ./src && wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.02.tar.gz
 	cd ./src && tar -xzf nginx-0.8.34.tar.gz
 	cd ./src && tar -xzf nginx_http_push_module-0.692.tar.gz
-	cd ./src/nginx-0.8.34 && ./configure --add-module=../nginx_http_push_module-0.692 && make
+	cd ./src/nginx-0.8.34 && ./configure --add-module=../nginx_http_push_module-0.692 --with-pcre=../# pcre-8.02 && make
