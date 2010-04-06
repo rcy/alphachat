@@ -1,0 +1,125 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    font-family: fixed;
+    background: #eee;
+}
+
+#alphachatter_box {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 99;
+}
+.box_face {
+    display: inline;
+    float: left;
+    padding: 5px;
+    margin: 5px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 100%;
+    width: 80px;
+}
+.red_face { background: pink; color: red;}
+.green_face { background: lightgreen; color: green; }
+.blue_face { background: lightblue; color: blue;}
+.alpha_face { background: gray; color: black;}
+
+.big {
+    color: black;
+    background: #eee;
+    margin: 10px;
+    padding: 10px;
+    font-size: 50px;
+    border: 3px solid black;
+}
+.subtitle {
+    font-size: 30px;
+}
+.button {
+    background: #ccc;
+}
+.button:hover {
+    background: black;
+    color: white;
+}
+#button_box {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 2;
+    display: inline;
+}
+
+#container {
+    margin: 0px;
+    padding: 0px;
+}
+
+#chat_box {
+    display: none;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 1;
+    font-family: monospace;
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+.chat_name {
+    display: table-cell;
+    text-align: right;
+    width: 7em;
+}    
+.chat_text {
+    display: table-cell;
+    text-align: left;
+}
+.red_name { color: #000; background: #c55;}
+.red_text { color: #f00; background: #fcc;}
+.green_name { color: #000; background: #5c5;}
+.green_text { color: #0f0; background: #cfc;}
+.blue_name { color: #000; background: #55c;}
+.blue_text { color: #00f; background: #ccf;}
+
+#time { 
+    color: gray; 
+    font-family: monospace;
+}
+
+#chat_area {
+    height: 280px;
+    overflow-y: scroll;    
+}
+#status_bar {
+    font-size: 20px;
+    height: 100px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid gray;
+}
+
+#input_bar {
+    height: 20px;
+    color: black;
+    border-top: 1px solid gray;
+}
+
+#scoreboard_box {
+    display: none;
+}
+#help_box {
+    display: none;
+}
+#lobby_box {
+    display: none;
+}
+
+#new_message {
+    width: 500px;
+}

@@ -1,0 +1,18 @@
+<div class="box_face alpha_face">
+  <img src="http://profile.ak.fbcdn.net/object3/1116/30/q68310606562_3401.jpg" />
+  <div><strong>α-chat</strong></div>
+</div>
+
+{% for color in other_colors %}
+<div class="box_face {{color}}_face">
+  <div>
+    <img src="{{ MEDIA_URL }}50x50.png" />
+  </div>
+  <div><strong>{{color}}</strong></div>
+</div>
+{% endfor %}
+
+<div class="box_face {{my_color}}_face">
+  <img src="xxx{{my_pic}}" />
+  <div><strong>{{my_color}}</strong></div>
+</div>

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>ALPHACHATbeta</title>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}alphachat.css" type="text/css"/>
+  </head>
+  <body>
+    <div id="container">
+
+      <!-- MAIN MENU -->
+      <div id="button_box">
+        <div id="welcome" class="big">
+          <table width="100%">
+            <tr>
+              <td>
+                <div class="title">ALPHACHAT</div>
+                <div class="subtitle">3 people, 2 minutes, 1 winner</div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div id="chat" class="big button">
+          play!
+        </div>
+        <div id="scoreboard" class="big button">
+          leaderboard
+        </div>
+        <div id="help" class="big button">
+          about
+        </div>
+      </div>
+
+
+      <!-- CHAT -->
+      <div id="chat_box">
+        <div id="activity">x</div>
+        <div id="status_bar">
+          <div>
+            You are <span class="green_name">green</span>.
+          </div>
+          <div>
+            You are chatting with <span class="red_name">red</span>
+            and <span class="blue_name">blue</span>.
+          </div>
+          <span id="time">1:59</span> remaining in this chat
+        </div>
+
+        <div id="chat_area">
+          <div>
+            <div class="red_name chat_name">red:</div>
+            <div class="red_text chat_text">Why do you all contribute to the spy
+              machine known as Facebook?</div>
+          </div>
+
+
+          <div>
+            <div class="green_name chat_name">green:</div>
+            <div class="green_text chat_text">i write facebook applications so i
+              can collect data from my users and exploit them.</div>
+          </div>
+          
+          <div>
+            <div class="green_name chat_name">green:</div>
+            <div class="green_text chat_text">obviously.</div>
+          </div>
+
+          <div>
+            <div class="red_name chat_name">red:</div> 
+            <div class="red_text chat_text">At least you have the courage to
+            admit it</div>
+          </div>
+
+          <div>
+            <div class="blue_name chat_name">blue:</div>
+            <div class="blue_text chat_text">lawl</div>
+          </div>
+
+        </div>
+        <div id="input_bar">
+          <form id="message_form">
+            <input id="new_message">
+          </form>
+        </div>
+      </div>
+
+
+      <!-- SCOREBOARD -->
+      <div id="scoreboard_box">
+        <center>
+          <img src="http://profile.ak.fbcdn.net/object3/1116/30/n68310606562_3401.jpg" />
+          <div>ALPHACHATTER</div>
+        </center>
+        <a href="#" id="menu">menu</a>
+      </div>
+
+
+      <!-- HELP -->
+      <div id="help_box">
+        <div>
+          <h1>welcome to alpha chat.</h1>
+          <p>click play</p>
+          <p>chat with 2 others</p>
+          <p>when the chat is over, pick who you liked best</p>
+        </div>
+
+        <a id="menu" href="#">menu</a>
+      </div>
+
+
+      <!-- LOBBY -->
+      <div id="lobby_box">
+        waiting for other chatters
+      </div>
+
+    </div>
+    <script type="text/javascript" 
+            src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js">
+    </script>
+    <script type="text/javascript"
+            src="{{MEDIA_URL}}alphachat.js">
+    </script>
+  </body>
+</html>
