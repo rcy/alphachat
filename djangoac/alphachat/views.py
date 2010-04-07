@@ -15,7 +15,7 @@ import facebook.djangofb as facebook
 from alphachat.session import Session
 fbs = Session();
 
-num_chatters = 2            # always 3, but hack it down to test
+num_chatters = 1            # always 3, but hack it down to test
 colors = ['red','green','blue']
 
 def create_message(from_, body):
@@ -28,10 +28,6 @@ def create_message(from_, body):
 def json_response(value, **kwargs):
     kwargs.setdefault('content_type', 'text/javascript; charset=UTF-8')
     return HttpResponse(simplejson.dumps(value), **kwargs)
-
-# todo: rewrite this handrolled session system, or extend the django
-# session framework once i have a better idea whats going on
-session = {}
 
 class Lobby(object):
     def __init__(self):
@@ -69,22 +65,6 @@ class Lobby(object):
         fbs.set(request, 'room', self.room)
 
         return json_response(True)
-        # print 'a got here'
-        # print 'set ',uid,'up in',self.room
-        # my_color = self.room.my_color(uid)
-        # other_colors = self.room.other_colors(uid)
-        # print 'c got here'
-        # chat_attrs = { 'my_color':my_color,
-        #                #'my_pic':Profile.objects.get(pic==),
-        #                'other_colors':other_colors,
-        #                }
-        # print 'd got here'
-        # html = render_to_string('status.html',
-        #                         chat_attrs,
-        #                         context_instance = RequestContext(request))
-        # print 'e got here'
-        # return json_response({'success':True,
-        #                       'status_html':html})
 
 chatrooms = {}
 class ChatRoom(object):
