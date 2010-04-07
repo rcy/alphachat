@@ -3,7 +3,6 @@ import httplib
 channel='xyzzy'
 
 def getmsg(last_response):
-    #print 'sent request...'
     new_headers = {}
 
     if last_response:
@@ -11,13 +10,15 @@ def getmsg(last_response):
         last_etag = last_response.getheader('Etag')
         new_headers = {'If-Modified-Since': last_modified,
                        'If-None-Match': last_etag }
+        print ('Last-Modified: ' + last_modified)
+        print ('Etag: ' + last_etag)
 
     conn = httplib.HTTPConnection('localhost:8088')
+    print "SEND"
     conn.request('GET', '/activity?id='+channel, headers=new_headers)
     r = conn.getresponse()
     data = r.read()
-    print "MESSAGE: " + data
-    #print 'sent request...done'
+    print "responseText: " + data
     return r
 
 r = None

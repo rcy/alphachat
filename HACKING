@@ -7,3 +7,7 @@ documentation was skimpy, and it's hard to tell how maintained it is.
 I much prefer the looks of
 
 http://pushmodule.slact.net/
+
+but now I'm using 
+
+http://blog.gevent.org/2009/10/10/simpler-long-polling-with-django-and-gevent/

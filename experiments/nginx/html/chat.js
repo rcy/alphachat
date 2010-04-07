@@ -13,19 +13,8 @@ function display(msg)
     $('#box').append(msg);
     $('#box').append('<br>');
 
-    if (msg == 0)
-        global_counter=0;
-    else 
-    {
-        global_counter++;
-        if (global_counter != msg) 
-        {
-            //alert('fail');
-            global_counter = msg;
-        }
-    }
-
-    //$('#counter').html(global_counter)
+    global_counter++;
+    $('#counter').html(global_counter)
 }
 
 function getmsg(last_xhr)
