@@ -67,7 +67,7 @@ var lobby = {
     wait: function() {
         $("#lobby_box").append(". ");
         // send message to server to indicate we are waiting to play
-        get('/a/lobby/wait', lobby.onSuccess, lobby.onError);
+        get('/a/lobby/wait/', lobby.onSuccess, lobby.onError);
     },
     onSuccess: function(response) {
         if (response) {
@@ -77,24 +77,25 @@ var lobby = {
             lobby.wait();
         }
     },
-    onError: function(xhr) {
-        alert(xhr.responseText);
+    onError: function(xhr,status) {
+        alert('lobby wait: ' + status);
     }
 }
 
 var chat = {
-    start: function(chatobj) {
+    start: function() {
         $("#lobby_box").css("display", "none");
         $("#chat_box").css("display", "inline");
 
-        $("#status_bar").html(chatobj.status_html);
-
-        // start listening for chat messages
-        chat.poll()
+        get('/a/room/join/',
+            function(r) {
+                $("#status_bar").html(r.status_html);
+                chat.poll();
+            })
     },
 
     poll: function() {
-        get('/a/message/updates', chat.onPollSuccess, chat.onPollError);
+        get('/a/message/updates/', chat.onPollSuccess, chat.onPollError);
     },
     onPollSuccess: function(response) {
         m = response.messages
@@ -117,15 +118,16 @@ var chat = {
 
         nm = $("#new_message")
 
+        // todo replace
         if (nm.val() != "") {
             args.body = nm.val();
-            $.ajax({url: "/a/message/new",
+            $.ajax({url: "/a/message/new/",
                     data: $.param(args),
                     dataType: "json",
                     type: "POST",
                     success: chat.onSendMessageSuccess,
-                    error: function(xhr) { 
-                        alert(xhr.responseText);
+                    error: function(xhr,status) { 
+                        alert('sendmessage error'+status);
                     }});
             nm.val("");
         }

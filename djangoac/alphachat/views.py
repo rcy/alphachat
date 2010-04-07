@@ -12,7 +12,10 @@ from django.template import RequestContext
 
 import facebook.djangofb as facebook
 
-num_chatters = 2            # always 3, but hack it down to test
+from alphachat.session import Session
+fbs = Session();
+
+num_chatters = 1            # always 3, but hack it down to test
 colors = ['red','green','blue']
 
 def create_message(from_, body):
@@ -40,18 +43,19 @@ class Lobby(object):
         self.chatters = []
 
     def wait(self, request):
-        key = request.facebook.session_key
+        uid = request.facebook.uid
 
-        self.chatters.append(key)
+        print 'chatter entered lobby #', uid
+        self.chatters.append(uid)
 
         if len(self.chatters) < num_chatters:
-            print 'queuing a chatter #', len(self.chatters)
+            print 'queuing a chatter'
             self.enough_chatters_event.wait(1)
 
             # see if we timed out
             if len(self.chatters) < num_chatters:
-                print 'chatter timed out'
-                self.chatters.remove(key)
+                print 'timed out chatter #', uid
+                self.chatters.remove(uid)
                 return json_response(False)
         else:
             print 'we have enough chatters now'
@@ -61,25 +65,26 @@ class Lobby(object):
             self.enough_chatters_event.set()
             self.enough_chatters_event.clear()
 
-        print 'a got here'
         # all chatters run through this code
-        session[key]['room'] = self.room
-        session[key]['foo'] = 'bar'
-        print 'set ',key,'up in',self.room
-        my_color = self.room.my_color(key)
-        other_colors = self.room.other_colors(key)
-        print 'c got here'
-        chat_attrs = { 'my_color':my_color,
-                       #'my_pic':Profile.objects.get(pic==),
-                       'other_colors':other_colors,
-                       }
-        print 'd got here'
-        html = render_to_string('status.html',
-                                chat_attrs,
-                                context_instance = RequestContext(request))
-        print 'e got here'
-        return json_response({'success':True,
-                              'status_html':html})
+        fbs.set(request, 'room', self.room)
+
+        return json_response(True)
+        # print 'a got here'
+        # print 'set ',uid,'up in',self.room
+        # my_color = self.room.my_color(uid)
+        # other_colors = self.room.other_colors(uid)
+        # print 'c got here'
+        # chat_attrs = { 'my_color':my_color,
+        #                #'my_pic':Profile.objects.get(pic==),
+        #                'other_colors':other_colors,
+        #                }
+        # print 'd got here'
+        # html = render_to_string('status.html',
+        #                         chat_attrs,
+        #                         context_instance = RequestContext(request))
+        # print 'e got here'
+        # return json_response({'success':True,
+        #                       'status_html':html})
 
 chatrooms = {}
 class ChatRoom(object):
@@ -90,20 +95,44 @@ class ChatRoom(object):
         self.id = str(uuid.uuid4())
         chatrooms[self.id] = self
         
-    def my_color(self, key):
-        return colors[self.chatters.index(key)]
+    def my_color(self, uid):
+        return colors[self.chatters.index(uid)]
 
-    def other_colors(self, key):
+    def other_colors(self, uid):
         other_colors = colors[:]
-        other_colors.remove(self.my_color(key))
+        other_colors.remove(self.my_color(uid))
         return other_colors
 
+    def get_pic(self, request):
+        return request.facebook.users.getInfo([request.facebook.uid], 
+                                              ['pic_square'])[0]['pic_square']
+
+    ################
+    # handlers
+    ################
+    def join(self, request):
+        uid = request.facebook.uid
+        print 'ROOM INFO:', self.chatters, 'uid:', uid
+
+        my_color = self.my_color(uid)
+        other_colors = self.other_colors(uid)
+        chat_attrs = { 'my_color': my_color,
+                       'my_pic': self.get_pic(request),
+                       'other_colors': other_colors,
+                       }
+        html = render_to_string('status.html',
+                                chat_attrs,
+                                context_instance = RequestContext(request))
+        return json_response({'success':True,
+                              'status_html':html})
+
+
     def message_new(self, request):
-        key = request.facebook.session_key
+        uid = request.facebook.uid
         body = request.POST['body']
         msg_obj = {'body': body,
                    'html': render_to_string('message.html',
-                                            {'color': self.my_color(key),
+                                            {'color': self.my_color(uid),
                                              'body': body})}
         self.messages.append(msg_obj)
         self.new_message_event.set()
@@ -111,8 +140,7 @@ class ChatRoom(object):
         return json_response(msg_obj)
 
     def message_updates(self, request):
-        key = request.facebook.session_key
-        cursor = session[key]['cursor']
+        cursor = fbs.get(request, 'cursor')
         print 'cursor:', cursor
 
         # the cursor cannot be ahead of the message queue
@@ -129,7 +157,7 @@ class ChatRoom(object):
             new_messages = self.messages[cursor:]
             
         # update the cursor and return the messages
-        session[key]['cursor'] = len(self.messages)
+        fbs.set(request, 'cursor', len(self.messages))
         return json_response({'messages': new_messages})
 
 ################
@@ -137,19 +165,11 @@ class ChatRoom(object):
 ################
 @facebook.require_login()
 def main(request): 
-    print "*** we should only come here on first page view or reload"
-    # this is the main landing page
-    key = request.facebook.session_key
-
-    # create a profile if one doesnt exist
-    #fb = request.facebook
-    #p = Profile(uid = fb.uid)
-
-    # set up a session
-    session[key] = { 'room': None,
-                     'cursor': 0,
-                     'foo': 'nothing'}
-
+    print "***"
+    print "*"
+    print "* landing page"
+    print "*"
+    print "***"
     return render_to_response('alphachat.html', {}, RequestContext(request))
 
 ################
@@ -165,32 +185,27 @@ def lobby_wait(request):
 # chat view wrappers
 ################
 @facebook.require_login()
+def room_join(request):
+    room = fbs.get(request,'room')
+    return room.join(request)
+    
+@facebook.require_login()
 def message_updates(request):
-    # lookup the users session id
-    key = request.facebook.session_key
-    print 'key',key
-    # find out which chat it is a part of
-    room = session[key]['room']
-    print 'room', room
-    foo = session[key]['foo']
-    print 'foo',foo
-    # dispatch to that chatroom
-    #return json_response(room.id)
+    room = fbs.get(request,'room')
     return room.message_updates(request)
 
 @facebook.require_login()
 def message_new(request):
-    key = request.facebook.session_key
-    s = session[key]
-    room = s['room']
+    room = fbs.get(request,'room')
     return room.message_new(request)
 
-
+################
+# debugging
+################
 @facebook.require_login()
 def test_foo(request):
-    key = request.facebook.session_key
-    print "test_foo:", key
-    if key == None:
-        raise KeyError
-    return HttpResponse(key)
+    fbs.set(request, 'foo', 'bar')
+    print fbs.get(request, 'foo')
+    print fbs.get(request, 'undef')
 
+    return HttpResponse(True)

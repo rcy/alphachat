@@ -13,6 +13,8 @@
 {% endfor %}
 
 <div class="box_face {{my_color}}_face">
-  <img src="xxx{{my_pic}}" />
+  {% if my_pic %}
+  <img src="{{my_pic}}" />
+  {% endif %}
   <div><strong>{{my_color}}</strong></div>
 </div>
