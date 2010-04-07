@@ -129,7 +129,8 @@ var chat = {
         }
     },
     onSendMessageSuccess: function(response) {
-        //alert(response.html);
+        // the response has the message if we want to do something
+        // with it here
     },
 
     displayMessage: function(message) {
