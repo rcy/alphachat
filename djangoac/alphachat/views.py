@@ -38,7 +38,8 @@ class Lobby(object):
         self.room = None
         self.chatters = []
 
-    def wait(self, request):
+    def find_room(self, request):
+        "Returns a room_id, or false.  Long polling."
         uid = request.facebook.uid
 
         print 'chatter entered lobby #', uid
@@ -64,7 +65,7 @@ class Lobby(object):
         # all chatters run through this code
         fbs.set(request, 'room', self.room)
 
-        return json_response(True)
+        return json_response(self.room.id)
 
 chatrooms = {}
 class ChatRoom(object):
@@ -90,7 +91,8 @@ class ChatRoom(object):
     ################
     # handlers
     ################
-    def join(self, request):
+    def chatters_html(self, request):
+        "Returns the sidebar html for the room's chatters."
         uid = request.facebook.uid
         print 'ROOM INFO:', self.chatters, 'uid:', uid
 
@@ -103,8 +105,7 @@ class ChatRoom(object):
         html = render_to_string('chatters.html',
                                 chat_attrs,
                                 context_instance = RequestContext(request))
-        return json_response({'success':True,
-                              'status_html':html})
+        return json_response({'html':html})
 
 
     def message_new(self, request):
@@ -162,16 +163,16 @@ def html_content(request, page):
 lobby = Lobby()
 
 @facebook.require_login()
-def lobby_wait(request): 
-    return lobby.wait(request)
+def lobby_find_room(request): 
+    return lobby.find_room(request)
 
 ################
 # chat view wrappers
 ################
 @facebook.require_login()
-def room_join(request):
+def room_chatters_html(request):
     room = fbs.get(request,'room')
-    return room.join(request)
+    return room.chatters_html(request)
     
 @facebook.require_login()
 def message_updates(request):

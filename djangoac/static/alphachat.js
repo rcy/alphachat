@@ -47,66 +47,73 @@ $(document).ready(function() {
     if (!window.console) window.console = {};
     if (!window.console.log) window.console.log = function() {};
 
-    $("#go_chat").live("click", function() {
-        html('/lobby.html',$("#content"),lobby.wait);
-        return false;
-    });
-    $("#scoreboard").live("click", function() {
-        $("#button_box").css("display", "none");
-        $("#scoreboard_box").css("display", "inline");
-        return false;
-    });
-    $("#menu").live("click", function() {
-        $("#help_box").css("display", "none");
-        $("#scoreboard_box").css("display", "none");
-        $("#button_box").css("display", "inline");
-    });
-
-    $("#inputform").live("submit", function() {
-        chat.sendMessage($(this));
-        return false;
-    });
-
     // start us off by loading the menu
-    html('/mainmenu.html', $("#content"));
+    html('/mainmenu.html', $("#content"),
+         function() {
+             $("#go_chat").bind("click", lobby.setup);
+         });
 });
 
+// budget generic error handler
+function on_error(xhr, status) { alert(status); }
+
 var lobby = {
-    wait: function() {
+    setup: function() {
+        // setup the page, then find a room
+        html('/lobby.html', $("#content"), lobby.find_room);
+    },
+    find_room: function() {
         $("#lobby_box").append(". ");
         // send message to server to indicate we are waiting to play
-        get('/a/lobby/wait/', lobby.onSuccess, lobby.onError);
+        get('/a/lobby/find_room/', lobby.find_room_success, on_error);
     },
-    onSuccess: function(response) {
+    find_room_success: function(response) {
         if (response) {
-            chat.prepare(response);
+            roomid = response;
+            chat.setup(roomid);
         } else {
             // server time-out, go again
-            lobby.wait();
+            lobby.find_room();
         }
-    },
-    onError: function(xhr,status) {
-        alert('lobby wait: ' + status);
     }
 }
 
 var chat = {
-    prepare: function() {
-        html("/chat.html", $("#content"), chat.join);
+    room: {},
+
+    setup: function(room_id) {
+        chat.room.id = room_id;
+        // request the chat page
+        html("/chat.html", $("#content"), 
+             function() {
+                 // show the room id in the chat window
+                 $('#chat').html(
+                     '<div>joined: ' + chat.room.id + '</div>');
+
+                 // show the chatters in the sidebar
+                 get('/a/room/chatters_html/', 
+                     function(r) { $("#chatters").html(r.html); });
+
+                 // wire up the form submit event to send messages to server
+                 $('#inputform').bind('submit', 
+                                      function() { 
+                                          chat.send_message_form($(this)); return false; 
+                                      });
+
+                 // start chatting
+                 chat.join();
+             });
     },
     join: function() {
-        get('/a/room/join/',
-            function(r) {
-                $("#chatters").html(r.status_html);
-                chat.poll();
-            })
+        chat.send_message("JOIN");
+        chat.poll();
     },
 
     poll: function() {
         get('/a/message/updates/', chat.onPollSuccess, chat.onPollError);
     },
     onPollSuccess: function(response) {
-        m = response.messages
+        m = response.messages;
         for (i in m) {
             chat.displayMessage(m[i]);
         }
@@ -117,16 +124,19 @@ var chat = {
         //alert('onPollError');
     },
 
-    sendMessage: function(form) {
-        args = g_fbqa
-        nm = $("#inputbar")
-        if (nm.val() != "") {
-            args.body = nm.val();
-            post("/a/message/new/", args, 
-                 chat.onSendMessageSuccess,
-                 function(xhr,status) { alert('sendmessage error'+status); })
-            nm.val("");
+    send_message_form: function(form) {
+        input = $("#inputbar")// TODO: should be able to get this from the FORM arg
+        if (input.val() != "") {
+            chat.send_message(input.val());
+            input.val("");
         }
+    },
+    send_message: function(msg) {
+        var args = {};
+        args.body = msg;
+        post("/a/message/new/", args, 
+             chat.onSendMessageSuccess,
+             on_error);
     },
     onSendMessageSuccess: function(response) {
         // the response has the message if we want to do something
