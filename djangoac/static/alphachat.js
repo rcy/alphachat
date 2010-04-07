@@ -122,15 +122,9 @@ var chat = {
         nm = $("#inputbar")
         if (nm.val() != "") {
             args.body = nm.val();
-            // todo replace
-            $.ajax({url: "/a/message/new/",
-                    data: $.param(args),
-                    dataType: "json",
-                    type: "POST",
-                    success: chat.onSendMessageSuccess,
-                    error: function(xhr,status) { 
-                        alert('sendmessage error'+status);
-                    }});
+            post("/a/message/new/", args, 
+                 chat.onSendMessageSuccess,
+                 function(xhr,status) { alert('sendmessage error'+status); })
             nm.val("");
         }
     },
