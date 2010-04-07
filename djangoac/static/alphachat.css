@@ -1,125 +1,116 @@
 body {
     margin: 0px;
     padding: 0px;
-    font-family: fixed;
-    background: #eee;
-}
-
-#alphachatter_box {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 99;
-}
-.box_face {
-    display: inline;
-    float: left;
-    padding: 5px;
-    margin: 5px;
-    text-align: center;
     font-family: monospace;
-    font-size: 100%;
-    width: 80px;
+    background: white; /**/
 }
-.red_face { background: pink; color: red;}
-.green_face { background: lightgreen; color: green; }
-.blue_face { background: lightblue; color: blue;}
-.alpha_face { background: gray; color: black;}
 
-.big {
-    color: black;
-    background: #eee;
-    margin: 10px;
-    padding: 10px;
-    font-size: 50px;
-    border: 3px solid black;
+#sidebar {
+    width: 100px;
+    height: 400px;
+    float: left;
+    background: white;/**/
 }
-.subtitle {
-    font-size: 30px;
+#content {
+    font-size: 1.5em;
+    height: 400px;
+    padding: 0px;
+    margin: 0px;
+    background: white;/**/
+}
+#chat {
+    border-left: solid 1px gray;
+    height: 350px;
+    background: white;/**/
+    overflow-y: scroll;
+}
+#input {
+    /*border-top: solid 1px white;*/
+    height: 50px;
+    padding: 0px;
+    margin: 0px;
+    background: white; /**/
+    overflow-y: scroll;
+}
+#inputbar {
+    width: 100%;
+    /* background: white; */
+    margin-top: 3px;
+    /* padding: 3px; */
+    /* border-left: solid 0px white; */
+    /* border-right: solid 0px white; */
+    /* border-bottom: solid 0px white; */
+    /* border-top: solid 1px blue; */
+    font-size: 1em;
+    font-family: monospace;
+}
+
+.face_box {
+    text-align: center;
+    margin: 10px;
+    height: 72.5px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    display: block;
+}
+.face_box:hover {
+    color: yellow;
+}
+.red_face { color: #000; background: #c55;}
+.green_face { color: #000; background: #5c5;}
+.blue_face { color: #000; background: #55c;}
+.alpha_face { color: white; background: #333; }
+
+.chat_msg {
+    padding-top: 3px;
+    margin: 0px;
+    background: white;
+    /* border: dotted 1px white; */
+}
+.chat_name {
+    float:left;
+    display: block;
+    font-weight: bold;
+}    
+.chat_text {
+    display: block;
+}
+.red_name { color: #c55; background: white;}
+.red_text { color: #c55; background: white;}
+.green_name { color: #3a3; background: white;}
+.green_text { color: #3a3; background: white;}
+.blue_name { color: #33a; background: white;}
+.blue_text { color: #33a; background: white;}
+
+/* main menu */
+.title {
+    font-size: 2em;
 }
 .button {
-    background: #ccc;
+    margin-left: 10px;
+    margin: 3px;
+    padding: 3px;
+    display: block;
+    color: black;
+    background: #eee;
+    border: 3px solid black;
+    font-size: 1.5em;
+    display: inline;
 }
 .button:hover {
     background: black;
     color: white;
 }
-#button_box {
-    text-align: center;
-    width: 100%;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    z-index: 2;
-    display: inline;
+.title {
+    font-family: serif monospace;
+    font-size: 300%;
+    margin: 10px;
 }
-
-#container {
-    margin: 0px;
-    padding: 0px;
+.subtitle {
+    font-size: 50%;
 }
-
-#chat_box {
-    display: none;
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    z-index: 1;
-    font-family: monospace;
-    height: 100%;
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
-}
-.chat_name {
-    display: table-cell;
-    text-align: right;
-    width: 7em;
-}    
-.chat_text {
-    display: table-cell;
-    text-align: left;
-}
-.red_name { color: #000; background: #c55;}
-.red_text { color: #f00; background: #fcc;}
-.green_name { color: #000; background: #5c5;}
-.green_text { color: #0f0; background: #cfc;}
-.blue_name { color: #000; background: #55c;}
-.blue_text { color: #00f; background: #ccf;}
-
-#time { 
-    color: gray; 
-    font-family: monospace;
-}
-
-#chat_area {
-    height: 280px;
-    overflow-y: scroll;    
-}
-#status_bar {
-    font-size: 20px;
-    height: 100px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-bottom: 1px solid gray;
-}
-
-#input_bar {
-    height: 20px;
-    color: black;
-    border-top: 1px solid gray;
-}
-
-#scoreboard_box {
-    display: none;
-}
-#help_box {
-    display: none;
-}
-#lobby_box {
-    display: none;
-}
-
-#new_message {
-    width: 500px;
+#mainmenu {
+    height: 350px;
+    background: white;/**/
+    overflow-y: scroll;
 }

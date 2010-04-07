@@ -15,7 +15,7 @@ import facebook.djangofb as facebook
 from alphachat.session import Session
 fbs = Session();
 
-num_chatters = 1            # always 3, but hack it down to test
+num_chatters = 2            # always 3, but hack it down to test
 colors = ['red','green','blue']
 
 def create_message(from_, body):
@@ -120,7 +120,7 @@ class ChatRoom(object):
                        'my_pic': self.get_pic(request),
                        'other_colors': other_colors,
                        }
-        html = render_to_string('status.html',
+        html = render_to_string('chatters.html',
                                 chat_attrs,
                                 context_instance = RequestContext(request))
         return json_response({'success':True,
@@ -164,13 +164,17 @@ class ChatRoom(object):
 # top level views
 ################
 @facebook.require_login()
-def main(request): 
+def index(request): 
     print "***"
     print "*"
     print "* landing page"
     print "*"
     print "***"
-    return render_to_response('alphachat.html', {}, RequestContext(request))
+    return render_to_response('index.html', {}, RequestContext(request))
+
+def html_content(request, page):
+    html = render_to_string(page, {}, RequestContext(request))
+    return json_response({'html':html})
 
 ################
 # lobby view wrappers

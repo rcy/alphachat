@@ -18,6 +18,7 @@ function get(url, onSuccess, onError) {
             success: onSuccess,
             error: onError});
 }
+
 function post(url, payload, onSuccess, onError) {
     args = g_fbqa
     $.extend(args, payload);
@@ -28,16 +29,26 @@ function post(url, payload, onSuccess, onError) {
             success: onSuccess,
             error: onError});
 }
+function html(url, selector, onSuccess) {
+    $.ajax({url: url+'?',
+            type: "GET",
+            dataType: "json",
+            success: function(r) {
+                selector.html(r.html);
+                if (onSuccess) onSuccess();
+            },
+            error: function(xhr) {
+                selector.html(xhr.responseText);
+            }});
+}
 
 $(document).ready(function() {
     g_fbqa = fb_query_args();
     if (!window.console) window.console = {};
     if (!window.console.log) window.console.log = function() {};
 
-    $("#chat").live("click", function() {
-        $("#button_box").css("display", "none");
-        $("#lobby_box").css("display", "inline");
-        lobby.wait();
+    $("#go_chat").live("click", function() {
+        html('/lobby.html',$("#content"),lobby.wait);
         return false;
     });
     $("#scoreboard").live("click", function() {
@@ -45,22 +56,19 @@ $(document).ready(function() {
         $("#scoreboard_box").css("display", "inline");
         return false;
     });
-    $("#help").live("click", function() {
-        $("#button_box").css("display", "none");
-        $("#help_box").css("display", "inline");
-        return false;
-    });
-
     $("#menu").live("click", function() {
         $("#help_box").css("display", "none");
         $("#scoreboard_box").css("display", "none");
         $("#button_box").css("display", "inline");
     });
 
-    $("#message_form").live("submit", function() {
+    $("#inputform").live("submit", function() {
         chat.sendMessage($(this));
         return false;
     });
+
+    // start us off by loading the menu
+    html('/mainmenu.html', $("#content"));
 });
 
 var lobby = {
@@ -71,7 +79,7 @@ var lobby = {
     },
     onSuccess: function(response) {
         if (response) {
-            chat.start(response);
+            chat.prepare(response);
         } else {
             // server time-out, go again
             lobby.wait();
@@ -83,13 +91,13 @@ var lobby = {
 }
 
 var chat = {
-    start: function() {
-        $("#lobby_box").css("display", "none");
-        $("#chat_box").css("display", "inline");
-
+    prepare: function() {
+        html("/chat.html", $("#content"), chat.join);
+    },
+    join: function() {
         get('/a/room/join/',
             function(r) {
-                $("#status_bar").html(r.status_html);
+                $("#chatters").html(r.status_html);
                 chat.poll();
             })
     },
@@ -99,13 +107,9 @@ var chat = {
     },
     onPollSuccess: function(response) {
         m = response.messages
-
-        $("#activity").html(Math.floor(Math.random()*1000))
-
         for (i in m) {
             chat.displayMessage(m[i]);
         }
-
         chat.poll();
     },
     onPollError: function(xhr) {
@@ -115,12 +119,10 @@ var chat = {
 
     sendMessage: function(form) {
         args = g_fbqa
-
-        nm = $("#new_message")
-
-        // todo replace
+        nm = $("#inputbar")
         if (nm.val() != "") {
             args.body = nm.val();
+            // todo replace
             $.ajax({url: "/a/message/new/",
                     data: $.param(args),
                     dataType: "json",
@@ -137,7 +139,7 @@ var chat = {
     },
 
     displayMessage: function(message) {
-        var div = $("#chat_area")
+        var div = $("#chat")
         div.append(message.html);
         // certain browsers have a bug such that scrollHeight is too small
         // when content does not fill the client area of the element
