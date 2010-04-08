@@ -11,8 +11,13 @@ function fb_query_args() {
     return assoc;
 }
 
+function add_slash(url) {
+    if (url[url.length-1] == '/') return url;
+    return url + '/';
+}
+
 function get(url, onSuccess, onError) {
-    $.ajax({url: url+'?'+$.param(g_fbqa),
+    $.ajax({url: add_slash(url)+'?'+$.param(g_fbqa),
             type: "GET",
             dataType: "json",
             cache: false,
@@ -23,7 +28,7 @@ function get(url, onSuccess, onError) {
 
 function post(url, args, onSuccess, onError) {
     $.extend(args, g_fbqa);
-    $.ajax({url: url,
+    $.ajax({url: add_slash(url),
             type: "POST",
             data: $.param(args),
             dataType: "json",
@@ -31,7 +36,8 @@ function post(url, args, onSuccess, onError) {
             error: onError});
 }
 function html(url, selector, onSuccess) {
-    $.ajax({url: url+'?',
+    url = add_slash(url);
+    $.ajax({url: add_slash(url),
             type: "GET",
             dataType: "json",
             success: function(r) {
@@ -92,7 +98,7 @@ var chat = {
                      '<div>joined: ' + chat.room.id + '</div>');
 
                  // show the chatters in the sidebar
-                 get('/a/room/chatters_html/', 
+                 get('/a/room/chatters_html/'+chat.room.id, 
                      function(r) { $("#chatters").html(r.html); });
 
                  // wire up the form submit event to send messages to server
@@ -116,7 +122,7 @@ var chat = {
 
     poll: function() {
         //chat.display_message("<div>&gt; poll in</div>");
-        get('/a/message/updates/', 
+        get('/a/message/updates/'+chat.room.id, 
             // success
             function(response) {
                 m = response.messages;
@@ -148,7 +154,8 @@ var chat = {
     send_message: function(msg) {
         var args = {};
         args.body = msg;
-        post("/a/message/new/", args, chat.onSendMessageSuccess, on_error);
+        post('/a/message/new/'+chat.room.id, 
+             args, chat.onSendMessageSuccess, on_error);
     },
     onSendMessageSuccess: function(response) {
         // the response has the message if we want to do something
@@ -192,8 +199,9 @@ var queue = {
         clearInterval(queue.interval_id);
     },
     run: function() {
-        console.log("running queue function on data: "+queue.data);
-        if (queue.data.length > 0)
+        if (queue.data.length > 0) {
+            console.log("running queue function on data: "+queue.data);
             queue.fn(queue.data.shift());
+        }
     }
 }

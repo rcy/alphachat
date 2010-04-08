@@ -155,6 +155,7 @@ def index(request):
     print "***"
     return render_to_response('index.html', {}, RequestContext(request))
 
+@facebook.require_login()
 def html_content(request, page):
     html = render_to_string(page, {}, RequestContext(request))
     return json_response({'html':html})
@@ -172,22 +173,25 @@ def lobby_find_room(request):
 # chat view wrappers
 ################
 @facebook.require_login()
-def room_chatters_html(request):
-    room = fbs.get(request,'room')
+def room_chatters_html(request, roomid):
+    #room = fbs.get(request,'room')
+    room = chatrooms[roomid]
     return room.chatters_html(request)
     
 @facebook.require_login()
-def message_updates(request):
+def message_updates(request, roomid):
+    room = chatrooms[roomid]
     print ">>> updates"
-    room = fbs.get(request,'room')
+    #room = fbs.get(request,'room')
     retval = room.message_updates(request)
     print "<<< updates"
     return retval
 
 @facebook.require_login()
-def message_new(request):
+def message_new(request, roomid):
     print ">>> new"
-    room = fbs.get(request,'room')
+    #room = fbs.get(request,'room')
+    room = chatrooms[roomid]
     retval = room.message_new(request)
     print "<<< new"
     return retval
