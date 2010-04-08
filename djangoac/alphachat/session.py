@@ -5,7 +5,6 @@ class Session:
         self.data = {}
 
     def get(self, request, key):
-        print 'get: ', key
         session_key = request.facebook.session_key
         assert session_key
         if not self.data.has_key(session_key):
@@ -15,7 +14,6 @@ class Session:
         return self.data[session_key][key]
 
     def set(self, request, key, val):
-        print 'set:', key, ',', val
         session_key = request.facebook.session_key
         assert session_key
         if not self.data.has_key(session_key):

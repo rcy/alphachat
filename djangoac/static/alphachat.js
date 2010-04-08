@@ -15,13 +15,14 @@ function get(url, onSuccess, onError) {
     $.ajax({url: url+'?'+$.param(g_fbqa),
             type: "GET",
             dataType: "json",
+            cache: false,
+            timeout: 50000,
             success: onSuccess,
             error: onError});
 }
 
-function post(url, payload, onSuccess, onError) {
-    args = g_fbqa
-    $.extend(args, payload);
+function post(url, args, onSuccess, onError) {
+    $.extend(args, g_fbqa);
     $.ajax({url: url,
             type: "POST",
             data: $.param(args),
@@ -41,7 +42,7 @@ function html(url, selector, onSuccess) {
                 selector.html(xhr.responseText);
             }});
 }
-
+
 $(document).ready(function() {
     g_fbqa = fb_query_args();
     if (!window.console) window.console = {};
@@ -56,7 +57,7 @@ $(document).ready(function() {
 
 // budget generic error handler
 function on_error(xhr, status) { alert(status); }
-
+
 var lobby = {
     setup: function() {
         // setup the page, then find a room
@@ -77,7 +78,7 @@ var lobby = {
         }
     }
 }
-
+
 var chat = {
     room: {},
 
@@ -97,58 +98,102 @@ var chat = {
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
                                       function() { 
-                                          chat.send_message_form($(this)); return false; 
+                                          chat.form_submit($(this)); 
+                                          return false; 
                                       });
 
                  // start chatting
                  chat.join();
+
+                 // start the send message queue
+                 queue.start(chat.send_message, 100);
              });
     },
     join: function() {
-        chat.send_message("JOIN");
+        chat.queue_message("JOIN");
         chat.poll();
     },
 
     poll: function() {
-        get('/a/message/updates/', chat.onPollSuccess, chat.onPollError);
-    },
-    onPollSuccess: function(response) {
-        m = response.messages;
-        for (i in m) {
-            chat.displayMessage(m[i]);
-        }
-        chat.poll();
-    },
-    onPollError: function(xhr) {
-        chat.displayMessage(xhr.responseText);
-        //alert('onPollError');
+        //chat.display_message("<div>&gt; poll in</div>");
+        get('/a/message/updates/', 
+            // success
+            function(response) {
+                m = response.messages;
+                for (i in m) {
+                    chat.display_message_object(m[i]);
+                }
+                window.setTimeout(chat.poll, 0);
+                //chat.display_message("<div>&lt; poll out</div>");
+            },
+            // error
+            function(xhr,status) {
+                chat.display_message('<div>on_poll_error: ' + status + '</div>');
+                setTimeout(chat.poll, 5000);
+            });
     },
 
-    send_message_form: function(form) {
+    form_submit: function(form) {
+        //var message = form.formToDict();
         input = $("#inputbar")// TODO: should be able to get this from the FORM arg
         if (input.val() != "") {
-            chat.send_message(input.val());
+            chat.queue_message(input.val());
             input.val("");
         }
+    },
+    queue_message: function(msg) {
+        //chat.display_message('<div>'+msg+'</div>');
+        queue.add(msg);
     },
     send_message: function(msg) {
         var args = {};
         args.body = msg;
-        post("/a/message/new/", args, 
-             chat.onSendMessageSuccess,
-             on_error);
+        post("/a/message/new/", args, chat.onSendMessageSuccess, on_error);
     },
     onSendMessageSuccess: function(response) {
         // the response has the message if we want to do something
         // with it here
     },
 
-    displayMessage: function(message) {
+    display_message_object: function(msgobj) {
+        chat.display_message(msgobj.html);
+    },
+    display_message: function(msg) {
         var div = $("#chat")
-        div.append(message.html);
+        div.append(msg);
         // certain browsers have a bug such that scrollHeight is too small
         // when content does not fill the client area of the element
         var scrollHeight = Math.max(div[0].scrollHeight, div[0].clientHeight);
         div[0].scrollTop = scrollHeight - div[0].clientHeight;
     },
+    debug: function(msg) {
+        chat.display_message("<div>debug: "+msg+"</div>");
+    }
+}
+
+
+// ################################################################
+var queue = {
+    data: Array(),
+    fn: null,
+    interval_id: null,
+
+    add: function(msg) {
+        queue.data.push(msg);
+    },
+    // next: function() {
+    //     return queue.data.shift();
+    // },
+    start: function(fn, timeout) {
+        queue.fn = fn;
+        queue.interval_id = setInterval("queue.run()", timeout);
+    },
+    stop: function() {
+        clearInterval(queue.interval_id);
+    },
+    run: function() {
+        console.log("running queue function on data: "+queue.data);
+        if (queue.data.length > 0)
+            queue.fn(queue.data.shift());
+    }
 }

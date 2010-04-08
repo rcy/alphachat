@@ -93,6 +93,7 @@ class ChatRoom(object):
     ################
     def chatters_html(self, request):
         "Returns the sidebar html for the room's chatters."
+        fbs.set(request, 'cursor', 0)#TODO: HACK: this should be in a real JOIN handler
         uid = request.facebook.uid
         print 'ROOM INFO:', self.chatters, 'uid:', uid
 
@@ -111,6 +112,7 @@ class ChatRoom(object):
     def message_new(self, request):
         uid = request.facebook.uid
         body = request.POST['body']
+        print "message_new:" + body
         msg_obj = {'body': body,
                    'html': render_to_string('message.html',
                                             {'color': self.my_color(uid),
@@ -122,7 +124,7 @@ class ChatRoom(object):
 
     def message_updates(self, request):
         cursor = fbs.get(request, 'cursor')
-        print 'cursor:', cursor
+        print 'message length:',len(self.messages),'cursor:', cursor
 
         # the cursor cannot be ahead of the message queue
         assert len(self.messages) >= cursor
@@ -176,13 +178,19 @@ def room_chatters_html(request):
     
 @facebook.require_login()
 def message_updates(request):
+    print ">>> updates"
     room = fbs.get(request,'room')
-    return room.message_updates(request)
+    retval = room.message_updates(request)
+    print "<<< updates"
+    return retval
 
 @facebook.require_login()
 def message_new(request):
+    print ">>> new"
     room = fbs.get(request,'room')
-    return room.message_new(request)
+    retval = room.message_new(request)
+    print "<<< new"
+    return retval
 
 ################
 # debugging
