@@ -7,8 +7,8 @@ urlpatterns = patterns('djangoac.alphachat.views',
 
                        ('^a/lobby/find_room/$', 'lobby_find_room'),
                        ('^a/room/chatters_html/(.+)/$', 'room_chatters_html'),
-                       ('^a/message/new/(.+)/$', 'message_new'),
-                       ('^a/message/updates/(.+)/$', 'message_updates'),
+                       ('^a/room/post/(.+)/$', 'message_new'),
+                       ('^a/room/msgs/(.+)/(\d+)/$', 'message_updates'),
 
                        # todo debugging, remove:
                        ('^facebook/canvas/a/lobby/wait/$', 'lobby_wait'),

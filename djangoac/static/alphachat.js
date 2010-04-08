@@ -21,7 +21,7 @@ function get(url, onSuccess, onError) {
             type: "GET",
             dataType: "json",
             cache: false,
-            timeout: 50000,
+            timeout: 5000,
             success: onSuccess,
             error: onError});
 }
@@ -87,15 +87,20 @@ var lobby = {
 
 var chat = {
     room: {},
+    last: 0,
+    error_wait: 100,
 
     setup: function(room_id) {
         chat.room.id = room_id;
+        last = 0;
+        error_wait = 100;
+
         // request the chat page
         html("/chat.html", $("#content"), 
              function() {
                  // show the room id in the chat window
                  $('#chat').html(
-                     '<div>joined: ' + chat.room.id + '</div>');
+                     '<div>match: ' + chat.room.id + '</div>');
 
                  // show the chatters in the sidebar
                  get('/a/room/chatters_html/'+chat.room.id, 
@@ -121,21 +126,29 @@ var chat = {
     },
 
     poll: function() {
-        //chat.display_message("<div>&gt; poll in</div>");
-        get('/a/message/updates/'+chat.room.id, 
+        get('/a/room/msgs/'+chat.room.id+'/'+chat.last+'/',
             // success
             function(response) {
                 m = response.messages;
                 for (i in m) {
                     chat.display_message_object(m[i]);
+                    chat.last = m[i].id;
+                }
+                if (response.time_up) {
+                    chat.display_message("TIME IS UP!");
                 }
                 window.setTimeout(chat.poll, 0);
-                //chat.display_message("<div>&lt; poll out</div>");
+                chat.error_wait = 100;
             },
             // error
             function(xhr,status) {
                 chat.display_message('<div>on_poll_error: ' + status + '</div>');
-                setTimeout(chat.poll, 5000);
+                if (status == 'timeout')
+                    wait_for = 100;
+                else
+                    wait_for = (chat.error_wait *= 2);
+
+                setTimeout(chat.poll, wait_for);
             });
     },
 
@@ -154,7 +167,7 @@ var chat = {
     send_message: function(msg) {
         var args = {};
         args.body = msg;
-        post('/a/message/new/'+chat.room.id, 
+        post('/a/room/post/'+chat.room.id, 
              args, chat.onSendMessageSuccess, on_error);
     },
     onSendMessageSuccess: function(response) {
