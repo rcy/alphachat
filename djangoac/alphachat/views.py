@@ -15,6 +15,10 @@ import facebook.djangofb as facebook
 from alphachat.models import Player, Room, Message
 from alphachat.session import Session
 from alphachat.event import EventManager
+
+from couchdbkit import Consumer
+from couchdbkit.ext.django.loading import get_db
+
 g_event = EventManager()
 
 fbs = Session();
@@ -183,13 +187,17 @@ def html_content(request, page):
     return json_response({'html':html})
 
 
+def get_player(request):
+    fb_uid = str(request.facebook.uid)
+    player = Player.view('alphachat/player__fb_uid', key=fb_uid).one()
+    return player
+
 @facebook.require_login()
 def lobby_find_room(request):
     """
     Mark player as available for chat
     """
-    fbuid = str(request.facebook.uid)
-    player = Player.view('alphachat/player__fb_uid', key=fbuid).one()
+    player = get_player(request)
 
     # set our state to lobby, and go to sleep until someone wakes us up
     if player.state != 'lobby':
@@ -198,7 +206,7 @@ def lobby_find_room(request):
 
     player = g_event.wait_for_doc_change(player, 60)
     if player.state == 'chat':
-        return player.room_id
+        return json_response(player.room_id)
     else:
         return json_response(False)
 
@@ -224,24 +232,40 @@ def test_foo(request):
 @facebook.require_login()
 def room_chatters_html(request, roomid):
     #room = fbs.get(request,'room')
-    room = chatrooms[roomid]
-    return room.chatters_html(request)
+    #room = chatrooms[roomid]
+    return HttpResponse("NOTHING HERE, FIXME")
     
 @facebook.require_login()
-def message_updates(request, roomid, last):
-    room = chatrooms[roomid]
-    print ">>> updates"
-    #room = fbs.get(request,'room')
-    retval = room.message_updates(request, int(last))
-    print "<<< updates"
-    return retval
+def message_updates(request, roomid, since):
+    # TODO: verify that this user is in this room
+    db = get_db('alphachat')
+    print 'db:',db
+    c = Consumer(db)
+    print "waiting for messages on:", roomid
+    r = c.wait_once(filter="alphachat/generic",
+                    doc_type="Message",
+                    by_key="room_id", by_value=roomid,
+                    since=since,
+                    timeout=100000)
+
+    message_ids = map(lambda m: m['id'], r['results'])
+    print "message_ids:",message_ids
+    messages = map(lambda i: db.get(i), message_ids)
+    print "messages",messages
+
+    return json_response({'since': r['last_seq'], 
+                          'messages': messages})
 
 @facebook.require_login()
-def message_new(request, roomid):
-    print ">>> new"
-    #room = fbs.get(request,'room')
-    room = chatrooms[roomid]
-    retval = room.message_new(request)
-    print "<<< new"
-    return retval
+def message_new(request, room_id):
+    player = get_player(request)
 
+    if request.method == 'POST':
+        data = request.POST
+        message = Message(room_id = room_id,
+                          player_id = player._id,
+                          command = data['command'],
+                          body = data['body'])
+        message.save()
+
+    return json_response(True)

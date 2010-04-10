@@ -27,8 +27,3 @@ class EventManager:
             if olddoc._rev != newdoc._rev:
                 return newdoc
             sleep_event.wait(1)
-
-        return newdoc
-
-    # def is_newer(self, line, doc):
-    #     print 'got %s' % line

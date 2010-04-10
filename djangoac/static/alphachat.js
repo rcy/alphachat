@@ -87,7 +87,7 @@ var lobby = {
 
 var chat = {
     room: {},
-    last: 0,
+    since: 0,
     error_wait: 100,
 
     setup: function(room_id) {
@@ -121,19 +121,20 @@ var chat = {
              });
     },
     join: function() {
-        chat.queue_message({cmd:'join'});
+        chat.queue_message({command:'join', body:'FIXME'});
         chat.poll();
     },
 
     poll: function() {
-        get('/a/room/msgs/'+chat.room.id+'/'+chat.last+'/',
+        get('/a/room/msgs/'+chat.room.id+'/'+chat.since+'/',
             // success
             function(response) {
                 chat.error_wait = 100;
+		chat.since = response.since;
                 m = response.messages;
+
                 for (i in m) {
                     chat.display_message_object(m[i]);
-                    chat.last = m[i].id;
                 }
                 if (response.time_up) {
                     chat.display_html("TIME IS UP! not repolling.");
@@ -158,7 +159,7 @@ var chat = {
         //var message = form.formToDict();
         input = $("#inputbar")// TODO: should be able to get this from the FORM arg
         if (input.val() != "") {
-            chat.queue_message({cmd:'privmsg', body:input.val()});
+            chat.queue_message({command:'privmsg', body:input.val()});
             input.val("");
         }
     },
@@ -176,7 +177,7 @@ var chat = {
     },
 
     display_message_object: function(msgobj) {
-        chat.display_html(msgobj.html);
+        chat.display_html(msgobj.body);
     },
     display_html: function(html) {
         var div = $("#chat")

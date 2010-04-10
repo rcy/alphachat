@@ -28,6 +28,8 @@ MIDDLEWARE_CLASSES = (
     'facebook.djangofb.FacebookMiddleware',
 )
 FACEBOOK_API_KEY='e56094f7af8d288bffab65c184f1a18b'
+from secrets import FACEBOOK_SECRET_KEY
+
 ROOT_URLCONF = 'djangoac.urls'
 TEMPLATE_DIRS = (
     join(__dir__, 'templates')
@@ -41,3 +43,5 @@ INSTALLED_APPS = (
 )
 COUCHDB_DATABASES = (
     ('djangoac.alphachat', 'http://localhost:5984/alphachat'), )
+
+

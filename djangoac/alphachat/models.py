@@ -32,5 +32,7 @@ class Message(Document):
 
     # join, privmsg, like
     command = StringProperty(required = True)
-    player = StringProperty(required = True)
+
+    body = StringProperty(required = True)
+    player_id = StringProperty(required = True)
     room_id = StringProperty(required = True)
