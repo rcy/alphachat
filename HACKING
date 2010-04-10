@@ -1,13 +1,53 @@
-to handle the comet stuff i started looking it
+* Deps
+couchdb 0.11.0
+couchdbkit (something really recent from git)
+python 2.5/2.6 (not 2.4, havent tested with 3)
+django 1.1.1 (lets try 1.2 when it is released)
+gevent 0.12.2
 
-http://orbited.org/
+--
+* setting up the environment
 
-documentation was skimpy, and it's hard to tell how maintained it is.
+$ sudo apt-get install python-virtualenv python-dev libevent-dev
 
-I much prefer the looks of
+$ virtualenv acenv
+$ source acenv/bin/activate
+(acenv)$ easy_install django
+(acenv)$ easy_install gevent
+(acenv)$ easy_install greenlet
 
-http://pushmodule.slact.net/
+(acenv)$ git clone git://github.com/benoitc/couchdbkit.git
+(acenv)$ cd couchdbkit
+(acenv) couchdbkit$ python ./setup.py install
+Finished processing dependencies for couchdbkit==0.5.0
 
-but now I'm using 
+at this point you should be able to run
+(acenv) alphachat/djangoac$ python ./run.py
+Serving on 8000...
 
-http://blog.gevent.org/2009/10/10/simpler-long-polling-with-django-and-gevent/
+surf to http://localhost:8000 and you'll probably see 
+'No module named facebook.djangofb'.  Let's continue.
+
+(acenv)$ git clone git://github.com/sciyoshi/pyfacebook.git
+
+the following patch needs to be applied to pyfacebook
+
+diff --git a/facebook/__init__.py b/facebook/__init__.py
+index 7ee9e0c..a0a2a34 100644
+--- a/facebook/__init__.py
++++ b/facebook/__init__.py
+@@ -1290,7 +1290,10 @@ class Facebook(object):
+             self.added = True
+ 
+         if params.get('expires'):
+-            self.session_key_expires = int(params['expires'])
++            try:
++                self.session_key_expires = int(params['expires'])
++            except ValueError:
++                pass
+ 
+         if 'locale' in params:
+             self.locale = params['locale']
+
+
+(acenv)$ easy_install simplejson
