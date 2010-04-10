@@ -6,7 +6,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = ()
 MANAGERS = ADMINS
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = 'alphachat.db'
+DATABASE_NAME = ':memory:'
 DATABASE_USER = ''
 DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
@@ -28,7 +28,6 @@ MIDDLEWARE_CLASSES = (
     'facebook.djangofb.FacebookMiddleware',
 )
 FACEBOOK_API_KEY='e56094f7af8d288bffab65c184f1a18b'
-FACEBOOK_SECRET_KEY='8d67994a8f2ad424ec53c9943c2fff79'
 ROOT_URLCONF = 'djangoac.urls'
 TEMPLATE_DIRS = (
     join(__dir__, 'templates')
