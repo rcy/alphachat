@@ -37,5 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'djangoac.alphachat'
+    'djangoac.alphachat',
+    'couchdbkit.ext.django'
 )
+COUCHDB_DATABASES = (
+    ('djangoac.alphachat', 'http://192.168.13.108:5984/alphachat'), )

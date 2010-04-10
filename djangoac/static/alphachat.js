@@ -80,7 +80,7 @@ var lobby = {
             chat.setup(roomid);
         } else {
             // server time-out, go again
-            lobby.find_room();
+            window.setTimeout(lobby.find_room, 1000);
         }
     }
 }
@@ -121,7 +121,7 @@ var chat = {
              });
     },
     join: function() {
-        chat.queue_message("JOIN");
+        chat.queue_message({cmd:'join'});
         chat.poll();
     },
 
@@ -129,20 +129,22 @@ var chat = {
         get('/a/room/msgs/'+chat.room.id+'/'+chat.last+'/',
             // success
             function(response) {
+                chat.error_wait = 100;
                 m = response.messages;
                 for (i in m) {
                     chat.display_message_object(m[i]);
                     chat.last = m[i].id;
                 }
                 if (response.time_up) {
-                    chat.display_message("TIME IS UP!");
+                    chat.display_html("TIME IS UP! not repolling.");
+                    chat.time_up = true;
+                } else {
+                    window.setTimeout(chat.poll, 0);
                 }
-                window.setTimeout(chat.poll, 0);
-                chat.error_wait = 100;
             },
             // error
             function(xhr,status) {
-                chat.display_message('<div>on_poll_error: ' + status + '</div>');
+                chat.display_html('<div>on_poll_error: ' + status + '</div>');
                 if (status == 'timeout')
                     wait_for = 100;
                 else
@@ -156,19 +158,17 @@ var chat = {
         //var message = form.formToDict();
         input = $("#inputbar")// TODO: should be able to get this from the FORM arg
         if (input.val() != "") {
-            chat.queue_message(input.val());
+            chat.queue_message({cmd:'privmsg', body:input.val()});
             input.val("");
         }
     },
-    queue_message: function(msg) {
-        //chat.display_message('<div>'+msg+'</div>');
-        queue.add(msg);
+    queue_message: function(msgobj) {
+        //chat.display_html('<div>'+msg+'</div>');
+        queue.add(msgobj);
     },
-    send_message: function(msg) {
-        var args = {};
-        args.body = msg;
+    send_message: function(msgobj) {
         post('/a/room/post/'+chat.room.id, 
-             args, chat.onSendMessageSuccess, on_error);
+             msgobj, chat.onSendMessageSuccess, on_error);
     },
     onSendMessageSuccess: function(response) {
         // the response has the message if we want to do something
@@ -176,19 +176,16 @@ var chat = {
     },
 
     display_message_object: function(msgobj) {
-        chat.display_message(msgobj.html);
+        chat.display_html(msgobj.html);
     },
-    display_message: function(msg) {
+    display_html: function(html) {
         var div = $("#chat")
-        div.append(msg);
+        div.append(html);
         // certain browsers have a bug such that scrollHeight is too small
         // when content does not fill the client area of the element
         var scrollHeight = Math.max(div[0].scrollHeight, div[0].clientHeight);
         div[0].scrollTop = scrollHeight - div[0].clientHeight;
     },
-    debug: function(msg) {
-        chat.display_message("<div>debug: "+msg+"</div>");
-    }
 }
 
 
@@ -198,8 +195,8 @@ var queue = {
     fn: null,
     interval_id: null,
 
-    add: function(msg) {
-        queue.data.push(msg);
+    add: function(obj) {
+        queue.data.push(obj);
     },
     // next: function() {
     //     return queue.data.shift();

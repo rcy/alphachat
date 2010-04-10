@@ -1,5 +1,5 @@
 {% for color in other_colors %}
-<div class="face_box {{color}}_face">
+<div class="face other_face {{color}}_face">
   <div>
     <img src="{{ MEDIA_URL }}50x50.png" />
   </div>
@@ -7,7 +7,7 @@
 </div>
 {% endfor %}
 
-<div class="face_box {{my_color}}_face">
+<div class="face my_face {{my_color}}_face">
   {% if my_pic %}
   <img src="{{my_pic}}" />
   {% endif %}

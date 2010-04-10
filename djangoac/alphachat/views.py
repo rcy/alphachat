@@ -2,19 +2,21 @@
 # http://code.google.com/p/pyfacebook/issues/detail?id=130
 import uuid
 import simplejson
+import datetime
 from time import time, sleep
 from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.http import HttpResponse
-from gevent.event import Event
-from gevent import Greenlet
 from djangoac import settings
-
 
 import facebook.djangofb as facebook
 
+from alphachat.models import Player, Room, Message
 from alphachat.session import Session
+from alphachat.event import EventManager
+g_event = EventManager()
+
 fbs = Session();
 
 num_chatters = 1            # always 3, but hack it down to test
@@ -31,57 +33,15 @@ def json_response(value, **kwargs):
     kwargs.setdefault('content_type', 'text/javascript; charset=UTF-8')
     return HttpResponse(simplejson.dumps(value), **kwargs)
 
-class Lobby(object):
-    def __init__(self):
-        self.enough_chatters_event = Event()
-        self.chatters = []
-        self.room = None
-
-    def find_room(self, request):
-        "Returns a room_id, or false.  Long polling."
-        uid = request.facebook.uid
-
-        # search the existing rooms to see if user is already a member
-        # TODO: this is an expensive lazy hack, store things
-        # differently so we dont have to walk the room list every time
-        # someone enters the lobby
-        for id_,room in chatrooms.items():
-            if uid in room.chatters:
-                print "WARNING: %s alreading chattin in %s" % (uid, id_)
-                return json_response(id_)
-
-        print 'chatter entered lobby #', uid
-        self.chatters.append(uid)
-
-        if len(self.chatters) < num_chatters:
-            print 'queuing a chatter'
-            self.enough_chatters_event.wait(1)
-
-            # see if we timed out
-            if len(self.chatters) < num_chatters:
-                print 'timed out chatter #', uid
-                self.chatters.remove(uid)
-                return json_response(False)
-        else:
-            print 'we have enough chatters now'
-            # the last chatter sets up the room
-            self.room = ChatRoom(self.chatters)
-            self.chatters = []
-            # push the others through
-            self.enough_chatters_event.set()
-            self.enough_chatters_event.clear()
-
-        return json_response(self.room.id)
-
+
 chatrooms = {}
-class ChatRoom(object):
+class ChatRoom:
     def __init__(self, chatters):
-        self.messages = []
-        self.new_message_event = Event()
+        self.message_cache = []
         self.chatters = chatters
+
+        self.new_message_event = Event()
         self.id = str(uuid.uuid4())
-        self.msg_count = 0
-        chatrooms[self.id] = self
         self.timekeeper = Greenlet.spawn(self.alarm)
 
     def alarm(self):
@@ -101,9 +61,9 @@ class ChatRoom(object):
         other_colors.remove(self.my_color(uid))
         return other_colors
 
-    def get_pic(self, request):
-        return request.facebook.users.getInfo([request.facebook.uid], 
-                                              ['pic_square'])[0]['pic_square']
+    # def get_pic(self, request):
+    #     return request.facebook.users.getInfo([request.facebook.uid], 
+    #                                           ['pic_square'])[0]['pic_square']
 
     ################
     # handlers
@@ -126,23 +86,51 @@ class ChatRoom(object):
 
 
     def message_new(self, request):
+        fbuid = request.facebook.uid
+
+        msg = Message(self, fbuid, request.POST)
+
+        self.store(msg)
+
+        if msg.cmd == 'JOIN':
+            retval = self.message_join(self, request)
+        elif cmd == 'PRIVMSG':
+            retval = self.message_privmsg(self, request)
+        else:
+            raise(BadCommand)
+        return json_response(retval)
+
+    def cmd_join(self, request):
+        return True
+
+    def message_privmsg(self, request):
         uid = request.facebook.uid
         body = request.POST['body']
 
         self.msg_count += 1
 
         print "message_new: [%d] %s" % (self.msg_count, body)
-        msg_obj = {'id':self.msg_count,
-                   'body': body,
-                   'html': render_to_string('message.html',
-                                            {'color': self.my_color(uid),
-                                             'id':self.msg_count,
-                                             'body': body})}
-        # TODO: push the msg_obj into the database here
-        self.messages.append(msg_obj)
+
+        html = render_to_string('message.html', {'color': color, 
+                                                 'id': count, 
+                                                 'body': body})
+
+        msg_obj = {'id': self.msg_count,
+                   'uid':uid,
+                   'color': self.my_color(uid),
+                   'room_id': self.room.id,
+                   'time': time.time(),
+                   'body': body}
+
+        self.messages.add(msg_obj)
+
+        # push the other clients through
         self.new_message_event.set()
         self.new_message_event.clear()
-        return json_response(msg_obj)
+
+        return {'success': True, 
+                obj: {'html': html,
+                      'msg': self.scrub(msg_obj)}}
 
     def message_updates(self, request, last):
         "Return a list of messages for this room since LAST."
@@ -163,8 +151,9 @@ class ChatRoom(object):
         else:
             new_messages = self.messages[last:]
             
-        return json_response({'messages': new_messages,
-                              'time_up': self.time_up})
+        return {'success': True, 
+                'messages': new_messages, 
+                'time_up': self.time_up}
 
 ################
 # top level views
@@ -176,21 +165,57 @@ def index(request):
     print "* landing page"
     print "*"
     print "***"
-    return render_to_response('index.html', {}, RequestContext(request))
+    fb_uid = request.facebook.uid
+    assert fb_uid
+
+    # get or create player
+    result = Player.view('alphachat/player__fb_uid', key=fb_uid)
+    if result.count() == 1:
+        player = result.first()
+    else:
+        player = Player().create(request)
+
+    return render_to_response('index.html', RequestContext(request))
 
 @facebook.require_login()
 def html_content(request, page):
     html = render_to_string(page, {}, RequestContext(request))
     return json_response({'html':html})
 
-################
-# lobby view wrappers
-################
-lobby = Lobby()
 
-@facebook.require_login()
-def lobby_find_room(request): 
-    return lobby.find_room(request)
+#@facebook.require_login()
+def lobby_find_room(request):
+    """
+    Mark player as available for chat
+    """
+
+    fbuid = '100000808527382'
+    player = Player.view('alphachat/player__fb_uid', key=fbuid).one()
+
+    # set our state to lobby, and go to sleep until someone wakes us up
+    player.state = 'lobby'
+    player.save()
+    player = g_event.wait_for_doc_change(player, 60)
+    if player.state == 'chat':
+        return player.room_id
+    else:
+        return json_response(False)
+
+    
+    g_event.sleep(60, 'dummyid') #player._id)
+    player = player.get(player._id)
+    print "AFTER PLAYERSTATE:", player.state, player._rev
+    #player = Player(player._id)
+    #player.state = 'idle'
+    #player.save()
+    return json_response(False)
+
+################
+# debugging
+################
+def test_foo(request):
+    g_event.wakeup('dummyid')
+    return HttpResponse(True)
 
 ################
 # chat view wrappers
@@ -219,13 +244,3 @@ def message_new(request, roomid):
     print "<<< new"
     return retval
 
-################
-# debugging
-################
-@facebook.require_login()
-def test_foo(request):
-    fbs.set(request, 'foo', 'bar')
-    print fbs.get(request, 'foo')
-    print fbs.get(request, 'undef')
-
-    return HttpResponse(True)
