@@ -165,7 +165,7 @@ def index(request):
     print "* landing page"
     print "*"
     print "***"
-    fb_uid = request.facebook.uid
+    fb_uid = str(request.facebook.uid)
     assert fb_uid
 
     # get or create player
@@ -183,18 +183,19 @@ def html_content(request, page):
     return json_response({'html':html})
 
 
-#@facebook.require_login()
+@facebook.require_login()
 def lobby_find_room(request):
     """
     Mark player as available for chat
     """
-
-    fbuid = '100000808527382'
+    fbuid = str(request.facebook.uid)
     player = Player.view('alphachat/player__fb_uid', key=fbuid).one()
 
     # set our state to lobby, and go to sleep until someone wakes us up
-    player.state = 'lobby'
-    player.save()
+    if player.state != 'lobby':
+        player.state = 'lobby'
+        player.save()
+
     player = g_event.wait_for_doc_change(player, 60)
     if player.state == 'chat':
         return player.room_id

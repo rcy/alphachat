@@ -11,7 +11,9 @@ class Player(Document):
     state = StringProperty()
 
     def create(self, request):
-        self.fb_uid = request.facebook.uid
+        self.fb_uid = str(request.facebook.uid)
+        self._id = 'player-'+self.fb_uid
+        print 'info: creating new player', self._id
         self.pic = request.facebook.users.getInfo([request.facebook.uid],
                                                   ['pic_square'])[0]['pic_square']
         self.save()

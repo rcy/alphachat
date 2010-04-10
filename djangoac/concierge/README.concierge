@@ -1,0 +1,16 @@
+The concierge manages connecting players with matches.  Players may
+have specific requests for their match (wanting to only play against
+friends, for instance).  
+
+It ultimately boils down to finding 3 players that are waiting to
+chat, creating a room, and putting them in it.
+
+Players enter the lobby and have their 'state' set to 'lobby'.  The
+concriege can thus get the occupants by viewing on that property.
+
+On the server, client request are waiting on changes to their
+document.  This process will make such changes.  In most cases,
+changing 'state' to 'chat', and adding 'room_id'.
+
+The concriege is also responsible for the creation and cleanup of
+rooms.  TODO: More on that later

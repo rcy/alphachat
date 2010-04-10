@@ -41,4 +41,4 @@ INSTALLED_APPS = (
     'couchdbkit.ext.django'
 )
 COUCHDB_DATABASES = (
-    ('djangoac.alphachat', 'http://192.168.13.108:5984/alphachat'), )
+    ('djangoac.alphachat', 'http://localhost:5984/alphachat'), )
