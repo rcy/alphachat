@@ -79,7 +79,7 @@ var lobby = {
 		    chat.setup(roomid);
 		} else {
 		    // server time-out, go again
-		    alert('WARNING: find_room: server timeout');
+		    $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
 		    window.setTimeout(lobby.find_room, 0);
 		}
 	    },
@@ -114,10 +114,16 @@ var chat = {
 
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
-                                      function() { 
+                                      function(e) { 
                                           chat.form_submit($(this));
                                           return false; 
                                       });
+		 $('inputform').keydown(function(e){
+		     if (e.keyCode == 13) {
+			 $(this).parents('form').submit();
+			 return false;
+		     }
+		 });
 
                  // start chatting
                  chat.join();
