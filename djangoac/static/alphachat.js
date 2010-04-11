@@ -21,7 +21,7 @@ function get(url, onSuccess, onError) {
             type: "GET",
             dataType: "json",
             cache: false,
-            timeout: 5000,
+            timeout: 50000,	// 50 seconds
             success: onSuccess,
             error: onError});
 }
@@ -72,16 +72,22 @@ var lobby = {
     find_room: function() {
         $("#lobby_box").append(". ");
         // send message to server to indicate we are waiting to play
-        get('/a/lobby/find_room/', lobby.find_room_success, on_error);
-    },
-    find_room_success: function(response) {
-        if (response) {
-            roomid = response;
-            chat.setup(roomid);
-        } else {
-            // server time-out, go again
-            window.setTimeout(lobby.find_room, 1000);
-        }
+        get('/a/lobby/find_room/', 
+	    function(response) {
+		if (response) {
+		    roomid = response;
+		    chat.setup(roomid);
+		} else {
+		    // server time-out, go again
+		    alert('WARNING: find_room: server timeout');
+		    window.setTimeout(lobby.find_room, 0);
+		}
+	    },
+	    function(xhr,status) {
+		if (status == 'timeout')
+		    // client timeout, no problem
+		    window.setTimeout(lobby.find_room, 0);
+	    });
     }
 }
 
@@ -109,7 +115,7 @@ var chat = {
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
                                       function() { 
-                                          chat.form_submit($(this)); 
+                                          chat.form_submit($(this));
                                           return false; 
                                       });
 
@@ -145,7 +151,7 @@ var chat = {
             },
             // error
             function(xhr,status) {
-                chat.display_html('<div>on_poll_error: ' + status + '</div>');
+                chat.display_html('<div>on_poll: ' + status + '</div>');
                 if (status == 'timeout')
                     wait_for = 100;
                 else
@@ -177,7 +183,7 @@ var chat = {
     },
 
     display_message_object: function(msgobj) {
-        chat.display_html(msgobj.body);
+        chat.display_html(msgobj.html);
     },
     display_html: function(html) {
         var div = $("#chat")
