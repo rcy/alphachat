@@ -33,12 +33,12 @@ def create_chat(players):
         player.color = color
         player.save()
 
-chat_min = 3
+chat_min = 1
 # TODO: use the _changes api to make this more efficient, and less noisy on the logs
 if __name__ == '__main__':
     print "Concierge started.  Waiting for players in state == 'ondeck'"
     while True: 
-       lobby_players = Player.view('alphachat/player__state', key='lobby').all()
+        lobby_players = Player.view('alphachat/player__state', key='lobby').all()
         if lobby_players:
             print "lobby:",map(lambda p: str(p.fb_uid), lobby_players)
 
