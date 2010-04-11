@@ -63,10 +63,6 @@ class ChatRoom:
         other_colors.remove(self.my_color(uid))
         return other_colors
 
-    # def get_pic(self, request):
-    #     return request.facebook.users.getInfo([request.facebook.uid], 
-    #                                           ['pic_square'])[0]['pic_square']
-
     ################
     # handlers
     ################
@@ -157,6 +153,11 @@ class ChatRoom:
                 'messages': new_messages, 
                 'time_up': self.time_up}
 
+
+def get_pic(request):
+    return request.facebook.users.getInfo([request.facebook.uid], 
+                                          ['pic_square'])[0]['pic_square']
+
 ################
 # top level views
 ################
@@ -228,10 +229,20 @@ def test_foo(request):
 # chat view wrappers
 ################
 @facebook.require_login()
-def room_chatters_html(request, roomid):
-    #room = fbs.get(request,'room')
-    #room = chatrooms[roomid]
-    return HttpResponse("NOTHING HERE, FIXME")
+def room_chatters_html(request, room_id):
+    player = get_player(request)
+    other_players = filter(lambda p: p._id != player._id,
+                           Player.view('alphachat/player__room_id', key=room_id).all())
+
+    print 'player:',player
+    print 'other_players:',other_players
+    
+    html = render_to_string('chatters.html',
+                            { 'my_color': player.color,
+                              'other_colors': map(lambda p: p.color, other_players),
+                              'my_pic': get_pic(request) },
+                            RequestContext(request))
+    return json_response({'html':html})
     
 @facebook.require_login()
 def message_updates(request, room_id, since):

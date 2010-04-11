@@ -10,6 +10,9 @@ class Player(Document):
     # waiting_for_game
     state = StringProperty()
 
+    color = StringProperty()
+    room_id = StringProperty()
+
     def create(self, request):
         self.fb_uid = str(request.facebook.uid)
         self._id = 'player-'+self.fb_uid
@@ -17,6 +20,7 @@ class Player(Document):
         self.pic = request.facebook.users.getInfo([request.facebook.uid],
                                                   ['pic_square'])[0]['pic_square']
         self.save()
+        return self
 
 class Room(Document):
     creation_time = DateTimeProperty(default = datetime.utcnow)
