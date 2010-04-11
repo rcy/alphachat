@@ -1,5 +1,3 @@
-# this thing busts on epiphany, looks related to:
-# http://code.google.com/p/pyfacebook/issues/detail?id=130
 import uuid
 import simplejson
 import datetime
