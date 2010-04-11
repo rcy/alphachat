@@ -202,14 +202,18 @@ def lobby_find_room(request):
         player.state = 'lobby'
         player.save()
 
-    player = wait_for_change(player.get_db(), player)
-    # TODO: http://dpaste.com/181858/
-    if player:
+    updated_player = wait_for_change(player.get_db(), player)
+    # TODO: http://dpaste.com/181858/ aka ../exp/class.py
+    if updated_player:
+        player = updated_player
         print 'player:', player, 'changed'
         if player['state'] == 'chat':
             return json_response(player['room_id'])
-    # no room for you
-    return json_response(False)
+    else:
+        # no room for you
+        player.state = None
+        player.save()
+        return json_response(False)
 
 ################
 # debugging

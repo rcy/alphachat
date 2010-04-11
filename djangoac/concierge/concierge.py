@@ -19,9 +19,6 @@ def create_chat(players):
     print 'creating a room for', players
 
     # create the room
-    player_list = map(lambda p: p._id, players)
-    print "player_list:",player_list
-
 
     if db.doc_exist('room-foobar'):
         r = db.get('room-foobar')
@@ -39,15 +36,18 @@ def create_chat(players):
         player.room_id = r['_id']
         player.save()
 
-chat_min = 1
+chat_min = 2
 # TODO: use the continuous _changes api to make this more efficient
 def run():
     print "Concierge started.  Waiting for players in state == 'lobby'"
     while True:
         players = Player.view('alphachat/player__state', key='lobby').all()
+
+        print "player_list:",map(lambda p: str(p.fb_uid), players)
+
         if (len(players) >= chat_min):
             create_chat(players[0:chat_min])
-        sleep (5)
+        sleep (1)
 run()
 
 
