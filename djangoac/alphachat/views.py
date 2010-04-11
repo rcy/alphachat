@@ -254,7 +254,8 @@ def message_updates(request, room_id, since):
                                    since=since)
 
     msgs = map(lambda m: {'html': render_to_string('message.html', 
-                                                   {'color': 'red', 'body': m['body']})},
+                                                   {'color': m['color'], 
+                                                    'body': m['body']})},
                docs)
     
     return json_response({'since': since, 
@@ -268,6 +269,7 @@ def message_new(request, room_id):
         data = request.POST
         message = Message(room_id = room_id,
                           player_id = player._id,
+                          color = player['color'],
                           command = data['command'],
                           body = data['body'])
         message.save()
