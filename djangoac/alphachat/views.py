@@ -19,140 +19,9 @@ from alphachat.event import wait_for_change, wait_for_changes
 from couchdbkit import Consumer
 from couchdbkit.ext.django.loading import get_db
 
-fbs = Session();
-
-num_chatters = 1            # always 3, but hack it down to test
-colors = ['red','green','blue']
-
-def create_message(from_, body):
-    data = {'id': str(uuid.uuid4()), 'from': from_, 'body': body}
-    data['html'] = render_to_string('message.html', 
-                                    dictionary={'message': data, 'color':'green'})
-    return data
-
-
 def json_response(value, **kwargs):
     kwargs.setdefault('content_type', 'text/javascript; charset=UTF-8')
     return HttpResponse(simplejson.dumps(value), **kwargs)
-
-
-chatrooms = {}
-class ChatRoom:
-    def __init__(self, chatters):
-        self.message_cache = []
-        self.chatters = chatters
-
-        self.new_message_event = Event()
-        self.id = str(uuid.uuid4())
-        self.timekeeper = Greenlet.spawn(self.alarm)
-
-    def alarm(self):
-        self.time_up = False
-        print "STARTED TIMER: %s" % (self.id)
-        sleep(30)
-        print "TIME UP: %s" % (self.id)
-        self.time_up = True
-        self.new_message_event.set()
-        self.new_message_event.clear()
-        
-    def my_color(self, uid):
-        return colors[self.chatters.index(uid)]
-
-    def other_colors(self, uid):
-        other_colors = colors[:]
-        other_colors.remove(self.my_color(uid))
-        return other_colors
-
-    ################
-    # handlers
-    ################
-    def chatters_html(self, request):
-        "Returns the sidebar html for the room's chatters."
-        uid = request.facebook.uid
-        print 'ROOM INFO:', self.chatters, 'uid:', uid
-
-        my_color = self.my_color(uid)
-        other_colors = self.other_colors(uid)
-        chat_attrs = { 'my_color': my_color,
-                       'my_pic': self.get_pic(request),
-                       'other_colors': other_colors,
-                       }
-        html = render_to_string('chatters.html',
-                                chat_attrs,
-                                context_instance = RequestContext(request))
-        return json_response({'html':html})
-
-
-    def message_new(self, request):
-        fbuid = request.facebook.uid
-
-        msg = Message(self, fbuid, request.POST)
-
-        self.store(msg)
-
-        if msg.cmd == 'JOIN':
-            retval = self.message_join(self, request)
-        elif cmd == 'PRIVMSG':
-            retval = self.message_privmsg(self, request)
-        else:
-            raise(BadCommand)
-        return json_response(retval)
-
-    def cmd_join(self, request):
-        return True
-
-    def message_privmsg(self, request):
-        uid = request.facebook.uid
-        body = request.POST['body']
-
-        self.msg_count += 1
-
-        print "message_new: [%d] %s" % (self.msg_count, body)
-
-        html = render_to_string('message.html', {'color': color, 
-                                                 'id': count, 
-                                                 'body': body})
-
-        msg_obj = {'id': self.msg_count,
-                   'uid':uid,
-                   'color': self.my_color(uid),
-                   'room_id': self.room.id,
-                   'time': time.time(),
-                   'body': body}
-
-        self.messages.add(msg_obj)
-
-        # push the other clients through
-        self.new_message_event.set()
-        self.new_message_event.clear()
-
-        return {'success': True, 
-                obj: {'html': html,
-                      'msg': self.scrub(msg_obj)}}
-
-    def message_updates(self, request, last):
-        "Return a list of messages for this room since LAST."
-        print 'updates: %s in %s after %d' % (request.facebook.uid, self.id, last)
-
-        num_messages = len(self.messages)
-
-        if last > num_messages:
-            print "WARNING: last(%d) is too far ahead of num_messages(%d)" % (last, num_messages)
-            last = num_messages
-
-        if last == num_messages:
-            self.new_message_event.wait(4)
-
-        # we test again to see if we timed out, or a new message came in
-        if last == num_messages:
-            new_messages = []
-        else:
-            new_messages = self.messages[last:]
-            
-        return {'success': True, 
-                'messages': new_messages, 
-                'time_up': self.time_up}
-
 
 def get_pic(request):
     return request.facebook.users.getInfo([request.facebook.uid], 
@@ -218,16 +87,6 @@ def lobby_find_room(request):
         player.save()
         return json_response(False)
 
-################
-# debugging
-################
-def test_foo(request):
-    g_event.wakeup('dummyid')
-    return HttpResponse(True)
-
-################
-# chat view wrappers
-################
 @facebook.require_login()
 def room_chatters_html(request, room_id):
     player = get_player(request)
@@ -275,3 +134,10 @@ def message_new(request, room_id):
         message.save()
 
     return json_response(True)
+
+################
+# debugging
+################
+def test_foo(request):
+    g_event.wakeup('dummyid')
+    return HttpResponse(True)
