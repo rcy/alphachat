@@ -1,0 +1,2 @@
+run:
+	python ./referee.py
