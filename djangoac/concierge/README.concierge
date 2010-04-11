@@ -5,8 +5,9 @@ friends, for instance).
 It ultimately boils down to finding 3 players that are waiting to
 chat, creating a room, and putting them in it.
 
-Players enter the lobby and have their 'state' set to 'lobby'.  The
-concriege can thus get the occupants by viewing on that property.
+Players hit the main page and have their state set to 'lobby'.  When
+they click to play, their state moves to 'ondeck', which is
+a state the concierge is interested in.
 
 On the server, client request are waiting on changes to their
 document.  This process will make such changes.  In most cases,

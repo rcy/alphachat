@@ -176,6 +176,8 @@ def index(request):
         player = result.first()
     else:
         player = Player().create(request)
+    player.state = 'lobby'
+    player.save()
 
     return render_to_response('index.html', RequestContext(request))
 
@@ -197,9 +199,9 @@ def lobby_find_room(request):
     """
     player = get_player(request)
 
-    # set our state to lobby, and go to sleep until someone wakes us up
-    if player.state != 'lobby':
-        player.state = 'lobby'
+    # set our state, and go to sleep until someone wakes us up
+    if player.state != 'ondeck':
+        player.state = 'ondeck'
         player.save()
 
     updated_player = wait_for_change(player.get_db(), player)
@@ -211,7 +213,7 @@ def lobby_find_room(request):
             return json_response(player['room_id'])
     else:
         # no room for you
-        player.state = None
+        player.state = 'lobby'
         player.save()
         return json_response(False)
 

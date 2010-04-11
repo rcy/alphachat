@@ -39,15 +39,18 @@ def create_chat(players):
         player.save()
 
 chat_min = 2
-# TODO: use the continuous _changes api to make this more efficient
-def run():
-    print "Concierge started.  Waiting for players in state == 'lobby'"
+# TODO: use the _changes api to make this more efficient, and less noisy on the logs
+if __name__ == '__main__':
+    print "Concierge started.  Waiting for players in state == 'ondeck'"
     while True:
-        players = Player.view('alphachat/player__state', key='lobby').all()
+        lobby_players = Player.view('alphachat/player__state', key='lobby').all()
+        if lobby_players:
+            print "lobby:",map(lambda p: str(p.fb_uid), lobby_players)
 
-        print "player_list:",map(lambda p: str(p.fb_uid), players)
+        ondeck_players = Player.view('alphachat/player__state', key='ondeck').all()
+        if ondeck_players:
+            print "ondeck:",map(lambda p: str(p.fb_uid), ondeck_players)
 
-        if (len(players) >= chat_min):
-            create_chat(players[0:chat_min])
+        if (len(ondeck_players) >= chat_min):
+            create_chat(ondeck_players[0:chat_min])
         sleep (1)
-run()
