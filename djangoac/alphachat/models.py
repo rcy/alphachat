@@ -1,18 +1,7 @@
-from couchdbkit.ext.django.schema import *
-from datetime import *
+from couchdbkit.ext.django.schema import Document
+from alphachat.schema import PlayerDoc, RoomDoc, MessageDoc
 
-class Player(Document):
-    creation_time = DateTimeProperty(default = datetime.utcnow)
-
-    fb_uid = StringProperty()
-    pic = StringProperty()
-
-    # waiting_for_game
-    state = StringProperty()
-
-    color = StringProperty()
-    room_id = StringProperty()
-
+class Player(Document, PlayerDoc):
     def create(self, request):
         self.fb_uid = str(request.facebook.uid)
         self._id = 'player-'+self.fb_uid
@@ -22,21 +11,8 @@ class Player(Document):
         self.save()
         return self
 
-class Room(Document):
-    creation_time = DateTimeProperty(default = datetime.utcnow)
+class Room(Document, RoomDoc):
+    pass
 
-    # ids of the occupants [red, green, blue]
-    players = ListProperty()
-
-    # needs_players, chatting, judging, finished
-    state = StringProperty()
-
-class Message(Document):
-    creation_time = DateTimeProperty(default = datetime.utcnow)
-
-    # join, privmsg, like
-    command = StringProperty(required = True)
-
-    body = StringProperty(required = True)
-    player_id = StringProperty(required = True)
-    room_id = StringProperty(required = True)
+class Message(Document, MessageDoc):
+    pass

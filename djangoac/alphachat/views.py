@@ -110,6 +110,9 @@ def message_updates(request, room_id, since):
                                    by_key="room_id", by_value=room_id, 
                                    since=since)
 
+    # TODO: process messages one by one by command type.  maybe filter
+    # some out for return to the client, ie dont send back their own
+    # messages, certain system messages, etc
     msgs = map(lambda m: {'html': render_to_string('message.html', 
                                                    {'color': m['color'], 
                                                     'body': m['body']})},
