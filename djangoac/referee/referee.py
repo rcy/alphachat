@@ -40,15 +40,11 @@ def create_chat(players):
     g = gevent.spawn(timer_fn, room._id, settings.chat_seconds)
 
 def timer_fn(room_id, seconds):
-    print "room %s: starting %d second timer" %(room_id, seconds)
+    Message().info(room_id, "starting a %d second timer" % seconds).save()
+    Message().time(room_id, seconds).save()
     gevent.sleep (seconds)
-    m = Message()
-    m.command = 'privmsg'
-    m.body = 'time is up'
-    m.room_id = room_id
-    m.color = 'black' # TODO: this is a hack
-    m.save()
-    print "sent message:",m._id
+    Message().info(room_id, 'time is up').save()
+    Message().time(room_id, 0).save()
     print "room %s: time is up!" %(room_id,)
 
 

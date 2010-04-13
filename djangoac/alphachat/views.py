@@ -126,12 +126,8 @@ def message_new(request, room_id):
 
     if request.method == 'POST':
         data = request.POST
-        message = Message(room_id = room_id,
-                          player_id = player._id,
-                          color = player['color'],
-                          command = data['command'],
-                          body = data['body'])
-        message.save()
+        print "new_code: foo"
+        Message().privmsg(room_id, player._id, data['body']).save()
 
     return json_response(True)
 
