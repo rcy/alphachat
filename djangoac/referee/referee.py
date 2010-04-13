@@ -6,6 +6,7 @@ from time import sleep
 import sys, os
 sys.path.append('..')
 from alphachat.schema import PlayerDoc, RoomDoc, MessageDoc
+import referee_settings as settings
 
 s = Server()
 db = s.get_or_create_db("alphachat")
@@ -17,7 +18,6 @@ Room.set_db(db)
 class Message(MessageDoc): pass
 Message.set_db(db)
 
-chat_min = 1
 colors = ['red','green','blue']
 
 def create_chat(players):
@@ -36,7 +36,8 @@ def create_chat(players):
         player.color = color
         player.save()
 
-    g = gevent.spawn(timer_fn, room._id, 10)
+    # start two minute timer
+    g = gevent.spawn(timer_fn, room._id, settings.chat_seconds)
 
 def timer_fn(room_id, seconds):
     print "room %s: starting %d second timer" %(room_id, seconds)
@@ -70,11 +71,12 @@ def main_loop():
             print "ondeck:",ondeck_player_ids
         old_ondeck_player_ids = ondeck_player_ids
 
-        if (len(ondeck_players) >= chat_min):
-            create_chat (players = ondeck_players[0:chat_min])
+        if (len(ondeck_players) >= settings.chat_min):
+            create_chat (players = ondeck_players[0:settings.chat_min])
 
         gevent.sleep (1)
 
 if __name__ == '__main__':
-    main = gevent.spawn(main_loop)
-    main.join()
+    #main = gevent.spawn(main_loop)
+    #main.join()
+    main_loop()
