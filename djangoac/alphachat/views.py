@@ -49,11 +49,10 @@ def index(request):
 
     return render_to_response('index.html', RequestContext(request))
 
-@facebook.require_login()
+#@facebook.require_login()
 def html_content(request, page):
     html = render_to_string(page, {}, RequestContext(request))
     return json_response({'html':html})
-
 
 def get_player(request):
     fb_uid = str(request.facebook.uid)
