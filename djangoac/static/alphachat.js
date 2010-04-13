@@ -21,7 +21,7 @@ function get(url, onSuccess, onError) {
             type: "GET",
             dataType: "json",
             cache: false,
-            timeout: 50000,	// 50 seconds
+            timeout: 50000,     // 50 seconds
             success: onSuccess,
             error: onError});
 }
@@ -35,31 +35,32 @@ function post(url, args, onSuccess, onError) {
             success: onSuccess,
             error: onError});
 }
-function html(url, selector, onSuccess) {
-    url = add_slash(url);
+function get_html(url, selector, onSuccess) {
     $.ajax({url: add_slash(url),
             type: "GET",
             dataType: "json",
             success: function(r) {
-                selector.html(r.html);
+                $(selector).html(r.html);
                 if (onSuccess) onSuccess();
             },
-            error: function(xhr) {
-                selector.html(xhr.responseText);
+            error: function(xhr, status, error) {
+                var errstr = 'get_html error: '+status+'\n'+error;
+                alert(errstr);
+                $(selector).html(errstr);
             }});
 }
 
+// main
 $(document).ready(function() {
-    g_fbqa = fb_query_args();
-    if (!window.console) window.console = {};
-    if (!window.console.log) window.console.log = function() {};
-
-    // start us off by loading the menu
-    html('/mainmenu.html', $("#content"),
-         function() {
-             $("#go_chat").bind("click", lobby.setup);
-         });
-});
+        g_fbqa = fb_query_args();
+        if (!window.console) window.console = {};
+        if (!window.console.log) window.console.log = function() {};
+        // start us off by loading the menu
+        get_html('/mainmenu.html', "#content",
+             function() {
+                 $("#go_chat").bind("click", lobby.setup);
+             });
+    });
 
 // budget generic error handler
 function on_error(xhr, status) { alert(status); }
@@ -67,27 +68,27 @@ function on_error(xhr, status) { alert(status); }
 var lobby = {
     setup: function() {
         // setup the page, then find a room
-        html('/lobby.html', $("#content"), lobby.find_room);
+        get_html('/lobby.html', "#content", lobby.find_room);
     },
     find_room: function() {
         $("#lobby_box").append(". ");
         // send message to server to indicate we are waiting to play
         get('/a/lobby/find_room/', 
-	    function(response) {
-		if (response) {
-		    roomid = response;
-		    chat.setup(roomid);
-		} else {
-		    // server time-out, go again
-		    $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
-		    window.setTimeout(lobby.find_room, 0);
-		}
-	    },
-	    function(xhr,status) {
-		if (status == 'timeout')
-		    // client timeout, no problem
-		    window.setTimeout(lobby.find_room, 0);
-	    });
+            function(response) {
+                if (response) {
+                    roomid = response;
+                    chat.setup(roomid);
+                } else {
+                    // server time-out, go again
+                    $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
+                    window.setTimeout(lobby.find_room, 0);
+                }
+            },
+            function(xhr,status) {
+                if (status == 'timeout')
+                    // client timeout, no problem
+                    window.setTimeout(lobby.find_room, 0);
+            });
     }
 }
 
@@ -102,7 +103,7 @@ var chat = {
         error_wait = 100;
 
         // request the chat page
-        html("/chat.html", $("#content"), 
+        get_html("/chat.html", "#content", 
              function() {
                  // show the room id in the chat window
                  $('#chat').html(
@@ -118,12 +119,12 @@ var chat = {
                                           chat.form_submit($(this));
                                           return false; 
                                       });
-		 $('inputform').keydown(function(e){
-		     if (e.keyCode == 13) {
-			 $(this).parents('form').submit();
-			 return false;
-		     }
-		 });
+                 $('inputform').keydown(function(e){
+                     if (e.keyCode == 13) {
+                         $(this).parents('form').submit();
+                         return false;
+                     }
+                 });
 
                  // start chatting
                  chat.join();
@@ -142,7 +143,7 @@ var chat = {
             // success
             function(response) {
                 chat.error_wait = 100;
-		chat.since = response.since;
+                chat.since = response.since;
                 m = response.messages;
 
                 for (i in m) {
