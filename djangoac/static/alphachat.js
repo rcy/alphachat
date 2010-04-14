@@ -58,8 +58,8 @@ $(document).ready(function() {
         // start us off by loading the menu
         get_html('/mainmenu.html', "#content",
              function() {
-                 $("#card_others").html('')
-                 $("#card_me").html('')
+                 $("#faces_others").html('')
+                 $("#faces_me").html('')
                  $("#go_chat").bind("click", lobby.setup);
              });
     });
@@ -176,13 +176,16 @@ var chat = {
                         }
                         break;
                     case 'join':
-                        // todo: draw the player card in the sidebar
-                        card = $("#msgtpl_player").jqote(msg);
+                        // todo: draw the player face card in the sidebar
+                        card = $("#msgtpl_face").jqote(msg);
 
                         if (msg.color == chat.my_color) 
-                            $("#card_me").append(card);
-                        else
-                            $("#card_others").append(card);
+                            $("#faces_me").append(card);
+                        else {
+                            $("#faces_others").append(card);
+                            // make this card clickable for choosing alpha
+                            $("#face_"+msg.color).addClass("face_button");
+                        }
 
                         break;
                     }

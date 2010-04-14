@@ -76,9 +76,10 @@ body {
 .face:hover { }
 .alpha_face:hover { }
 .my_face:hover { }
-.other_face:hover { 
-    border: 5px solid gray; 
-    background: white;
+.face_button {
+}
+.face_button:hover { 
+    border: 5px solid yellow; 
 }
 
 .chat_msg {
