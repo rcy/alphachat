@@ -128,8 +128,7 @@ def message_new(request, room_id):
 
     if request.method == 'POST':
         data = request.POST
-        print "new_code: foo"
-        Message().privmsg(room_id, player._id, data['body']).save()
+        Message().Chat(room_id, player._id, data['body']).save()
 
     return json_response(True)
 

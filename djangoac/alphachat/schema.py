@@ -24,12 +24,12 @@ class MessageDoc(BaseDoc):
     # join, privmsg, like
     room_id = StringProperty(required = True)
     command = StringProperty(required = True)
-    body = StringProperty(required = True)
+    body = StringProperty(required = False)
 
     player_id = StringProperty(required = False)
     color = StringProperty(required = False)
 
-    def privmsg(self, room_id, player_id, message):
+    def Chat(self, room_id, player_id, message):
         # TODO: make sure player is in room, do other validation
         self.room_id = room_id
         self.player_id = player_id
@@ -38,14 +38,16 @@ class MessageDoc(BaseDoc):
         self.body = message
         return self
 
-    def info(self, room_id, message):
+    def Info(self, room_id, message):
         self.room_id = room_id
         self.command = 'info'
         self.body = message
         return self
 
-    def time(self, room_id, seconds):
+    def State(self, room_id, state, seconds):
+        print "STATE: ", state
         self.room_id = room_id
-        self.command = 'time'
-        self.body = str(seconds)
+        self.command = 'state'
+        self.state = state
+        self.seconds = seconds
         return self

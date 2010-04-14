@@ -44,21 +44,19 @@ def timer_fn(room_id):
     vote_seconds = settings.vote_seconds
 
     # game time
-    Message().info(room_id, "chat for %d seconds" % game_seconds).save()
-    Message().time(room_id, game_seconds).save()
+    Message().State(room_id, "chat", game_seconds).save()
     gevent.sleep (game_seconds)
-    Message().info(room_id, 'chat is over!').save()
-    Message().time(room_id, 0).save()
+    Message().State(room_id, "chat", 0).save()
     print "room %s: chat time is up!" %(room_id,)
 
     # voting time
-    Message().info(room_id, "choose the chatter you preferred (%d seconds)" % vote_seconds).save()
-    Message().time(room_id, vote_seconds).save()
+    Message().State(room_id, "vote", vote_seconds).save()
     gevent.sleep (vote_seconds)
-    Message().info(room_id, 'time is up! TODO: show winner').save()
-    Message().time(room_id, 0).save()
+    Message().State(room_id, "vote", 0).save()
     print "room %s: vote time is up!" %(room_id,)
 
+    # display winner time
+    Message().State(room_id, "results", 0).save()
 
 def main_loop():
     print "Referee started.  Waiting for players in state == 'ondeck'"

@@ -147,7 +147,8 @@ var chat = {
                 m = response.messages;
 
                 for (i in m) {
-                    chat.display_message_object(m[i]);
+                    html = $("#msgtpl_" + m[i].command).jqote(m[i]);
+                    chat.display_html(html);
                 }
                 
                 window.setTimeout(chat.poll, 0);
@@ -185,10 +186,6 @@ var chat = {
         // with it here
     },
 
-    display_message_object: function(msgobj) {
-        html = $("#msgtpl_"+msgobj.command).jqote(msgobj);
-        chat.display_html(html);
-    },
     display_html: function(html) {
         var div = $("#chat")
         div.append(html);
