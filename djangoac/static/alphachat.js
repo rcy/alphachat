@@ -134,7 +134,7 @@ var chat = {
              });
     },
     join: function() {
-        chat.queue_message({command:'join', body:'FIXME'});
+        chat.queue_message({command:'join', body:'JOINFIXME'});
         chat.poll();
     },
 
@@ -190,7 +190,8 @@ var chat = {
     },
 
     display_message_object: function(msgobj) {
-        chat.display_html(msgobj.html);
+        html = $("#template_message").jqote(msgobj);
+        chat.display_html(html);
     },
     display_html: function(html) {
         var div = $("#chat")

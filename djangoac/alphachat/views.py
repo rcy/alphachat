@@ -100,6 +100,10 @@ def room_chatters_html(request, room_id):
                             RequestContext(request))
     return json_response({'html':html})
     
+def scrub_message(message):
+    """remove any private data from message for client consumption"""
+    return message
+
 @facebook.require_login()
 def message_updates(request, room_id, since):
     # TODO: verify that this user is in this room
@@ -112,11 +116,9 @@ def message_updates(request, room_id, since):
     # TODO: process messages one by one by command type.  maybe filter
     # some out for return to the client, ie dont send back their own
     # messages, certain system messages, etc
-    msgs = map(lambda m: {'html': render_to_string('message.html', 
-                                                   {'color': m['color'], 
-                                                    'body': m['body']})},
-               docs)
-    
+    #msgs = filter(message_is_public, 
+    msgs = map(scrub_message, docs)
+
     return json_response({'since': since, 
                           'messages': msgs})
 

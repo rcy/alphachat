@@ -10,3 +10,12 @@
           <input type="submit" class="hidden" onclick="" />
         </form>
       </div>
+
+    <script id="template_message" type="text/x-jqote-template">
+      <![CDATA[
+      <div>
+        <span class="<%= this.color %>_name chat_name"><%= this.color %>:</span>
+        <span class="<%= this.color %>_text chat_text"><%= this.body %></span>
+      </div>
+      ]]>
+    </script>
