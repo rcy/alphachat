@@ -81,6 +81,7 @@ def lobby_find_room(request):
         log('player: %s changed' % player)
         if player['state'] == 'chat':
             return json_response({'room_id': player['room_id'],
+                                  'color': player['color'],
                                   'since': get_seq(get_db('alphachat'))})
     else:
         # no room for you

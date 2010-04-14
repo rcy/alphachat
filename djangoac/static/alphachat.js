@@ -58,6 +58,7 @@ $(document).ready(function() {
         // start us off by loading the menu
         get_html('/mainmenu.html', "#content",
              function() {
+                 $("#chatters").html('')
                  $("#go_chat").bind("click", lobby.setup);
              });
     });
@@ -77,8 +78,9 @@ var lobby = {
             function(response) {
                 if (response) {
                     room_id = response.room_id;
+                    my_color = response.color;
                     since = response.since;
-                    chat.setup(room_id, since);
+                    chat.setup(room_id, my_color, since);
                 } else {
                     // server time-out, go again
                     $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
@@ -95,20 +97,24 @@ var lobby = {
 
 var chat = {
     room: {},
+    my_color: '',
     since: 0,
     error_wait: 100,
 
-    setup: function(room_id, since) {
+    setup: function(room_id, color, since) {
         chat.room.id = room_id;
+        chat.my_color = color;
         chat.since = since;
         chat.error_wait = 100;
 
         // request the chat page
         get_html("/chat.html", "#content", 
              function() {
+                 // focus the input bar
+                 $("input:text:visible:first").focus();
+
                  // show the room id in the chat window
-                 $('#chat').html(
-                     '<div>match: ' + chat.room.id + '</div>');
+                 $('#chat').html('<div>match: ' + chat.room.id + '</div>');
 
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
@@ -148,12 +154,13 @@ var chat = {
                 m = response.messages;
 
                 for (i in m) {
-                    html = $("#msgtpl_" + m[i].command).jqote(m[i]);
+                    var msg = m[i];
+                    html = $("#msgtpl_" + msg.command).jqote(msg);
                     chat.display_html(html);
 
-                    switch (m[i].command) {
+                    switch (msg.command) {
                     case 'state':
-                        switch (m[i].state) {
+                        switch (msg.state) {
                         case 'vote':
                             chat.display_html("<div>VOTANG</div>");
                             break;
@@ -164,11 +171,18 @@ var chat = {
                         case 'chat':
                             break;
                         default:
-                            alert("unknown state:"+m[i].state);
+                            alert("unknown state:"+msg.state);
                         }
                         break;
                     case 'join':
                         // todo: draw the player card in the sidebar
+                        card = $("#msgtpl_player").jqote(msg);
+
+                        if (msg.color == chat.my_color) 
+                            $("#card_me").append(card);
+                        else
+                            $("#card_others").append(card);
+
                         break;
                     }
                 }
