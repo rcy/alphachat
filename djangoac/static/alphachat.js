@@ -58,7 +58,8 @@ $(document).ready(function() {
         // start us off by loading the menu
         get_html('/mainmenu.html', "#content",
              function() {
-                 $("#chatters").html('')
+                 $("#card_others").html('')
+                 $("#card_me").html('')
                  $("#go_chat").bind("click", lobby.setup);
              });
     });
