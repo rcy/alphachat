@@ -1,7 +1,7 @@
 import uuid
 import simplejson
 import datetime
-from time import time, sleep
+from time import time
 from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -12,7 +12,8 @@ import facebook.djangofb as facebook
 
 from alphachat.models import Player, Room, Message
 from alphachat.session import Session
-from alphachat.event import wait_for_change, wait_for_changes
+from alphachat.event import wait_for_change, wait_for_changes, get_seq
+from alphachat.debug import log
 
 from couchdbkit import Consumer
 from couchdbkit.ext.django.loading import get_db
@@ -66,18 +67,21 @@ def lobby_find_room(request):
     """
     player = get_player(request)
 
+    since = get_seq(player.get_db())
+
     # set our state, and go to sleep until someone wakes us up
     if player.state != 'ondeck':
         player.state = 'ondeck'
         player.save()
 
-    updated_player = wait_for_change(player.get_db(), player)
+    updated_player = wait_for_change(player.get_db(), player, since)
     # TODO: http://dpaste.com/181858/ aka ../exp/class.py
     if updated_player:
         player = updated_player
-        print 'player:', player, 'changed'
+        log('player: %s changed' % player)
         if player['state'] == 'chat':
-            return json_response(player['room_id'])
+            return json_response({'room_id': player['room_id'],
+                                  'since': get_seq(get_db('alphachat'))})
     else:
         # no room for you
         player.state = 'lobby'
@@ -90,8 +94,8 @@ def room_chatters_html(request, room_id):
     other_players = filter(lambda p: p._id != player._id,
                            Player.view('alphachat/player__room_id', key=room_id).all())
 
-    print 'player:',player
-    print 'other_players:',other_players
+    log('player: %s'%player)
+    log('other_players: %s'%other_players)
     
     html = render_to_string('chatters.html',
                             { 'my_color': player.color,
@@ -107,7 +111,7 @@ def scrub_message(message):
 @facebook.require_login()
 def message_updates(request, room_id, since):
     # TODO: verify that this user is in this room
-    print "waiting for messages on:", room_id
+    log("waiting for messages on: %s" % room_id)
     docs, since = wait_for_changes(get_db('alphachat'),
                                    doc_type="Message", 
                                    by_key="room_id", by_value=room_id, 
@@ -124,11 +128,18 @@ def message_updates(request, room_id, since):
 
 @facebook.require_login()
 def message_new(request, room_id):
+    # TODO: make sure player is in room, do other validation.
     player = get_player(request)
 
     if request.method == 'POST':
         data = request.POST
-        Message().Chat(room_id, player._id, data['body']).save()
+        log('new_message: %s'%request.POST)
+        if data['command'] == 'join':
+            Message().Join(room_id, player._id).save()
+            player.join = True
+            player.save()
+        else:
+            Message().Chat(room_id, player._id, data['body']).save()
 
     return json_response(True)
 

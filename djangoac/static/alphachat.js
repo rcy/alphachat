@@ -76,8 +76,9 @@ var lobby = {
         get('/a/lobby/find_room/', 
             function(response) {
                 if (response) {
-                    roomid = response;
-                    chat.setup(roomid);
+                    room_id = response.room_id;
+                    since = response.since;
+                    chat.setup(room_id, since);
                 } else {
                     // server time-out, go again
                     $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
@@ -97,10 +98,10 @@ var chat = {
     since: 0,
     error_wait: 100,
 
-    setup: function(room_id) {
+    setup: function(room_id, since) {
         chat.room.id = room_id;
-        last = 0;
-        error_wait = 100;
+        chat.since = since;
+        chat.error_wait = 100;
 
         // request the chat page
         get_html("/chat.html", "#content", 
@@ -108,10 +109,6 @@ var chat = {
                  // show the room id in the chat window
                  $('#chat').html(
                      '<div>match: ' + chat.room.id + '</div>');
-
-                 // show the chatters in the sidebar
-                 get('/a/room/chatters_html/'+chat.room.id, 
-                     function(r) { $("#chatters").html(r.html); });
 
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
@@ -126,16 +123,20 @@ var chat = {
                      }
                  });
 
-                 // start chatting
-                 chat.join();
-
                  // start the send message queue
                  queue.start(chat.send_message, 100);
+
+                 // wait for messages
+                 chat.poll();
+
+                 // tell server we are ready to go
+                 //alert("delay join");
+                 window.setTimeout(chat.join, 100);
              });
     },
+
     join: function() {
-        chat.queue_message({command:'join', body:'JOINFIXME'});
-        chat.poll();
+        chat.queue_message({command:'join'});
     },
 
     poll: function() {
@@ -150,7 +151,8 @@ var chat = {
                     html = $("#msgtpl_" + m[i].command).jqote(m[i]);
                     chat.display_html(html);
 
-                    if (m[i].command == 'state')
+                    switch (m[i].command) {
+                    case 'state':
                         switch (m[i].state) {
                         case 'vote':
                             chat.display_html("<div>VOTANG</div>");
@@ -159,7 +161,16 @@ var chat = {
                             // show return to main menu button
                             $("#menubutton").css('display','inline');
                             break;
+                        case 'chat':
+                            break;
+                        default:
+                            alert("unknown state:"+m[i].state);
                         }
+                        break;
+                    case 'join':
+                        // todo: draw the player card in the sidebar
+                        break;
+                    }
                 }
                 
                 window.setTimeout(chat.poll, 0);

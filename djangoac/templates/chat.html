@@ -1,39 +1,48 @@
-      <div id=chat>
-        #chat#
-      </div>
+<div id=chat>
+  #chattext here#
+</div>
+<div id="input">
+  <form id="inputform">
+    <div style="padding-right: 15px">
+      <input type="text" id="inputbar" />
+    </div>
+    <input type="submit" class="hidden" onclick="" />
+  </form>
+</div>
 
-      <div id="input">
-        <form id="inputform">
-          <div style="padding-right: 15px">
-            <input type="text" id="inputbar" />
-          </div>
-          <input type="submit" class="hidden" onclick="" />
-        </form>
-      </div>
-
-    <script id="msgtpl_privmsg" type="text/x-jqote-template">
-      <![CDATA[
+<!-- message templates -->
+<script id="msgtpl_privmsg" type="text/x-jqote-template">
+  <![CDATA[
       <div>
         <span class="<%= this.color %>_name chat_name">&lt;<%= this.color %>&gt;&nbsp;</span>
         <span class="<%= this.color %>_text chat_text"><%= this.body %></span>
       </div>
       ]]>
-    </script>
+</script>
 
-    <script id="msgtpl_info" type="text/x-jqote-template">
-      <![CDATA[
+<script id="msgtpl_info" type="text/x-jqote-template">
+  <![CDATA[
       <div>
         <span class="chat_name">*info*&nbsp;</span>
         <span class="chat_text"><%= this.body %></span>
       </div>
       ]]>
-    </script>
+</script>
 
-    <script id="msgtpl_state" type="text/x-jqote-template">
-      <![CDATA[
+<script id="msgtpl_state" type="text/x-jqote-template">
+  <![CDATA[
       <div>
-        <span class="chat_name">*state*&nbsp;</span>
-        <span class="chat_text"><%= this.state %> for <%= this.seconds %> seconds</span>
+        <span class="chat_name">*state: <%= this.state %>*&nbsp;</span>
+        <span class="chat_text">for <%= this.seconds %> seconds</span>
       </div>
       ]]>
-    </script>
+</script>
+
+<script id="msgtpl_join" type="text/x-jqote-template">
+  <![CDATA[
+      <div>
+        <span class="chat_name">*<%= this.command %>*&nbsp;</span>
+        <span class="chat_text"><%= this.player_id %></span>
+      </div>
+      ]]>
+</script>
