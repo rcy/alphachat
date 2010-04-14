@@ -137,3 +137,12 @@ body {
 .hidden {
     display: none;
 }
+
+#menubutton {
+    position: absolute;
+    right: 50px;
+    background: purple;
+    height: 30px;
+    color: white;
+    display: none;
+}

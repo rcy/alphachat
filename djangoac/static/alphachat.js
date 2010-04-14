@@ -149,6 +149,17 @@ var chat = {
                 for (i in m) {
                     html = $("#msgtpl_" + m[i].command).jqote(m[i]);
                     chat.display_html(html);
+
+                    if (m[i].command == 'state')
+                        switch (m[i].state) {
+                        case 'vote':
+                            chat.display_html("<div>VOTANG</div>");
+                            break;
+                        case 'results':
+                            // show return to main menu button
+                            $("#menubutton").css('display','inline');
+                            break;
+                        }
                 }
                 
                 window.setTimeout(chat.poll, 0);
