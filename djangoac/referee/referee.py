@@ -37,15 +37,27 @@ def create_chat(players):
         player.save()
 
     # start two minute timer
-    g = gevent.spawn(timer_fn, room._id, settings.chat_seconds)
+    g = gevent.spawn(timer_fn, room._id)
 
-def timer_fn(room_id, seconds):
-    Message().info(room_id, "starting a %d second timer" % seconds).save()
-    Message().time(room_id, seconds).save()
-    gevent.sleep (seconds)
-    Message().info(room_id, 'time is up').save()
+def timer_fn(room_id):
+    game_seconds = settings.chat_seconds
+    vote_seconds = settings.vote_seconds
+
+    # game time
+    Message().info(room_id, "chat for %d seconds" % game_seconds).save()
+    Message().time(room_id, game_seconds).save()
+    gevent.sleep (game_seconds)
+    Message().info(room_id, 'chat is over!').save()
     Message().time(room_id, 0).save()
-    print "room %s: time is up!" %(room_id,)
+    print "room %s: chat time is up!" %(room_id,)
+
+    # voting time
+    Message().info(room_id, "choose the chatter you preferred (%d seconds)" % vote_seconds).save()
+    Message().time(room_id, vote_seconds).save()
+    gevent.sleep (vote_seconds)
+    Message().info(room_id, 'time is up! TODO: show winner').save()
+    Message().time(room_id, 0).save()
+    print "room %s: vote time is up!" %(room_id,)
 
 
 def main_loop():
