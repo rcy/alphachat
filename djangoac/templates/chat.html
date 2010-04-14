@@ -11,11 +11,20 @@
         </form>
       </div>
 
-    <script id="template_message" type="text/x-jqote-template">
+    <script id="msgtpl_privmsg" type="text/x-jqote-template">
       <![CDATA[
       <div>
-        <span class="<%= this.color %>_name chat_name"><%= this.color %>:</span>
+        <span class="<%= this.color %>_name chat_name">&lt;<%= this.color %>&gt;&nbsp;</span>
         <span class="<%= this.color %>_text chat_text"><%= this.body %></span>
+      </div>
+      ]]>
+    </script>
+
+    <script id="msgtpl_info" type="text/x-jqote-template">
+      <![CDATA[
+      <div>
+        <span class="chat_name">*info*&nbsp;</span>
+        <span class="chat_text"><%= this.body %></span>
       </div>
       ]]>
     </script>

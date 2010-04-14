@@ -149,12 +149,8 @@ var chat = {
                 for (i in m) {
                     chat.display_message_object(m[i]);
                 }
-                if (response.time_up) {
-                    chat.display_html("TIME IS UP! not repolling.");
-                    chat.time_up = true;
-                } else {
-                    window.setTimeout(chat.poll, 0);
-                }
+                
+                window.setTimeout(chat.poll, 0);
             },
             // error
             function(xhr,status) {
@@ -190,7 +186,7 @@ var chat = {
     },
 
     display_message_object: function(msgobj) {
-        html = $("#template_message").jqote(msgobj);
+        html = $("#msgtpl_"+msgobj.command).jqote(msgobj);
         chat.display_html(html);
     },
     display_html: function(html) {
