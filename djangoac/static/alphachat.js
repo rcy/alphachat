@@ -62,6 +62,8 @@ $(document).ready(function() {
                  $("#faces_me").html('')
                  $("#go_chat").bind("click", lobby.setup);
              });
+        window.onbeforeunload = function(ev) { return "You won''t be able to return to this chat"; };
+        //$(window).unload(function(ev) { alert("unload!?"); });
     });
 
 // budget generic error handler
