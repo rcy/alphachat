@@ -26,6 +26,9 @@ def get_pic(request):
     return request.facebook.users.getInfo([request.facebook.uid], 
                                           ['pic_square'])[0]['pic_square']
 
+### exceptions
+class BadCommand(Exception): pass
+
 ################
 # top level views
 ################
@@ -139,8 +142,15 @@ def message_new(request, room_id):
             Message().Join(room_id, player._id).save()
             player.join = True
             player.save()
-        else:
+        elif data['command'] == 'vote':
+            # we hold the vote in the player object until the end of the round
+            player.vote_color = data['color']
+            player.save()
+            log("caching a vote from %s for %s"%(player._id, player.vote_color))
+        elif data['command'] == 'privmsg':
             Message().Chat(room_id, player._id, data['body']).save()
+        else:
+            raise BadCommand
 
     return json_response(True)
 

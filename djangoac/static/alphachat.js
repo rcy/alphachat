@@ -163,7 +163,6 @@ var chat = {
                     case 'state':
                         switch (msg.state) {
                         case 'vote':
-                            chat.display_html("<div>VOTANG</div>");
                             break;
                         case 'results':
                             // show return to main menu button
@@ -184,7 +183,9 @@ var chat = {
                         else {
                             $("#faces_others").append(card);
                             // make this card clickable for choosing alpha
-                            $("#face_"+msg.color).addClass("face_button");
+                            face = $("#face_"+msg.color);
+                            face.addClass("face_button");
+                            face.bind("click", {color:msg.color}, chat.vote_click);
                         }
 
                         break;
@@ -203,6 +204,10 @@ var chat = {
 
                 setTimeout(chat.poll, wait_for);
             });
+    },
+
+    vote_click: function(ev) {
+        chat.queue_message({command:'vote', color:ev.data.color});
     },
 
     form_submit: function(form) {

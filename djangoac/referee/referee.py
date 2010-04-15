@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import datetime
+import datetime, random
 from couchdbkit import Server, Document
 from couchdbkit import StringProperty, ListProperty
 import gevent
@@ -10,6 +10,7 @@ sys.path.append('..')
 from alphachat.schema import PlayerDoc, RoomDoc, MessageDoc
 import referee_settings as settings
 from alphachat.event import wait_for_change, get_seq
+from alphachat.debug import log
 
 gevent.monkey.patch_all()
 
@@ -25,25 +26,30 @@ Message.set_db(db)
 
 colors = ['red','green','blue']
 
-def debug(msg):
-    print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), msg
+def refresh_list(lst):
+    # This hack is to refresh documents from the database after they
+    # might have been changed elsewhere.  Useful after calling
+    # wait_for_change.  todo: maybe this should be pushed into
+    # wait_for_change somehow?
+    return map(lambda e: e.get(e._id), lst)
 
 def create_chat(players):
-    debug ('creating a room for %s' % players)
+    log ('creating a room for %s' % players)
 
     # create the room
     room = Room(state = 'chat')
     room.save()
-    debug ('created room: %s' % room._id)
+    log ('created room: %s' % room._id)
 
     since = get_seq(db)
 
     # mark the players as chatting in the room
     for player, color in zip(players, colors):
-        debug( 'moving %s to chat in %s' % (player.fb_uid, room['_id']))
+        log( 'moving %s to chat in %s' % (player.fb_uid, room['_id']))
         player.state = 'chat'
         player.room_id = room['_id']
         player.color = color
+        player.vote_color = random.choice(filter(lambda x: x!=color, colors))
         player.join = False
         player.save()
 
@@ -53,22 +59,14 @@ def create_chat(players):
 def run_game(room_id, players, since):
     jobs = []
     for player in players:
-        debug ("WAITING FOR PLAYER TO JOIN: %s" % player.color)
+        log ("WAITING FOR PLAYER TO JOIN: %s" % player.color)
         jobs.append(gevent.spawn(wait_for_change, player.get_db(), player, since))
     gevent.joinall(jobs)
 
-
-    # todo: this hack is to refresh the players from the database
-    # after the wait_for_change, push this into that routine, or find
-    # a cleaner way to do this.
-    new_players = []
-    for p in players:
-        new_players.append(p.get(p._id))
-    players = new_players
-
+    players = refresh_list(players)
 
     not_joined = filter(lambda p: not p.join, players)
-    debug("NOTJOINED:%s"%not_joined)
+    log("NOTJOINED:%s"%not_joined)
     if not_joined:
         # cancel the game
         for p in not_joined:
@@ -76,31 +74,36 @@ def run_game(room_id, players, since):
                            "%s didnt join, cancelling game." % p.color).save()
         return
         
-    debug ("ALL PLAYERS JOINED STARTING GAME")
+    log ("ALL PLAYERS JOINED STARTING GAME")
     game_seconds = settings.chat_seconds
     vote_seconds = settings.vote_seconds
 
     # game time
     Message().State(room_id, "chat", game_seconds).save()
 
-    debug ("sleeping for %d seconds..." % game_seconds)
+    log ("sleeping for %d seconds..." % game_seconds)
     gevent.sleep (game_seconds)
-    debug ("sleeping for %d seconds...done." % game_seconds)
+    log ("sleeping for %d seconds...done." % game_seconds)
 
     Message().State(room_id, "chat", 0).save()
-    debug( "room %s: chat time is up!" %(room_id,))
+    log ("room %s: chat time is up!" %(room_id,))
 
     # voting time
     Message().State(room_id, "vote", vote_seconds).save()
     gevent.sleep (vote_seconds)
     Message().State(room_id, "vote", 0).save()
-    debug ("room %s: vote time is up!" %(room_id,))
+    log ("room %s: vote time is up!" %(room_id,))
 
-    # display winner time
+    # count votes
+    players = refresh_list(players)
+    for p in players:
+        log("vote: %s for %s" % (p.color, p.vote_color))
+        Message().Info(room_id, "%s voted for %s"%(p.color, p.vote_color)).save()
+    
     Message().State(room_id, "results", 0).save()
 
 def main_loop():
-    debug ("Referee started.  Waiting for players in state == 'ondeck'")
+    log ("Referee started.  Waiting for players in state == 'ondeck'")
 
     old_lobby_player_ids = None
     old_ondeck_player_ids = None
@@ -109,19 +112,19 @@ def main_loop():
         lobby_players = Player.view('alphachat/player__state', key='lobby').all()
         lobby_player_ids = map(lambda p: str(p.fb_uid), lobby_players)
         if lobby_player_ids != old_lobby_player_ids:
-            debug ("lobby: %s" % lobby_player_ids)
+            log ("lobby: %s" % lobby_player_ids)
         old_lobby_player_ids = lobby_player_ids
 
         ondeck_players = Player.view('alphachat/player__state', key='ondeck').all()
         ondeck_player_ids = map(lambda p: str(p.fb_uid), ondeck_players)
         if ondeck_player_ids != old_ondeck_player_ids:
-            debug ("ondeck: %s" % ondeck_player_ids)
+            log ("ondeck: %s" % ondeck_player_ids)
         old_ondeck_player_ids = ondeck_player_ids
 
         if (len(ondeck_players) >= settings.chat_min):
             create_chat (players = ondeck_players[0:settings.chat_min])
             
-        #debug (".")
+        #log (".")
         gevent.sleep (1)
 
 if __name__ == '__main__':
