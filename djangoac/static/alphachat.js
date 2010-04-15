@@ -208,6 +208,8 @@ var chat = {
 
     vote_click: function(ev) {
         chat.queue_message({command:'vote', color:ev.data.color});
+        // refocus the input bar
+        $("input:text:visible:first").focus();
     },
 
     form_submit: function(form) {
