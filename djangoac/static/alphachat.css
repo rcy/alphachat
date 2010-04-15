@@ -79,7 +79,10 @@ body {
 .face_button {
 }
 .face_button:hover { 
-    border: 5px solid yellow; 
+    background: gray;
+}
+.picked {
+    border: 5px dotted yellow;
 }
 
 .chat_msg {

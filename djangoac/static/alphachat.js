@@ -207,7 +207,15 @@ var chat = {
     },
 
     vote_click: function(ev) {
-        chat.queue_message({command:'vote', color:ev.data.color});
+        color = ev.data.color;
+
+        // send message to server
+        chat.queue_message({command:'vote', color:color});
+
+        // visibly mark face as picked
+        $("*").removeClass("picked");
+        $("#face_"+color).addClass("picked");
+
         // refocus the input bar
         $("input:text:visible:first").focus();
     },
