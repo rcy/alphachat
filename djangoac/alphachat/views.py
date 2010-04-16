@@ -83,9 +83,9 @@ def lobby_find_room(request):
     if updated_player:
         player = updated_player
         log('player: %s changed' % player)
-        if player['state'] == 'chat':
-            return json_response({'room_id': player['room_id'],
-                                  'color': player['color'],
+        if player.state == 'chat':
+            return json_response({'room_id': player.room_id,
+                                  'color': player.color,
                                   'face': get_pic(request.facebook, request.facebook.uid),
                                   'since': get_seq(get_db('alphachat'))})
     else:
@@ -94,14 +94,10 @@ def lobby_find_room(request):
         player.save()
         return json_response(False)
 
-def scrub_message(message):
-    """Return a copy of message with identifying information removed."""
-    if message.has_key('player_id'):
-        copy = message.copy()
-        del copy['player_id']
-        return copy
-    else:
-        return message
+def scrub_message(doc):
+    """Remove identifying information from doc."""
+    doc.player_id = None
+    return doc
 
 @facebook.require_login()
 def message_updates(request, room_id, since):
@@ -118,8 +114,8 @@ def message_updates(request, room_id, since):
     #msgs = filter(message_is_public, 
 
     # remove player_ids from messages
-    msgs = map(scrub_message, docs)
-
+    msgs = map(lambda doc: doc.all_properties(), 
+               map(scrub_message, docs))
     return json_response({'since': since, 
                           'messages': msgs})
 
