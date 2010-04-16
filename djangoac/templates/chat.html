@@ -1,12 +1,68 @@
-      <div id=chat>
-        #chat#
-      </div>
+<div id=chat>
+  #chattext here#
+</div>
+<div id="input">
+  <div id="progressbar"></div>
+  <form id="inputform">
+    <div style="padding-right: 15px">
+      <input type="text" id="inputbar" />
+    </div>
+    <input type="submit" class="hidden" onclick="" />
+  </form>
+</div>
 
-      <div id="input">
-        <form id="inputform">
-          <div style="padding-right: 15px">
-            <input type="text" id="inputbar" />
-          </div>
-          <input type="submit" class="hidden" />
-        </form>
+<!-- message templates -->
+<script id="msgtpl_privmsg" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="msg_privmsg">
+        <span class="<%= this.color %>_name chat_name">&lt;<%= this.color %>&gt;&nbsp;</span>
+        <span class="<%= this.color %>_text chat_text"><%= this.body %></span>
       </div>
+      ]]>
+</script>
+
+<script id="msgtpl_info" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="">
+        <span class="chat_name">**</span>
+        <span class="chat_text"><%= this.body %></span>
+      </div>
+      ]]>
+</script>
+
+<script id="msgtpl_state" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="debug">
+        <span class="chat_name">*state: <%= this.state %>*&nbsp;</span>
+        <span class="chat_text">for <%= this.seconds %> seconds</span>
+      </div>
+      ]]>
+</script>
+
+<script id="msgtpl_join" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="msg_join">
+        <span class="chat_name">*&nbsp;</span>
+        <span class="<%= this.color %>_text chat_text">you are <%= this.color %></span>
+      </div>
+      ]]>
+</script>
+
+<script id="msgtpl_face" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="face <%=this.color%>_face" id="face_<%=this.color%>">
+        <img src="<%=this.face%>" />
+        <div><strong><%=this.color%></strong></div>
+      </div>
+      ]]>
+</script>
+
+<script id="msgtpl_debug" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="debug">
+        <span class="chat_name">/</span>
+        <span class="chat_text"><%= this.cmd %></span>
+      </div>
+      ]]>
+</script>
+

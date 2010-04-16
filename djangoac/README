@@ -2,3 +2,9 @@ ALPHACHAT for facebook
 
 To start the server, run
 $ python run.py
+
+
+# django might be overkill here, for example, this should be sufficient
+http://bitbucket.org/denis/gevent/src/tip/examples/webpy.py
+
+# though we are using the template engine, which is very nice

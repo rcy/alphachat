@@ -26,7 +26,7 @@ body {
 }
 #input {
     /*border-top: solid 1px white;*/
-    height: 50px;
+    height: 100px;
     padding: 0px;
     margin: 0px;
     background: white; /**/
@@ -44,8 +44,16 @@ body {
     font-size: 1em;
     font-family: monospace;
 }
+#logo {
+    width: 100px;
+    font-size: 80px;
+    background: gray;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
 
-.face_box {
+.face {
     text-align: center;
 
     margin-left: 10px;
@@ -53,18 +61,29 @@ body {
     margin-top: 0px;
     margin-bottom: 10px;
 
-    height: 72.5px;
+    height: 63px;
     padding-top: 10px;
     padding-bottom: 5px;
     display: block;
+
+    border: 5px solid pink;
 }
-.face_box:hover {
+.red_face { color: #000; background: #c55; border: 5px solid red; }
+.green_face { color: #000; background: #5c5; border: 5px solid green; }
+.blue_face { color: #000; background: #55c; border: 5px solid blue; }
+.alpha_face { color: white; background: #333; border: 5px solid black; }
+
+.face:hover { }
+.alpha_face:hover { }
+.my_face:hover { }
+.face_button {
+}
+.face_button:hover { 
     color: yellow;
 }
-.red_face { color: #000; background: #c55;}
-.green_face { color: #000; background: #5c5;}
-.blue_face { color: #000; background: #55c;}
-.alpha_face { color: white; background: #333; }
+.picked {
+    border: 5px dotted yellow;
+}
 
 .chat_msg {
     padding-top: 3px;
@@ -120,5 +139,18 @@ body {
     overflow-y: scroll;
 }
 .hidden {
+    display: none;
+}
+
+#menubutton {
+    position: absolute;
+    right: 50px;
+    background: purple;
+    height: 30px;
+    color: white;
+    display: none;
+}
+.debug {
+    font-size: 50%;
     display: none;
 }

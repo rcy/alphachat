@@ -1,0 +1,11 @@
+function(doc, req) { 
+    if (req.query.doc_type)
+	if (doc.doc_type != req.query.doc_type)
+	    return false;
+    if (req.query.by_key)
+	if (doc[req.query.by_key] == req.query.by_value)
+	    return true;
+	else
+	    return false;
+    return true;
+}

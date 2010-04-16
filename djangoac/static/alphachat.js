@@ -21,7 +21,7 @@ function get(url, onSuccess, onError) {
             type: "GET",
             dataType: "json",
             cache: false,
-            timeout: 5000,
+            timeout: 50000,     // 50 seconds
             success: onSuccess,
             error: onError});
 }
@@ -35,31 +35,36 @@ function post(url, args, onSuccess, onError) {
             success: onSuccess,
             error: onError});
 }
-function html(url, selector, onSuccess) {
-    url = add_slash(url);
+function get_html(url, selector, onSuccess) {
     $.ajax({url: add_slash(url),
             type: "GET",
             dataType: "json",
             success: function(r) {
-                selector.html(r.html);
+                $(selector).html(r.html);
                 if (onSuccess) onSuccess();
             },
-            error: function(xhr) {
-                selector.html(xhr.responseText);
+            error: function(xhr, status, error) {
+                var errstr = 'get_html error: '+status+'\n'+error;
+                alert(errstr);
+                $(selector).html(errstr);
             }});
 }
 
+// main
 $(document).ready(function() {
-    g_fbqa = fb_query_args();
-    if (!window.console) window.console = {};
-    if (!window.console.log) window.console.log = function() {};
-
-    // start us off by loading the menu
-    html('/mainmenu.html', $("#content"),
-         function() {
-             $("#go_chat").bind("click", lobby.setup);
-         });
-});
+        g_fbqa = fb_query_args();
+        if (!window.console) window.console = {};
+        if (!window.console.log) window.console.log = function() {};
+        // start us off by loading the menu
+        get_html('/mainmenu.html', "#content",
+             function() {
+                 $("#faces_others").html('')
+                 $("#faces_me").html('')
+                 $("#go_chat").bind("click", lobby.setup);
+             });
+        window.onbeforeunload = function(ev) { return "You won''t be able to return to this chat"; };
+        //$(window).unload(function(ev) { alert("unload!?"); });
+    });
 
 // budget generic error handler
 function on_error(xhr, status) { alert(status); }
@@ -67,82 +72,151 @@ function on_error(xhr, status) { alert(status); }
 var lobby = {
     setup: function() {
         // setup the page, then find a room
-        html('/lobby.html', $("#content"), lobby.find_room);
+        get_html('/lobby.html', "#content", lobby.find_room);
     },
     find_room: function() {
         $("#lobby_box").append(". ");
         // send message to server to indicate we are waiting to play
-        get('/a/lobby/find_room/', lobby.find_room_success, on_error);
-    },
-    find_room_success: function(response) {
-        if (response) {
-            roomid = response;
-            chat.setup(roomid);
-        } else {
-            // server time-out, go again
-            lobby.find_room();
-        }
+        get('/a/lobby/find_room/', 
+            function(response) {
+                if (response) {
+                    room_id = response.room_id;
+                    my_color = response.color;
+                    my_face = response.face;
+                    since = response.since;
+                    chat.setup(room_id, my_color, my_face, since);
+                } else {
+                    // server time-out, go again
+                    $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
+                    window.setTimeout(lobby.find_room, 0);
+                }
+            },
+            function(xhr,status) {
+                if (status == 'timeout')
+                    // client timeout, no problem
+                    window.setTimeout(lobby.find_room, 0);
+            });
     }
 }
 
 var chat = {
     room: {},
-    last: 0,
+    my_color: '',
+    my_face: 'http://static.ak.fbcdn.net/pics/q_silhouette.gif',
+    since: 0,
     error_wait: 100,
+    time: 0,
 
-    setup: function(room_id) {
+    setup: function(room_id, color, face, since) {
         chat.room.id = room_id;
-        last = 0;
-        error_wait = 100;
+        chat.my_color = color;
+        if (face) 
+            chat.my_face = face;
+        chat.since = since;
+        chat.error_wait = 100;
 
         // request the chat page
-        html("/chat.html", $("#content"), 
+        get_html("/chat.html", "#content", 
              function() {
-                 // show the room id in the chat window
-                 $('#chat').html(
-                     '<div>match: ' + chat.room.id + '</div>');
+                 // focus the input bar
+                 $("input:text:visible:first").focus();
 
-                 // show the chatters in the sidebar
-                 get('/a/room/chatters_html/'+chat.room.id, 
-                     function(r) { $("#chatters").html(r.html); });
+                 // show the room id in the chat window
+                 $('#chat').html('<div class="debug">match: ' + chat.room.id + '</div>');
 
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
-                                      function() { 
-                                          chat.form_submit($(this)); 
+                                      function(e) { 
+                                          chat.form_submit($(this));
                                           return false; 
                                       });
+                 $('inputform').keydown(function(e){
+                     if (e.keyCode == 13) {
+                         $(this).parents('form').submit();
+                         return false;
+                     }
+                 });
 
-                 // start chatting
-                 chat.join();
+                 // boot up the progress bar
+                 progress.reset();
 
                  // start the send message queue
                  queue.start(chat.send_message, 100);
+
+                 // wait for messages
+                 chat.poll();
+
+                 // tell server we are ready to go
+                 //alert("delay join");
+                 window.setTimeout(chat.join, 100);
              });
     },
+
     join: function() {
-        chat.queue_message("JOIN");
-        chat.poll();
+        chat.queue_message({command:'join'});
     },
 
     poll: function() {
-        get('/a/room/msgs/'+chat.room.id+'/'+chat.last+'/',
+        get('/a/room/msgs/'+chat.room.id+'/'+chat.since+'/',
             // success
             function(response) {
-                m = response.messages;
-                for (i in m) {
-                    chat.display_message_object(m[i]);
-                    chat.last = m[i].id;
-                }
-                if (response.time_up) {
-                    chat.display_message("TIME IS UP!");
-                }
-                window.setTimeout(chat.poll, 0);
                 chat.error_wait = 100;
+                chat.since = response.since;
+                m = response.messages;
+
+                for (i in m) {
+                    var msg = m[i];
+                    html = $("#msgtpl_" + msg.command).jqote(msg);
+                    chat.display_html(html);
+
+                    switch (msg.command) {
+                    case 'state':
+
+                        if (msg.seconds > 0) {
+                            progress.start(msg.seconds);
+                        }
+
+                        switch (msg.state) {
+                        case 'vote':
+                            break;
+                        case 'results':
+                            // show return to main menu button
+                            $("#menubutton").css('display','inline');
+                            break;
+                        case 'chat':
+                            break;
+                        default:
+                            alert("unknown state:"+msg.state);
+                        }
+                        break;
+                    case 'join':
+                        // todo: draw the player face card in the sidebar
+                        if (msg.color == chat.my_color)
+                            msg['face'] = chat.my_face;
+                        else
+                            msg['face'] = '/media/50x50.png';
+
+                        card = $("#msgtpl_face").jqote(msg);
+
+                        if (msg.color == chat.my_color) 
+                            $("#faces_me").append(card);
+                        else {
+                            $("#faces_others").append(card);
+                            // make this card clickable for choosing alpha
+                            face = $("#face_"+msg.color);
+                            face.addClass("face_button");
+                            face.bind("click", {color:msg.color}, chat.vote_click);
+                        }
+
+                        break;
+                    }
+                }
+                
+                window.setTimeout(chat.poll, 0);
             },
             // error
             function(xhr,status) {
-                chat.display_message('<div>on_poll_error: ' + status + '</div>');
+                chat.display_html('<div class="debug">on_poll: ' + status + '</div>');
                 if (status == 'timeout')
                     wait_for = 100;
                 else
@@ -152,43 +226,58 @@ var chat = {
             });
     },
 
+    vote_click: function(ev) {
+        color = ev.data.color;
+
+        // send message to server
+        chat.queue_message({command:'vote', color:color});
+
+        // visibly mark face as picked
+        $("*").removeClass("picked");
+        $("#face_"+color).addClass("picked");
+
+        // refocus the input bar
+        $("input:text:visible:first").focus();
+    },
+
     form_submit: function(form) {
-        //var message = form.formToDict();
-        input = $("#inputbar")// TODO: should be able to get this from the FORM arg
-        if (input.val() != "") {
-            chat.queue_message(input.val());
-            input.val("");
+        input = $("#inputbar").val() // TODO: should be able to get this from the FORM arg
+        if (input != "") {
+            if (input[0] == '/') {
+                // /command
+                cmd = input.slice(1)
+                chat.display_html($("#msgtpl_debug").jqote({cmd:cmd}));
+                if (cmd == 'hide')
+                    $('.debug').css('display', 'none');
+                else if (cmd == 'unhide')
+                    $('.debug').css('display', 'inline');
+            } else {
+                chat.queue_message({command:'privmsg', body:input});
+            }
+            $("#inputbar").val("");
         }
     },
-    queue_message: function(msg) {
-        //chat.display_message('<div>'+msg+'</div>');
-        queue.add(msg);
+    queue_message: function(msgobj) {
+        //chat.display_html('<div>'+msg+'</div>');
+        queue.add(msgobj);
     },
-    send_message: function(msg) {
-        var args = {};
-        args.body = msg;
+    send_message: function(msgobj) {
         post('/a/room/post/'+chat.room.id, 
-             args, chat.onSendMessageSuccess, on_error);
+             msgobj, chat.onSendMessageSuccess, on_error);
     },
     onSendMessageSuccess: function(response) {
         // the response has the message if we want to do something
         // with it here
     },
 
-    display_message_object: function(msgobj) {
-        chat.display_message(msgobj.html);
-    },
-    display_message: function(msg) {
+    display_html: function(html) {
         var div = $("#chat")
-        div.append(msg);
+        div.append(html);
         // certain browsers have a bug such that scrollHeight is too small
         // when content does not fill the client area of the element
         var scrollHeight = Math.max(div[0].scrollHeight, div[0].clientHeight);
         div[0].scrollTop = scrollHeight - div[0].clientHeight;
     },
-    debug: function(msg) {
-        chat.display_message("<div>debug: "+msg+"</div>");
-    }
 }
 
 
@@ -198,8 +287,8 @@ var queue = {
     fn: null,
     interval_id: null,
 
-    add: function(msg) {
-        queue.data.push(msg);
+    add: function(obj) {
+        queue.data.push(obj);
     },
     // next: function() {
     //     return queue.data.shift();
@@ -215,6 +304,39 @@ var queue = {
         if (queue.data.length > 0) {
             console.log("running queue function on data: "+queue.data);
             queue.fn(queue.data.shift());
+        }
+    }
+}
+
+// ################################################################
+var progress = {
+    // http://docs.jquery.com/UI/Progressbar
+    start_time: 0,
+    duration: 0,
+
+    reset: function() {
+        progress.stop();
+        $("#progressbar").progressbar({value: 0});
+    },
+    start: function(seconds) {
+        console.log("starting progress bar: "+seconds);
+        progress.reset();
+        progress.duration = seconds * 1000; // to get to milliseconds
+        progress.start_time = new Date().getTime();
+        progress.interval_id = setInterval("progress.update()", 250);
+    },
+    update: function() {
+        now = new Date().getTime();
+        percentage = (now - progress.start_time) / progress.duration * 100;
+        console.log('progress percentage:'+percentage);
+        $("#progressbar").progressbar({value: percentage});
+        if (percentage >= 100)
+            progress.stop();
+    },
+    stop: function() {
+        if (progress.interval_id) {
+            console.log('killed timer');
+            clearInterval(progress.interval_id);
         }
     }
 }

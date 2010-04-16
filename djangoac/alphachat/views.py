@@ -1,170 +1,34 @@
-# this thing busts on epiphany, looks related to:
-# http://code.google.com/p/pyfacebook/issues/detail?id=130
 import uuid
 import simplejson
-from time import time, sleep
+import datetime
+from time import time
 from django.shortcuts import render_to_response
 from django.template.loader import render_to_string
 from django.template import RequestContext
 from django.http import HttpResponse
-from gevent.event import Event
-from gevent import Greenlet
 from djangoac import settings
-
 
 import facebook.djangofb as facebook
 
+from alphachat.models import Player, Room, Message
 from alphachat.session import Session
-fbs = Session();
+from alphachat.event import wait_for_change, wait_for_changes, get_seq
+from alphachat.debug import log
 
-num_chatters = 1            # always 3, but hack it down to test
-colors = ['red','green','blue']
-
-def create_message(from_, body):
-    data = {'id': str(uuid.uuid4()), 'from': from_, 'body': body}
-    data['html'] = render_to_string('message.html', 
-                                    dictionary={'message': data, 'color':'green'})
-    return data
-
+from couchdbkit import Consumer
+from couchdbkit.ext.django.loading import get_db
 
 def json_response(value, **kwargs):
     kwargs.setdefault('content_type', 'text/javascript; charset=UTF-8')
     return HttpResponse(simplejson.dumps(value), **kwargs)
 
-class Lobby(object):
-    def __init__(self):
-        self.enough_chatters_event = Event()
-        self.chatters = []
-        self.room = None
+def get_pic(fb, uid):
+    face = fb.users.getInfo([uid], ['pic_square'])[0]['pic_square']
+    log("FACE: %s"%face)
+    return face
 
-    def find_room(self, request):
-        "Returns a room_id, or false.  Long polling."
-        uid = request.facebook.uid
-
-        # search the existing rooms to see if user is already a member
-        # TODO: this is an expensive lazy hack, store things
-        # differently so we dont have to walk the room list every time
-        # someone enters the lobby
-        for id_,room in chatrooms.items():
-            if uid in room.chatters:
-                print "WARNING: %s alreading chattin in %s" % (uid, id_)
-                return json_response(id_)
-
-        print 'chatter entered lobby #', uid
-        self.chatters.append(uid)
-
-        if len(self.chatters) < num_chatters:
-            print 'queuing a chatter'
-            self.enough_chatters_event.wait(1)
-
-            # see if we timed out
-            if len(self.chatters) < num_chatters:
-                print 'timed out chatter #', uid
-                self.chatters.remove(uid)
-                return json_response(False)
-        else:
-            print 'we have enough chatters now'
-            # the last chatter sets up the room
-            self.room = ChatRoom(self.chatters)
-            self.chatters = []
-            # push the others through
-            self.enough_chatters_event.set()
-            self.enough_chatters_event.clear()
-
-        return json_response(self.room.id)
-
-chatrooms = {}
-class ChatRoom(object):
-    def __init__(self, chatters):
-        self.messages = []
-        self.new_message_event = Event()
-        self.chatters = chatters
-        self.id = str(uuid.uuid4())
-        self.msg_count = 0
-        chatrooms[self.id] = self
-        self.timekeeper = Greenlet.spawn(self.alarm)
-
-    def alarm(self):
-        self.time_up = False
-        print "STARTED TIMER: %s" % (self.id)
-        sleep(30)
-        print "TIME UP: %s" % (self.id)
-        self.time_up = True
-        self.new_message_event.set()
-        self.new_message_event.clear()
-        
-    def my_color(self, uid):
-        return colors[self.chatters.index(uid)]
-
-    def other_colors(self, uid):
-        other_colors = colors[:]
-        other_colors.remove(self.my_color(uid))
-        return other_colors
-
-    def get_pic(self, request):
-        return request.facebook.users.getInfo([request.facebook.uid], 
-                                              ['pic_square'])[0]['pic_square']
-
-    ################
-    # handlers
-    ################
-    def chatters_html(self, request):
-        "Returns the sidebar html for the room's chatters."
-        uid = request.facebook.uid
-        print 'ROOM INFO:', self.chatters, 'uid:', uid
-
-        my_color = self.my_color(uid)
-        other_colors = self.other_colors(uid)
-        chat_attrs = { 'my_color': my_color,
-                       'my_pic': self.get_pic(request),
-                       'other_colors': other_colors,
-                       }
-        html = render_to_string('chatters.html',
-                                chat_attrs,
-                                context_instance = RequestContext(request))
-        return json_response({'html':html})
-
-
-    def message_new(self, request):
-        uid = request.facebook.uid
-        body = request.POST['body']
-
-        self.msg_count += 1
-
-        print "message_new: [%d] %s" % (self.msg_count, body)
-        msg_obj = {'id':self.msg_count,
-                   'body': body,
-                   'html': render_to_string('message.html',
-                                            {'color': self.my_color(uid),
-                                             'id':self.msg_count,
-                                             'body': body})}
-        # TODO: push the msg_obj into the database here
-        self.messages.append(msg_obj)
-        self.new_message_event.set()
-        self.new_message_event.clear()
-        return json_response(msg_obj)
-
-    def message_updates(self, request, last):
-        "Return a list of messages for this room since LAST."
-        print 'updates: %s in %s after %d' % (request.facebook.uid, self.id, last)
-
-        num_messages = len(self.messages)
-
-        if last > num_messages:
-            print "WARNING: last(%d) is too far ahead of num_messages(%d)" % (last, num_messages)
-            last = num_messages
-
-        if last == num_messages:
-            self.new_message_event.wait(4)
-
-        # we test again to see if we timed out, or a new message came in
-        if last == num_messages:
-            new_messages = []
-        else:
-            new_messages = self.messages[last:]
-            
-        return json_response({'messages': new_messages,
-                              'time_up': self.time_up})
+### exceptions
+class BadCommand(Exception): pass
 
 ################
 # top level views
@@ -176,56 +40,112 @@ def index(request):
     print "* landing page"
     print "*"
     print "***"
-    return render_to_response('index.html', {}, RequestContext(request))
+    fb_uid = str(request.facebook.uid)
+    assert fb_uid
 
-@facebook.require_login()
+    # get or create player
+    result = Player.view('alphachat/player__fb_uid', key=fb_uid)
+    if result.count() == 1:
+        player = result.first()
+    else:
+        player = Player().create(request)
+    player.state = 'lobby'
+    player.save()
+
+    return render_to_response('index.html', RequestContext(request))
+
+#@facebook.require_login()
 def html_content(request, page):
     html = render_to_string(page, {}, RequestContext(request))
     return json_response({'html':html})
 
-################
-# lobby view wrappers
-################
-lobby = Lobby()
+def get_player(request):
+    fb_uid = str(request.facebook.uid)
+    player = Player.view('alphachat/player__fb_uid', key=fb_uid).one()
+    return player
 
 @facebook.require_login()
-def lobby_find_room(request): 
-    return lobby.find_room(request)
+def lobby_find_room(request):
+    """
+    Mark player as available for chat
+    """
+    player = get_player(request)
 
-################
-# chat view wrappers
-################
-@facebook.require_login()
-def room_chatters_html(request, roomid):
-    #room = fbs.get(request,'room')
-    room = chatrooms[roomid]
-    return room.chatters_html(request)
-    
-@facebook.require_login()
-def message_updates(request, roomid, last):
-    room = chatrooms[roomid]
-    print ">>> updates"
-    #room = fbs.get(request,'room')
-    retval = room.message_updates(request, int(last))
-    print "<<< updates"
-    return retval
+    since = get_seq(player.get_db())
+
+    # set our state, and go to sleep until someone wakes us up
+    if player.state != 'ondeck':
+        player.state = 'ondeck'
+        player.save()
+
+    updated_player = wait_for_change(player.get_db(), player, since)
+    # TODO: http://dpaste.com/181858/ aka ../exp/class.py
+    if updated_player:
+        player = updated_player
+        log('player: %s changed' % player)
+        if player.state == 'chat':
+            return json_response({'room_id': player.room_id,
+                                  'color': player.color,
+                                  'face': get_pic(request.facebook, request.facebook.uid),
+                                  'since': get_seq(get_db('alphachat'))})
+    else:
+        # no room for you
+        player.state = 'lobby'
+        player.save()
+        return json_response(False)
+
+def scrub_message(doc):
+    """Remove identifying information from doc."""
+    doc.player_id = None
+    return doc
 
 @facebook.require_login()
-def message_new(request, roomid):
-    print ">>> new"
-    #room = fbs.get(request,'room')
-    room = chatrooms[roomid]
-    retval = room.message_new(request)
-    print "<<< new"
-    return retval
+def message_updates(request, room_id, since):
+    # TODO: verify that this user is in this room
+    log("waiting for messages on: %s" % room_id)
+    docs, since = wait_for_changes(get_db('alphachat'),
+                                   doc_type="Message", 
+                                   by_key="room_id", by_value=room_id, 
+                                   since=since)
+
+    # TODO: process messages one by one by command type.  maybe filter
+    # some out for return to the client, ie dont send back their own
+    # messages, certain system messages, etc
+    #msgs = filter(message_is_public, 
+
+    # remove player_ids from messages
+    msgs = map(lambda doc: doc.all_properties(), 
+               map(scrub_message, docs))
+    return json_response({'since': since, 
+                          'messages': msgs})
+
+@facebook.require_login()
+def message_new(request, room_id):
+    # TODO: make sure player is in room, do other validation.
+    player = get_player(request)
+
+    if request.method == 'POST':
+        data = request.POST
+        log('new_message: %s'%request.POST)
+        if data['command'] == 'join':
+            Message().Join(room_id, player._id).save()
+            player.join = True
+            player.save()
+        elif data['command'] == 'vote':
+            # we hold the vote in the player object until the end of the round
+            player.vote_color = data['color']
+            player.save()
+            log("caching a vote from %s for %s"%(player._id, player.vote_color))
+        elif data['command'] == 'privmsg':
+            Message().Chat(room_id, player._id, data['body']).save()
+        else:
+            raise BadCommand
+
+    return json_response(True)
 
 ################
 # debugging
 ################
-@facebook.require_login()
 def test_foo(request):
-    fbs.set(request, 'foo', 'bar')
-    print fbs.get(request, 'foo')
-    print fbs.get(request, 'undef')
-
+    g_event.wakeup('dummyid')
     return HttpResponse(True)

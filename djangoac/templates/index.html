@@ -3,31 +3,37 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>ALPHACHATbeta</title>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="{{ MEDIA_URL }}alphachat.css" type="text/css"/>
     <!-- <link rel="stylesheet" href="../static/alphachat.css" type="text/css"/> -->
   </head>
   <body>
+    <div id="menubutton">
+      MAINMENU
+    </div>
 
     <div id="sidebar">
-      <div id="alphachatter">
-        <div class="face_box alpha_face">
-          <img src="http://profile.ak.fbcdn.net/object3/1116/30/q68310606562_3401.jpg" />
-          <div><strong>α</strong></div>
-        </div>
+
+      <div id="logo">
+        <div><strong> α </strong></div>
       </div>
-      <div id="chatters">
-        #chatters#
+
+      <div id="faces_others">
+        #faces_others#
+      </div>
+
+      <div id="faces_me">
+        #faces_me#
       </div>
     </div>
 
     <div id="content"> <!-- ######################################## -->
     </div> <!-- ######################################## -->
 
-    <script type="text/javascript" 
-            src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js">
-    </script>
-    <script type="text/javascript"
-            src="{{MEDIA_URL}}alphachat.js">
-    </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"> </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{MEDIA_URL}}contrib/jquery.jqote2.min.js"> </script>
+    <script type="text/javascript" src="{{MEDIA_URL}}alphachat.js"> </script>
+
   </body>
 </html>
