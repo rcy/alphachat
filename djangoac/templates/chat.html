@@ -23,8 +23,8 @@
 
 <script id="msgtpl_info" type="text/x-jqote-template">
   <![CDATA[
-      <div class="debug">
-        <span class="chat_name">*info*&nbsp;</span>
+      <div class="">
+        <span class="chat_name">**</span>
         <span class="chat_text"><%= this.body %></span>
       </div>
       ]]>
@@ -42,8 +42,8 @@
 <script id="msgtpl_join" type="text/x-jqote-template">
   <![CDATA[
       <div class="msg_join">
-        <span class="chat_name">*<%= this.command %>*&nbsp;</span>
-        <span class="chat_text"><%= this.player_id %></span>
+        <span class="chat_name">*&nbsp;</span>
+        <span class="<%= this.color %>_text chat_text">you are <%= this.color %></span>
       </div>
       ]]>
 </script>

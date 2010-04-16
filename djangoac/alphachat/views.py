@@ -95,8 +95,13 @@ def lobby_find_room(request):
         return json_response(False)
 
 def scrub_message(message):
-    """remove any private data from message for client consumption"""
-    return message
+    """Return a copy of message with identifying information removed."""
+    if message.has_key('player_id'):
+        copy = message.copy()
+        del copy['player_id']
+        return copy
+    else:
+        return message
 
 @facebook.require_login()
 def message_updates(request, room_id, since):
@@ -111,6 +116,8 @@ def message_updates(request, room_id, since):
     # some out for return to the client, ie dont send back their own
     # messages, certain system messages, etc
     #msgs = filter(message_is_public, 
+
+    # remove player_ids from messages
     msgs = map(scrub_message, docs)
 
     return json_response({'since': since, 
