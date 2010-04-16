@@ -2,6 +2,7 @@
   #chattext here#
 </div>
 <div id="input">
+  <div id="progressbar"></div>
   <form id="inputform">
     <div style="padding-right: 15px">
       <input type="text" id="inputbar" />
@@ -50,7 +51,7 @@
 <script id="msgtpl_face" type="text/x-jqote-template">
   <![CDATA[
       <div class="face <%=this.color%>_face" id="face_<%=this.color%>">
-        <!-- <img src="<%=this.pic%>" /> -->
+        <img src="<%=this.face%>" />
         <div><strong><%=this.color%></strong></div>
       </div>
       ]]>

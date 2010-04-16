@@ -22,9 +22,10 @@ def json_response(value, **kwargs):
     kwargs.setdefault('content_type', 'text/javascript; charset=UTF-8')
     return HttpResponse(simplejson.dumps(value), **kwargs)
 
-def get_pic(request):
-    return request.facebook.users.getInfo([request.facebook.uid], 
-                                          ['pic_square'])[0]['pic_square']
+def get_pic(fb, uid):
+    face = fb.users.getInfo([uid], ['pic_square'])[0]['pic_square']
+    log("FACE: %s"%face)
+    return face
 
 ### exceptions
 class BadCommand(Exception): pass
@@ -85,6 +86,7 @@ def lobby_find_room(request):
         if player['state'] == 'chat':
             return json_response({'room_id': player['room_id'],
                                   'color': player['color'],
+                                  'face': get_pic(request.facebook, request.facebook.uid),
                                   'since': get_seq(get_db('alphachat'))})
     else:
         # no room for you
@@ -92,22 +94,6 @@ def lobby_find_room(request):
         player.save()
         return json_response(False)
 
-@facebook.require_login()
-def room_chatters_html(request, room_id):
-    player = get_player(request)
-    other_players = filter(lambda p: p._id != player._id,
-                           Player.view('alphachat/player__room_id', key=room_id).all())
-
-    log('player: %s'%player)
-    log('other_players: %s'%other_players)
-    
-    html = render_to_string('chatters.html',
-                            { 'my_color': player.color,
-                              'other_colors': map(lambda p: p.color, other_players),
-                              'my_pic': get_pic(request) },
-                            RequestContext(request))
-    return json_response({'html':html})
-    
 def scrub_message(message):
     """remove any private data from message for client consumption"""
     return message

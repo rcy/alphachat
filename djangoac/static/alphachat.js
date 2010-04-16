@@ -82,8 +82,9 @@ var lobby = {
                 if (response) {
                     room_id = response.room_id;
                     my_color = response.color;
+                    my_face = response.face;
                     since = response.since;
-                    chat.setup(room_id, my_color, since);
+                    chat.setup(room_id, my_color, my_face, since);
                 } else {
                     // server time-out, go again
                     $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
@@ -101,12 +102,16 @@ var lobby = {
 var chat = {
     room: {},
     my_color: '',
+    my_face: 'http://static.ak.fbcdn.net/pics/q_silhouette.gif',
     since: 0,
     error_wait: 100,
+    time: 0,
 
-    setup: function(room_id, color, since) {
+    setup: function(room_id, color, face, since) {
         chat.room.id = room_id;
         chat.my_color = color;
+        if (face) 
+            chat.my_face = face;
         chat.since = since;
         chat.error_wait = 100;
 
@@ -131,6 +136,9 @@ var chat = {
                          return false;
                      }
                  });
+
+                 // boot up the progress bar
+                 progress.reset();
 
                  // start the send message queue
                  queue.start(chat.send_message, 100);
@@ -163,6 +171,11 @@ var chat = {
 
                     switch (msg.command) {
                     case 'state':
+
+                        if (msg.seconds > 0) {
+                            progress.start(msg.seconds);
+                        }
+
                         switch (msg.state) {
                         case 'vote':
                             break;
@@ -178,6 +191,11 @@ var chat = {
                         break;
                     case 'join':
                         // todo: draw the player face card in the sidebar
+                        if (msg.color == chat.my_color)
+                            msg['face'] = chat.my_face;
+                        else
+                            msg['face'] = '/media/50x50.png';
+
                         card = $("#msgtpl_face").jqote(msg);
 
                         if (msg.color == chat.my_color) 
@@ -277,6 +295,39 @@ var queue = {
         if (queue.data.length > 0) {
             console.log("running queue function on data: "+queue.data);
             queue.fn(queue.data.shift());
+        }
+    }
+}
+
+// ################################################################
+var progress = {
+    // http://docs.jquery.com/UI/Progressbar
+    start_time: 0,
+    duration: 0,
+
+    reset: function() {
+        progress.stop();
+        $("#progressbar").progressbar({value: 0});
+    },
+    start: function(seconds) {
+        console.log("starting progress bar: "+seconds);
+        progress.reset();
+        progress.duration = seconds * 1000; // to get to milliseconds
+        progress.start_time = new Date().getTime();
+        progress.interval_id = setInterval("progress.update()", 250);
+    },
+    update: function() {
+        now = new Date().getTime();
+        percentage = (now - progress.start_time) / progress.duration * 100;
+        console.log('progress percentage:'+percentage);
+        $("#progressbar").progressbar({value: percentage});
+        if (percentage >= 100)
+            progress.stop();
+    },
+    stop: function() {
+        if (progress.interval_id) {
+            console.log('killed timer');
+            clearInterval(progress.interval_id);
         }
     }
 }

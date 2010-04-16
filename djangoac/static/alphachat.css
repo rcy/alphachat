@@ -26,7 +26,7 @@ body {
 }
 #input {
     /*border-top: solid 1px white;*/
-    height: 50px;
+    height: 100px;
     padding: 0px;
     margin: 0px;
     background: white; /**/
@@ -79,7 +79,7 @@ body {
 .face_button {
 }
 .face_button:hover { 
-    background: gray;
+    color: yellow;
 }
 .picked {
     border: 5px dotted yellow;
