@@ -14,7 +14,7 @@
 <!-- message templates -->
 <script id="msgtpl_privmsg" type="text/x-jqote-template">
   <![CDATA[
-      <div>
+      <div class="msg_privmsg">
         <span class="<%= this.color %>_name chat_name">&lt;<%= this.color %>&gt;&nbsp;</span>
         <span class="<%= this.color %>_text chat_text"><%= this.body %></span>
       </div>
@@ -23,7 +23,7 @@
 
 <script id="msgtpl_info" type="text/x-jqote-template">
   <![CDATA[
-      <div>
+      <div class="debug">
         <span class="chat_name">*info*&nbsp;</span>
         <span class="chat_text"><%= this.body %></span>
       </div>
@@ -32,7 +32,7 @@
 
 <script id="msgtpl_state" type="text/x-jqote-template">
   <![CDATA[
-      <div>
+      <div class="debug">
         <span class="chat_name">*state: <%= this.state %>*&nbsp;</span>
         <span class="chat_text">for <%= this.seconds %> seconds</span>
       </div>
@@ -41,7 +41,7 @@
 
 <script id="msgtpl_join" type="text/x-jqote-template">
   <![CDATA[
-      <div>
+      <div class="msg_join">
         <span class="chat_name">*<%= this.command %>*&nbsp;</span>
         <span class="chat_text"><%= this.player_id %></span>
       </div>
@@ -56,3 +56,13 @@
       </div>
       ]]>
 </script>
+
+<script id="msgtpl_debug" type="text/x-jqote-template">
+  <![CDATA[
+      <div class="debug">
+        <span class="chat_name">/</span>
+        <span class="chat_text"><%= this.cmd %></span>
+      </div>
+      ]]>
+</script>
+

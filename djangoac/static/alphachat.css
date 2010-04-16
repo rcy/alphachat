@@ -150,3 +150,7 @@ body {
     color: white;
     display: none;
 }
+.debug {
+    font-size: 50%;
+    display: none;
+}

@@ -122,7 +122,7 @@ var chat = {
                  $("input:text:visible:first").focus();
 
                  // show the room id in the chat window
-                 $('#chat').html('<div>match: ' + chat.room.id + '</div>');
+                 $('#chat').html('<div class="debug">match: ' + chat.room.id + '</div>');
 
                  // wire up the form submit event to send messages to server
                  $('#inputform').bind('submit', 
@@ -216,7 +216,7 @@ var chat = {
             },
             // error
             function(xhr,status) {
-                chat.display_html('<div>on_poll: ' + status + '</div>');
+                chat.display_html('<div class="debug">on_poll: ' + status + '</div>');
                 if (status == 'timeout')
                     wait_for = 100;
                 else
@@ -241,11 +241,20 @@ var chat = {
     },
 
     form_submit: function(form) {
-        //var message = form.formToDict();
-        input = $("#inputbar")// TODO: should be able to get this from the FORM arg
-        if (input.val() != "") {
-            chat.queue_message({command:'privmsg', body:input.val()});
-            input.val("");
+        input = $("#inputbar").val() // TODO: should be able to get this from the FORM arg
+        if (input != "") {
+            if (input[0] == '/') {
+                // /command
+                cmd = input.slice(1)
+                chat.display_html($("#msgtpl_debug").jqote({cmd:cmd}));
+                if (cmd == 'hide')
+                    $('.debug').css('display', 'none');
+                else if (cmd == 'unhide')
+                    $('.debug').css('display', 'inline');
+            } else {
+                chat.queue_message({command:'privmsg', body:input});
+            }
+            $("#inputbar").val("");
         }
     },
     queue_message: function(msgobj) {
