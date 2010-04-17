@@ -17,13 +17,13 @@ function add_slash(url) {
 }
 
 function get(url, onSuccess, onError) {
-    $.ajax({url: add_slash(url)+'?'+$.param(g_fbqa),
-            type: "GET",
-            dataType: "json",
-            cache: false,
-            timeout: 50000,     // 50 seconds
-            success: onSuccess,
-            error: onError});
+    return $.ajax({url: add_slash(url)+'?'+$.param(g_fbqa),
+                type: "GET",
+                dataType: "json",
+                cache: false,
+                timeout: 50000,     // 50 seconds
+                success: onSuccess,
+                error: onError});
 }
 
 function post(url, args, onSuccess, onError) {
@@ -59,6 +59,14 @@ $(document).ready(function() {
     mainmenu();
     window.onbeforeunload = function(ev) { return "You won''t be able to return to this chat"; };
     //$(window).unload(function(ev) { alert("unload!?"); });
+
+    // wire up the mainmenu button
+    $("#go_mainmenu").bind("click", 
+                           function(ev) {
+                               if (chat.poll_request)
+                                   chat.poll_request.abort();
+                               mainmenu();
+                           });
 });
 
 function mainmenu() {
@@ -179,81 +187,81 @@ var chat = {
     },
 
     poll: function() {
-        get('/a/room/msgs/'+chat.room.id+'/'+chat.since+'/',
-            // success
-            function(response) {
-                chat.error_wait = 100;
-                chat.since = response.since;
-                m = response.messages;
+        chat.poll_request = 
+            get('/a/room/msgs/'+chat.room.id+'/'+chat.since+'/',
+                // success
+                function(response) {
+                    chat.error_wait = 100;
+                    chat.since = response.since;
+                    m = response.messages;
 
-                for (i in m) {
-                    var msg = m[i];
-                    html = $("#msgtpl_" + msg.command).jqote(msg);
-                    chat.display_html(html);
+                    for (i in m) {
+                        var msg = m[i];
+                        html = $("#msgtpl_" + msg.command).jqote(msg);
+                        chat.display_html(html);
 
-                    switch (msg.command) {
-                    case 'state':
-                        if (msg.seconds > 0) {
-                            progress.start(msg.seconds);
-                        }
-
-                        switch (msg.state) {
-                        case 'chat':
+                        switch (msg.command) {
+                        case 'state':
                             if (msg.seconds > 0) {
+                                progress.start(msg.seconds);
+                            }
+
+                            switch (msg.state) {
+                            case 'chat':
+                                if (msg.seconds > 0) {
+                                    chat.form_enable();
+                                    chat.vote_display(chat.my_vote);
+                                }
+                                break;
+
+                            case 'vote':
+                                if (msg.seconds > 0)
+                                    chat.form_disable();
+                                break;
+                            case 'results':
+                                // show return to main menu button
+                                $("#menu").css('display','inline');
                                 chat.form_enable();
-                                chat.vote_display(chat.my_vote);
+                                break;
+                            default:
+                                alert("unknown state:"+msg.state);
                             }
                             break;
+                        case 'join':
+                            // todo: draw the player face card in the sidebar
+                            if (msg.color == chat.my_color)
+                                msg['face'] = chat.my_face;
+                            else
+                                msg['face'] = '/media/50x50.png';
 
-                        case 'vote':
-                            if (msg.seconds > 0)
-                                chat.form_disable();
+                            card = $("#msgtpl_face").jqote(msg);
+
+                            if (msg.color == chat.my_color) 
+                                $("#faces_me").append(card);
+                            else {
+                                $("#faces_others").append(card);
+                                // make this card clickable for choosing alpha
+                                face = $("#face_"+msg.color);
+                                face.addClass("face_button");
+                                face.bind("click", {color:msg.color}, chat.vote_click);
+                            }
+
                             break;
-                        case 'results':
-                            // show return to main menu button
-                            $("#menu").css('display','inline');
-                            $("#go_mainmenu").bind("click", mainmenu);
-                            chat.form_enable();
-                            break;
-                        default:
-                            alert("unknown state:"+msg.state);
                         }
-                        break;
-                    case 'join':
-                        // todo: draw the player face card in the sidebar
-                        if (msg.color == chat.my_color)
-                            msg['face'] = chat.my_face;
-                        else
-                            msg['face'] = '/media/50x50.png';
-
-                        card = $("#msgtpl_face").jqote(msg);
-
-                        if (msg.color == chat.my_color) 
-                            $("#faces_me").append(card);
-                        else {
-                            $("#faces_others").append(card);
-                            // make this card clickable for choosing alpha
-                            face = $("#face_"+msg.color);
-                            face.addClass("face_button");
-                            face.bind("click", {color:msg.color}, chat.vote_click);
-                        }
-
-                        break;
                     }
-                }
                 
-                window.setTimeout(chat.poll, 0);
-            },
-            // error
-            function(xhr,status) {
-                chat.display_html('<div class="debug">on_poll: ' + status + '</div>');
-                if (status == 'timeout')
-                    wait_for = 100;
-                else
-                    wait_for = (chat.error_wait *= 2);
+                    window.setTimeout(chat.poll, 0);
+                },
+                // error
+                function(xhr,status) {
+                    chat.display_html('<div class="debug">on_poll: ' + status + '</div>');
+                    if (status == 'timeout')
+                        wait_for = 100;
+                    else
+                        wait_for = (chat.error_wait *= 2);
 
-                setTimeout(chat.poll, wait_for);
-            });
+                    setTimeout(chat.poll, wait_for);
+                });
     },
 
     vote_click: function(ev) {
