@@ -142,7 +142,7 @@ body {
     display: none;
 }
 
-#menubutton {
+#menu {
     position: absolute;
     right: 50px;
     background: purple;

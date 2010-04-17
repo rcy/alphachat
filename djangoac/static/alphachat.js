@@ -56,15 +56,21 @@ $(document).ready(function() {
         if (!window.console) window.console = {};
         if (!window.console.log) window.console.log = function() {};
         // start us off by loading the menu
-        get_html('/mainmenu.html', "#content",
-             function() {
-                 $("#faces_others").html('')
-                 $("#faces_me").html('')
-                 $("#go_chat").bind("click", lobby.setup);
-             });
+        mainmenu();
         window.onbeforeunload = function(ev) { return "You won''t be able to return to this chat"; };
         //$(window).unload(function(ev) { alert("unload!?"); });
     });
+
+function mainmenu() {
+    $("#faces_others").html('');
+    $("#faces_me").html('');
+    $("#menu").css('display','none');
+    
+    get_html('/mainmenu.html', "#content",
+             function() {
+                 $("#go_chat").bind("click", lobby.setup);
+             });
+}
 
 // budget generic error handler
 function on_error(xhr, status) { alert(status); }
@@ -205,7 +211,8 @@ var chat = {
                             break;
                         case 'results':
                             // show return to main menu button
-                            $("#menubutton").css('display','inline');
+                            $("#menu").css('display','inline');
+                            $("#go_mainmenu").bind("click", mainmenu);
                             chat.form_enable();
                             break;
                         default:
