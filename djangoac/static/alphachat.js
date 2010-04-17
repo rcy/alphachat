@@ -118,30 +118,18 @@ var chat = {
         // request the chat page
         get_html("/chat.html", "#content", 
              function() {
-                 // focus the input bar
-                 $("input:text:visible:first").focus();
-
                  // show the room id in the chat window
                  $('#chat').html('<div class="debug">match: ' + chat.room.id + '</div>');
-
-                 // wire up the form submit event to send messages to server
-                 $('#inputform').bind('submit', 
-                                      function(e) { 
-                                          chat.form_submit($(this));
-                                          return false; 
-                                      });
-                 $('inputform').keydown(function(e){
-                     if (e.keyCode == 13) {
-                         $(this).parents('form').submit();
-                         return false;
-                     }
-                 });
 
                  // boot up the progress bar
                  progress.reset();
 
                  // start the send message queue
                  queue.start(chat.send_message, 100);
+
+                 // setup the form, disabled
+                 chat.form_setup();
+                 chat.form_disable();
 
                  // wait for messages
                  chat.poll();
@@ -150,6 +138,31 @@ var chat = {
                  //alert("delay join");
                  window.setTimeout(chat.join, 100);
              });
+    },
+
+    form_setup: function() {
+        // wire up the form submit event to send messages to server
+        $('#inputform').bind('submit', 
+                             function(e) { 
+                                 chat.form_submit($(this));
+                                 return false; 
+                             });
+        $('inputform').keydown(function(e){
+                if (e.keyCode == 13) {
+                    $(this).parents('form').submit();
+                    return false;
+                }
+            });
+    },
+    form_enable: function() {
+        chat.display_html('<div class="debug">chat enable</div>');
+        $('#inputbar').attr('disabled', false);
+        // focus the input bar
+        $("input:text:visible:first").focus();
+    },
+    form_disable: function() {
+        chat.display_html('<div class="debug">chat disable</div>');
+        $('#inputbar').attr('disabled', true);
     },
 
     join: function() {
@@ -171,19 +184,24 @@ var chat = {
 
                     switch (msg.command) {
                     case 'state':
-
                         if (msg.seconds > 0) {
                             progress.start(msg.seconds);
                         }
 
                         switch (msg.state) {
+                        case 'chat':
+                            if (msg.seconds > 0)
+                                chat.form_enable();
+                            break;
+
                         case 'vote':
+                            if (msg.seconds > 0)
+                                chat.form_disable();
                             break;
                         case 'results':
                             // show return to main menu button
                             $("#menubutton").css('display','inline');
-                            break;
-                        case 'chat':
+                            chat.form_enable();
                             break;
                         default:
                             alert("unknown state:"+msg.state);
@@ -302,7 +320,6 @@ var queue = {
     },
     run: function() {
         if (queue.data.length > 0) {
-            console.log("running queue function on data: "+queue.data);
             queue.fn(queue.data.shift());
         }
     }
@@ -319,7 +336,6 @@ var progress = {
         $("#progressbar").progressbar({value: 0});
     },
     start: function(seconds) {
-        console.log("starting progress bar: "+seconds);
         progress.reset();
         progress.duration = seconds * 1000; // to get to milliseconds
         progress.start_time = new Date().getTime();
@@ -328,14 +344,12 @@ var progress = {
     update: function() {
         now = new Date().getTime();
         percentage = (now - progress.start_time) / progress.duration * 100;
-        console.log('progress percentage:'+percentage);
         $("#progressbar").progressbar({value: percentage});
         if (percentage >= 100)
             progress.stop();
     },
     stop: function() {
         if (progress.interval_id) {
-            console.log('killed timer');
             clearInterval(progress.interval_id);
         }
     }
