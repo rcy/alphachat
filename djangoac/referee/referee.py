@@ -88,16 +88,14 @@ def run_game(room_id, players, since):
     vote_seconds = settings.vote_seconds
 
     # game time
+    Message().Info(room_id, "Chat for %s seconds"%game_seconds).save();
     Message().State(room_id, "chat", game_seconds).save()
-
-    log ("sleeping for %d seconds..." % game_seconds)
     gevent.sleep (game_seconds)
-    log ("sleeping for %d seconds...done." % game_seconds)
-
     Message().State(room_id, "chat", 0).save()
     log ("room %s: chat time is up!" %(room_id,))
 
     # voting time
+    Message().Info(room_id, "Choose the player you liked the best (%s seconds)"%vote_seconds).save();
     Message().State(room_id, "vote", vote_seconds).save()
     gevent.sleep (vote_seconds)
     Message().State(room_id, "vote", 0).save()
