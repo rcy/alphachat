@@ -51,7 +51,14 @@ def create_chat(players):
         player.state = 'chat'
         player.room_id = room['_id']
         player.color = color
-        player.vote_color = random.choice(filter(lambda x: x!=color, colors)[:len(players)-1])
+
+        # TODO: remove this debugging special case handling:
+        if len(players) == 1:
+            # vote for ourselves
+            player.vote_color = player.color
+        else:
+            player.vote_color = random.choice(filter(lambda x: x!=color, colors)[:len(players)-1])
+
         player.join = False
         player.save()
 
