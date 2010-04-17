@@ -49,17 +49,17 @@ function get_html(url, selector, onSuccess) {
                 $(selector).html(errstr);
             }});
 }
-
+
 // main
 $(document).ready(function() {
-        g_fbqa = fb_query_args();
-        if (!window.console) window.console = {};
-        if (!window.console.log) window.console.log = function() {};
-        // start us off by loading the menu
-        mainmenu();
-        window.onbeforeunload = function(ev) { return "You won''t be able to return to this chat"; };
-        //$(window).unload(function(ev) { alert("unload!?"); });
-    });
+    g_fbqa = fb_query_args();
+    if (!window.console) window.console = {};
+    if (!window.console.log) window.console.log = function() {};
+    // start us off by loading the menu
+    mainmenu();
+    window.onbeforeunload = function(ev) { return "You won''t be able to return to this chat"; };
+    //$(window).unload(function(ev) { alert("unload!?"); });
+});
 
 function mainmenu() {
     $("#faces_others").html('');
@@ -74,7 +74,7 @@ function mainmenu() {
 
 // budget generic error handler
 function on_error(xhr, status) { alert(status); }
-
+
 var lobby = {
     setup: function() {
         // setup the page, then find a room
@@ -105,7 +105,7 @@ var lobby = {
             });
     }
 }
-
+
 var chat = {
     room: {},
     my_color: '',
@@ -126,27 +126,27 @@ var chat = {
 
         // request the chat page
         get_html("/chat.html", "#content", 
-             function() {
-                 // show the room id in the chat window
-                 $('#chat').html('<div class="debug">match: ' + chat.room.id + '</div>');
+                 function() {
+                     // show the room id in the chat window
+                     $('#chat').html('<div class="debug">match: ' + chat.room.id + '</div>');
 
-                 // boot up the progress bar
-                 progress.reset();
+                     // boot up the progress bar
+                     progress.reset();
 
-                 // start the send message queue
-                 queue.start(chat.send_message, 100);
+                     // start the send message queue
+                     queue.start(chat.send_message, 100);
 
-                 // setup the form, disabled
-                 chat.form_setup();
-                 chat.form_disable();
+                     // setup the form, disabled
+                     chat.form_setup();
+                     chat.form_disable();
 
-                 // wait for messages
-                 chat.poll();
+                     // wait for messages
+                     chat.poll();
 
-                 // tell server we are ready to go
-                 //alert("delay join");
-                 window.setTimeout(chat.join, 100);
-             });
+                     // tell server we are ready to go
+                     //alert("delay join");
+                     window.setTimeout(chat.join, 100);
+                 });
     },
 
     form_setup: function() {
@@ -157,11 +157,11 @@ var chat = {
                                  return false; 
                              });
         $('inputform').keydown(function(e){
-                if (e.keyCode == 13) {
-                    $(this).parents('form').submit();
-                    return false;
-                }
-            });
+            if (e.keyCode == 13) {
+                $(this).parents('form').submit();
+                return false;
+            }
+        });
     },
     form_enable: function() {
         chat.display_html('<div class="debug">chat enable</div>');
@@ -315,7 +315,7 @@ var chat = {
     },
 }
 
-
+
 // ################################################################
 var queue = {
     data: Array(),
