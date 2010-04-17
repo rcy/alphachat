@@ -7,7 +7,7 @@ import gevent.monkey
 from time import sleep
 import sys, os
 sys.path.append('..')
-from alphachat.schema import PlayerDoc, RoomDoc, MessageDoc
+from alphachat.schema import PlayerDoc, RoomDoc, MessageDoc, VoteDoc
 import referee_settings as settings
 from alphachat.event import wait_for_change, get_seq
 from alphachat.debug import log
@@ -21,6 +21,8 @@ class Player(PlayerDoc): pass
 Player.set_db(db)
 class Room(RoomDoc): pass
 Room.set_db(db)
+class Vote(VoteDoc): pass
+Vote.set_db(db)
 class Message(MessageDoc): pass
 Message.set_db(db)
 
@@ -49,7 +51,7 @@ def create_chat(players):
         player.state = 'chat'
         player.room_id = room['_id']
         player.color = color
-        player.vote_color = random.choice(filter(lambda x: x!=color, colors))
+        player.vote_color = random.choice(filter(lambda x: x!=color, colors)[:len(players)-1])
         player.join = False
         player.save()
 
@@ -96,9 +98,18 @@ def run_game(room_id, players, since):
 
     # count votes
     players = refresh_list(players)
+    by_color = {}
     for p in players:
-        log("vote: %s for %s" % (p.color, p.vote_color))
-        Message().Info(room_id, "%s voted for %s"%(p.color, p.vote_color)).save()
+        by_color[p.color] = p
+
+    for p in players:
+        voter = p
+        choice = by_color[p.vote_color]
+
+        log("vote: %s for %s" % (voter.color, choice.color))
+        Message().Info(room_id, "%s voted for %s"%(voter.color, choice.color)).save()
+        # create the vote document
+        Vote(room_id = room_id, player_id = voter._id, choice_id = choice._id).save()
     
     Message().State(room_id, "results", 0).save()
 

@@ -20,6 +20,11 @@ class RoomDoc(BaseDoc):
     players = ListProperty()
     state = StringProperty()
 
+class VoteDoc(BaseDoc):
+    room_id = StringProperty(required = True)
+    player_id = StringProperty(required = True)
+    choice_id = StringProperty(required = True)
+
 class MessageDoc(BaseDoc):
     # join, privmsg, like
     room_id = StringProperty(required = True)
