@@ -79,13 +79,13 @@ def lobby_find_room(request):
         player.save()
 
     updated_player = wait_for_change(player.get_db(), player, since)
-    # TODO: http://dpaste.com/181858/ aka ../exp/class.py
     if updated_player:
         player = updated_player
         log('player: %s changed' % player)
         if player.state == 'chat':
             return json_response({'room_id': player.room_id,
                                   'color': player.color,
+                                  'vote': player.vote_color,
                                   'face': get_pic(request.facebook, request.facebook.uid),
                                   'since': get_seq(get_db('alphachat'))})
     else:

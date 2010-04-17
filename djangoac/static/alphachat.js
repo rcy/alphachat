@@ -83,8 +83,9 @@ var lobby = {
                     room_id = response.room_id;
                     my_color = response.color;
                     my_face = response.face;
+                    my_vote = response.vote;
                     since = response.since;
-                    chat.setup(room_id, my_color, my_face, since);
+                    chat.setup(room_id, my_color, my_face, my_vote, since);
                 } else {
                     // server time-out, go again
                     $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
@@ -103,15 +104,17 @@ var chat = {
     room: {},
     my_color: '',
     my_face: 'http://static.ak.fbcdn.net/pics/q_silhouette.gif',
+    my_vote: '',
     since: 0,
     error_wait: 100,
     time: 0,
 
-    setup: function(room_id, color, face, since) {
+    setup: function(room_id, color, face, vote, since) {
         chat.room.id = room_id;
         chat.my_color = color;
         if (face) 
             chat.my_face = face;
+        chat.my_vote = vote; // we are given an initial choice, cannot abstain
         chat.since = since;
         chat.error_wait = 100;
 
@@ -190,8 +193,10 @@ var chat = {
 
                         switch (msg.state) {
                         case 'chat':
-                            if (msg.seconds > 0)
+                            if (msg.seconds > 0) {
                                 chat.form_enable();
+                                chat.vote_display(chat.my_vote);
+                            }
                             break;
 
                         case 'vote':
@@ -250,12 +255,17 @@ var chat = {
         // send message to server
         chat.queue_message({command:'vote', color:color});
 
-        // visibly mark face as picked
-        $("*").removeClass("picked");
-        $("#face_"+color).addClass("picked");
+        // ui
+        vote_display(color);
 
         // refocus the input bar
         $("input:text:visible:first").focus();
+    },
+
+    vote_display: function(color) {
+        // visibly mark face as picked
+        $("*").removeClass("picked");
+        $("#face_"+color).addClass("picked");
     },
 
     form_submit: function(form) {
