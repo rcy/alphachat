@@ -95,7 +95,7 @@ def run_game(room_id, players, since):
     log ("room %s: chat time is up!" %(room_id,))
 
     # voting time
-    Message().Info(room_id, "Choose the player you liked the best (%s seconds)"%vote_seconds).save();
+    Message().Info(room_id, "Click on the player you liked the best (%s seconds)"%vote_seconds).save();
     Message().State(room_id, "vote", vote_seconds).save()
     gevent.sleep (vote_seconds)
     Message().State(room_id, "vote", 0).save()
@@ -107,15 +107,22 @@ def run_game(room_id, players, since):
     for p in players:
         by_color[p.color] = p
 
+    score = {'red':0, 'green':0, 'blue':0}
     for p in players:
         voter = p
         choice = by_color[p.vote_color]
+        score[p.vote_color] += 1000
 
         log("vote: %s for %s" % (voter.color, choice.color))
         Message().Info(room_id, "%s voted for %s"%(voter.color, choice.color)).save()
         # create the vote document
         Vote(room_id = room_id, player_id = voter._id, choice_id = choice._id).save()
-    
+
+    score = "[POINTS] Red: %s, Green: %s, Blue: %s"%(score['red'],
+                                                     score['green'],
+                                                     score['blue'])
+    log("score: %s"%score)
+    Message().Info(room_id, score).save()
     Message().State(room_id, "results", 0).save()
 
 def main_loop():
@@ -144,6 +151,4 @@ def main_loop():
         gevent.sleep (1)
 
 if __name__ == '__main__':
-    #main = gevent.spawn(main_loop)
-    #main.join()
     main_loop()

@@ -197,11 +197,17 @@ var chat = {
 
                     for (i in m) {
                         var msg = m[i];
-                        html = $("#msgtpl_" + msg.command).jqote(msg);
-                        chat.display_html(html);
 
                         switch (msg.command) {
+                        case 'info':
+                            chat.display_html($("#msgtpl_info").jqote(msg));
+                            break;
+                        case 'privmsg':
+                            chat.display_html($("#msgtpl_privmsg").jqote(msg));
+                            break;
                         case 'state':
+                            chat.display_html($("#msgtpl_state").jqote(msg));
+
                             if (msg.seconds > 0) {
                                 progress.start(msg.seconds);
                             }
@@ -229,9 +235,10 @@ var chat = {
                             break;
                         case 'join':
                             // todo: draw the player face card in the sidebar
-                            if (msg.color == chat.my_color)
+                            if (msg.color == chat.my_color) {
+                                chat.display_html($("#msgtpl_join").jqote(msg));
                                 msg['face'] = chat.my_face;
-                            else
+                            } else
                                 msg['face'] = '/media/50x50.png';
 
                             card = $("#msgtpl_face").jqote(msg);
@@ -246,6 +253,9 @@ var chat = {
                                 face.bind("click", {color:msg.color}, chat.vote_click);
                             }
 
+                            break;
+                        default:
+                            alert('unknown command: ' + msg.command);
                             break;
                         }
                     }
