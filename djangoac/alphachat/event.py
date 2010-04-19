@@ -4,14 +4,18 @@ from couchdbkit import Consumer, Document
 def get_seq(db):
     return db.info()['update_seq']
 
-def wait_for_change(db, doc, since=0, timeout=60000):
+class Timeout(Exception): pass
+
+def wait_for_change(doc, since=0, timeout=60000):
     assert int(since) > 0
+    db = doc.get_db()
     log("update_seq: %s"%get_seq(db))
     log("info: wait_for_change on _id: %s, _rev: %s" % (doc['_id'], doc['_rev']))
     docid = doc['_id']
     rev = doc['_rev']
     c = Consumer(db)
     
+    log('fetch: started...')
     r = c.fetch(filter="alphachat/generic",
                 by_key='_id', by_value=docid, since=since)
     log('fetch: %s'%r)
@@ -23,6 +27,7 @@ def wait_for_change(db, doc, since=0, timeout=60000):
             return Document(db[doc['_id']])
 
     last_seq = r['last_seq']
+    log('poll: started...')
     r = c.wait_once(filter="alphachat/generic",
                     by_key='_id', by_value=docid,
                     since = last_seq,
@@ -31,7 +36,7 @@ def wait_for_change(db, doc, since=0, timeout=60000):
     if len(r['results']) > 0:
         return Document(db[doc['_id']])
     else:
-        log('timed_out: no changes')
+        raise Timeout
 
 def wait_for_changes(db, doc_type=None, by_key=None, by_value=None, since=0, timeout=60000):
     assert int(since) > 0
@@ -53,9 +58,14 @@ if __name__ == '__main__':
     s = Server('http://localhost:5984')
     db = s.get_or_create_db('alphachat')
     Document.set_db(db)
-    doc = db['monkey']
+    doc = Document(db['monkey'])
+    since = get_seq(db)
     print "go change doc '%s' now, or wait until after the fetch" % doc['_id']
+    from time import sleep
     sleep(10)
-    newdoc = wait_for_change(db, doc, 10000)
-    print 'newdoc:',newdoc
+    try:
+        doc = wait_for_change(doc, since, 10000)
+    except Timeout:
+        print "TIMEOUT"
 
+    print 'doc:',doc

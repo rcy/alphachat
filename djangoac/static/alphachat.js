@@ -21,7 +21,7 @@ function get(url, onSuccess, onError) {
                 type: "GET",
                 dataType: "json",
                 cache: false,
-                timeout: 50000,     // 50 seconds
+                timeout: 5000,
                 success: onSuccess,
                 error: onError});
 }
@@ -102,14 +102,14 @@ var lobby = {
                     chat.setup(room_id, my_color, my_face, my_vote, since);
                 } else {
                     // server time-out, go again
-                    $("#lobby_box").append('<div>WARNING: find_room: server timeout</div>');
-                    window.setTimeout(lobby.find_room, 0);
+                    $("#lobby_box").append(', ');
+                    window.setTimeout(lobby.find_room, 100);
                 }
             },
             function(xhr,status) {
                 if (status == 'timeout')
                     // client timeout, no problem
-                    window.setTimeout(lobby.find_room, 0);
+                    window.setTimeout(lobby.find_room, 100);
             });
     }
 }

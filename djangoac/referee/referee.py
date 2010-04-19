@@ -69,7 +69,7 @@ def run_game(room_id, players, since):
     jobs = []
     for player in players:
         log ("WAITING FOR PLAYER TO JOIN: %s" % player.color)
-        jobs.append(gevent.spawn(wait_for_change, player.get_db(), player, since))
+        jobs.append(gevent.spawn(wait_for_change, player, since))
     gevent.joinall(jobs)
 
     players = refresh_list(players)

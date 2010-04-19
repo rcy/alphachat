@@ -12,7 +12,7 @@ import facebook.djangofb as facebook
 
 from alphachat.models import Player, Room, Message
 from alphachat.session import Session
-from alphachat.event import wait_for_change, wait_for_changes, get_seq
+from alphachat.event import wait_for_change, wait_for_changes, get_seq, Timeout
 from alphachat.debug import log
 
 from couchdbkit import Consumer
@@ -78,18 +78,19 @@ def lobby_find_room(request):
         player.state = 'ondeck'
         player.save()
 
-    updated_player = wait_for_change(player.get_db(), player, since)
-    if updated_player:
-        player = updated_player
+    try:
+        player = wait_for_change(player, since, 1000)
         log('player: %s changed' % player)
-        if player.state == 'chat':
-            return json_response({'room_id': player.room_id,
-                                  'color': player.color,
-                                  'vote': player.vote_color,
-                                  'face': get_pic(request.facebook, request.facebook.uid),
-                                  'since': get_seq(get_db('alphachat'))})
+    except Timeout:
+        log("player: %s no change, TIMEOUT" % player)
+
+    if player.state == 'chat':
+        return json_response({'room_id': player.room_id,
+                              'color': player.color,
+                              'vote': player.vote_color,
+                              'face': get_pic(request.facebook, request.facebook.uid),
+                              'since': get_seq(get_db('alphachat'))})
     else:
-        # no room for you
         player.state = 'lobby'
         player.save()
         return json_response(False)
