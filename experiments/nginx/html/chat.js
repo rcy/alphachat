@@ -5,6 +5,7 @@ var global_counter = 0;
 
 $(function () {
         $('#chatform').submit(sendmsg);
+        $('#chat').focus();
         getmsg();
 });
 
