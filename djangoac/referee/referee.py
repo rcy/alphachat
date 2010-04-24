@@ -47,7 +47,7 @@ def create_chat(players):
 
     # mark the players as chatting in the room
     for player, color in zip(players, colors):
-        log( 'moving %s to chat in %s' % (player.fb_uid, room['_id']))
+        log('moving %s to chat in %s' % (player.fb_uid, room['_id']))
         player.state = 'chat'
         player.room_id = room['_id']
         player.color = color
@@ -124,6 +124,11 @@ def run_game(room_id, players, since):
     log("score: %s"%score)
     Message().Info(room_id, score).save()
     Message().State(room_id, "results", 0).save()
+
+    # update player states
+    for p in players:
+        p.state = 'endgame'
+        p.save()
 
 def main_loop():
     log ("Referee started.  Waiting for players in state == 'ondeck'")
