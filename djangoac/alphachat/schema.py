@@ -5,7 +5,9 @@ class BaseDoc(Document):
     creation_time = DateTimeProperty(default = datetime.utcnow)
 
 class PlayerDoc(BaseDoc):
-    fb_uid = StringProperty()
+    email = StringProperty()
+    password = StringProperty()
+
     pic = StringProperty()
 
     # lobby, ondeck, chat

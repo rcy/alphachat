@@ -36,6 +36,7 @@ def index(request):
     print "* landing page"
     print "*"
     print "***"
+    get_player_create(request);
     return render_to_response('index.html', RequestContext(request))
 
 #@facebook.require_login()
@@ -43,10 +44,24 @@ def html_content(request, page):
     html = render_to_string(page, {}, RequestContext(request))
     return json_response({'html':html})
 
-def get_player(request):
-    fb_uid = str(request.facebook.uid)
-    player = Player.view('alphachat/player__fb_uid', key=fb_uid).one()
+def get_player_create(request):
+    player = get_player(request)
+    if player:
+        return player 
+    
+    player = Player().create()
+    request.session['user_id'] = player._id
+    log('created: player: %s' % player._id)
     return player
+
+def get_player(request):
+    user_id = request.session.get('user_id', False)
+    if user_id:
+        log('used_id: %s' % user_id)
+        player = Player.view('alphachat/player__user_id', key=user_id).one()
+        if player:
+            log('player: %s' % player._id)
+            return player
 
 def lobby_find_room(request):
     """
