@@ -1,17 +1,1 @@
--*- outline -*-
-
-* current iteration
-- get running again
-- rip out facebook junk
-- make simple signin/register
-- allow anonymous / per-session play
-
-* backlog
-- make the sessions stuff solid
-- faces in status bar
-- move status bar to sidebar
-- set a countdown timer for chat
-- fix cursor assertion error
-? investigate message body in message/updates request
-implement chat end game
-
+See http://github.com/rcy/alphachat/issues
