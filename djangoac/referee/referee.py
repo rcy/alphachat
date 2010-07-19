@@ -79,8 +79,10 @@ def run_game(room_id, players, since):
     if not_joined:
         # cancel the game
         for p in not_joined:
-            Message().Info(room_id, 
-                           "%s didnt join, cancelling game." % p.color).save()
+            Message().Info(room_id, "%s didnt join, cancelling game." % p.color).save()
+        for p in players:
+            p.state = 'endgame'
+            p.save()
         return
         
     log ("ALL PLAYERS JOINED STARTING GAME")
@@ -95,8 +97,15 @@ def run_game(room_id, players, since):
     log ("room %s: chat time is up!" %(room_id,))
 
     # voting time
-    Message().Info(room_id, "Click on the player you liked the best (%s seconds)"%vote_seconds).save();
+    players = refresh_list(players)
+    for p in players:
+        log("marking player %s as state vote" % p._id)
+        p.state = 'vote'
+        p.save()
     Message().State(room_id, "vote", vote_seconds).save()
+    Message().Info(room_id, "Chat period is over!").save();
+    gevent.sleep(1)
+    Message().Info(room_id, "You have %s seconds to choose the player on the left that you liked the best"%vote_seconds).save();
     gevent.sleep (vote_seconds)
     Message().State(room_id, "vote", 0).save()
     log ("room %s: vote time is up!" %(room_id,))
@@ -124,6 +133,7 @@ def run_game(room_id, players, since):
     log("score: %s"%score)
     Message().Info(room_id, score).save()
     Message().State(room_id, "results", 0).save()
+    Message().Info(room_id, "Game is over!").save();
 
     # update player states
     for p in players:

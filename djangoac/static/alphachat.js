@@ -21,7 +21,7 @@ function get(url, onSuccess, onError) {
                 type: "GET",
                 dataType: "json",
                 cache: false,
-                timeout: 5000,
+                timeout: 65000,
                 success: onSuccess,
                 error: onError});
 }
@@ -84,9 +84,17 @@ function mainmenu() {
 function on_error(xhr, status) { alert(status); }
 
 var lobby = {
+    since: 0,
     setup: function() {
         // setup the page, then find a room
-        get_html('/lobby.html', "#content", lobby.find_room);
+        get_html('/lobby.html', "#content", lobby.get_seq);
+    },
+    get_seq: function() {
+        get('/a/get_since',
+            function(response) {
+                lobby.since = response.since;
+                lobby.find_room();
+            });
     },
     find_room: function() {
         $("#lobby_box").append(". ");
@@ -98,8 +106,7 @@ var lobby = {
                     my_color = response.color;
                     my_face = response.face;
                     my_vote = response.vote;
-                    since = response.since;
-                    chat.setup(room_id, my_color, my_face, my_vote, since);
+                    chat.setup(room_id, my_color, my_face, my_vote, lobby.since);
                 } else {
                     // server time-out, go again
                     $("#lobby_box").append(', ');
@@ -153,7 +160,7 @@ var chat = {
 
                      // tell server we are ready to go
                      //alert("delay join");
-                     window.setTimeout(chat.join, 100);
+                     chat.join();
                  });
     },
 
@@ -281,7 +288,7 @@ var chat = {
         chat.queue_message({command:'vote', color:color});
 
         // ui
-        vote_display(color);
+        chat.vote_display(color);
 
         // refocus the input bar
         $("input:text:visible:first").focus();
