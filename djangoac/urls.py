@@ -2,9 +2,10 @@ from django.conf.urls.defaults import *
 from djangoac import settings
 
 urlpatterns = patterns('djangoac.alphachat.views',
-                       ('^facebook/canvas/$', 'index'),
+                       ('^$', 'index'),
                        ('^(\w+.html)', 'html_content'),
 
+                       ('^a/get_since/$', 'get_since'),
                        ('^a/lobby/find_room/$', 'lobby_find_room'),
                        ('^a/room/chatters_html/(.+)/$', 'room_chatters_html'),
                        ('^a/room/post/(.+)/$', 'message_new'),

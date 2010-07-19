@@ -8,10 +8,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from djangoac import settings
 
-import facebook.djangofb as facebook
-
 from alphachat.models import Player, Room, Message
-from alphachat.session import Session
 from alphachat.event import wait_for_change, wait_for_changes, get_seq, Timeout
 from alphachat.debug import log
 
@@ -33,25 +30,12 @@ class BadCommand(Exception): pass
 ################
 # top level views
 ################
-@facebook.require_login()
 def index(request): 
     print "***"
     print "*"
     print "* landing page"
     print "*"
     print "***"
-    fb_uid = str(request.facebook.uid)
-    assert fb_uid
-
-    # get or create player
-    result = Player.view('alphachat/player__fb_uid', key=fb_uid)
-    if result.count() == 1:
-        player = result.first()
-    else:
-        player = Player().create(request)
-    player.state = 'lobby'
-    player.save()
-
     return render_to_response('index.html', RequestContext(request))
 
 #@facebook.require_login()
@@ -64,7 +48,6 @@ def get_player(request):
     player = Player.view('alphachat/player__fb_uid', key=fb_uid).one()
     return player
 
-@facebook.require_login()
 def lobby_find_room(request):
     """
     Mark player as available for chat
@@ -89,7 +72,7 @@ def lobby_find_room(request):
                               'color': player.color,
                               'vote': player.vote_color,
                               'face': get_pic(request.facebook, request.facebook.uid),
-                              'since': get_seq(get_db('alphachat'))})
+                              })
     else:
         player.state = 'lobby'
         player.save()
@@ -100,7 +83,6 @@ def scrub_message(doc):
     doc.player_id = None
     return doc
 
-@facebook.require_login()
 def message_updates(request, room_id, since):
     # TODO: verify that this user is in this room
     log("waiting for messages on: %s" % room_id)
@@ -120,7 +102,6 @@ def message_updates(request, room_id, since):
     return json_response({'since': since, 
                           'messages': msgs})
 
-@facebook.require_login()
 def message_new(request, room_id):
     # TODO: make sure player is in room, do other validation.
     player = get_player(request)
@@ -147,6 +128,7 @@ def message_new(request, room_id):
 ################
 # debugging
 ################
-def test_foo(request):
-    g_event.wakeup('dummyid')
-    return HttpResponse(True)
+def get_since(request):
+    since = get_seq(get_db('alphachat'))
+    log("get_since %d" % since)
+    return json_response({'since': since})

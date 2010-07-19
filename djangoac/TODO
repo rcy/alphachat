@@ -1,6 +1,12 @@
 -*- outline -*-
 
-* all
+* current iteration
+- get running again
+- rip out facebook junk
+- make simple signin/register
+- allow anonymous / per-session play
+
+* backlog
 - make the sessions stuff solid
 - faces in status bar
 - move status bar to sidebar

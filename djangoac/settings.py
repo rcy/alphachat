@@ -25,10 +25,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'facebook.djangofb.FacebookMiddleware',
 )
-FACEBOOK_API_KEY='e56094f7af8d288bffab65c184f1a18b'
-from secrets import FACEBOOK_SECRET_KEY
 
 ROOT_URLCONF = 'djangoac.urls'
 TEMPLATE_DIRS = (
