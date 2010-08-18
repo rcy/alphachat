@@ -47,7 +47,7 @@ def create_chat(players):
 
     # mark the players as chatting in the room
     for player, color in zip(players, colors):
-        log('moving %s to chat in %s' % (player.fb_uid, room['_id']))
+        log('moving %s to chat in %s' % (player._id, room['_id']))
         player.state = 'chat'
         player.room_id = room['_id']
         player.color = color
@@ -148,13 +148,13 @@ def main_loop():
     
     while True: 
         lobby_players = Player.view('alphachat/player__state', key='lobby').all()
-        lobby_player_ids = map(lambda p: str(p.fb_uid), lobby_players)
+        lobby_player_ids = map(lambda p: str(p._id), lobby_players)
         if lobby_player_ids != old_lobby_player_ids:
             log ("lobby: %s" % lobby_player_ids)
         old_lobby_player_ids = lobby_player_ids
 
         ondeck_players = Player.view('alphachat/player__state', key='ondeck').all()
-        ondeck_player_ids = map(lambda p: str(p.fb_uid), ondeck_players)
+        ondeck_player_ids = map(lambda p: str(p._id), ondeck_players)
         if ondeck_player_ids != old_ondeck_player_ids:
             log ("ondeck: %s" % ondeck_player_ids)
         old_ondeck_player_ids = ondeck_player_ids

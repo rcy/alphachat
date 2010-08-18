@@ -1,5 +1,5 @@
 * Deps
-couchdb 0.11.0
+couchdb 1.0
 couchdbkit (something really recent from git)
 python 2.5/2.6 (not 2.4, havent tested with 3)
 django 1.1.1 (lets try 1.2 when it is released)
@@ -16,11 +16,7 @@ $ source acenv/bin/activate
 (acenv)$ easy_install gevent
 (acenv)$ easy_install greenlet
 (acenv)$ easy_install simplejson
-
-(acenv)$ git clone git://github.com/benoitc/couchdbkit.git
-(acenv)$ cd couchdbkit
-(acenv) couchdbkit$ python ./setup.py install
-Finished processing dependencies for couchdbkit==0.5.0
+(acenv)$ easy_install couchdbkit
 
 at this point you should be able to run
 (acenv) alphachat/djangoac$ python ./run.py
