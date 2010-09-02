@@ -3,7 +3,7 @@ function(row) {
   var me = profile && profile.name;
   var v = row.value;
   var d = {
-    message: v.message,
+    message: $.linkify(v.message),
     nickname: v.profile && v.profile.nickname || "SYSTEM",
     name: v.profile && v.profile.name || "SYSTEM"
   };
