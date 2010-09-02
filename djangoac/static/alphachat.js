@@ -331,7 +331,7 @@ var chat = {
     },
 
     display_html: function(html) {
-        var div = $("#chat")
+        var div = $("#chat");
         div.append(html);
         // certain browsers have a bug such that scrollHeight is too small
         // when content does not fill the client area of the element
