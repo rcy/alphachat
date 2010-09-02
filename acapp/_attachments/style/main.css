@@ -1,0 +1,40 @@
+/* add styles here */
+
+body {
+  font-family:monospace;
+  padding:0;
+  margin:0;
+}
+
+#account {
+  float: right;
+}
+
+#profile {
+  background:#orange;
+}
+
+#items {
+  background:#eee;
+  padding-bottom: 3em;
+}
+
+#toolbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+p {
+  padding:0;
+  margin:0;
+}
+
+form {
+  background-color:yellow;
+}
+form input {
+    padding: 0;
+    margin: 0;
+    background-color:green;
+}
