@@ -2,8 +2,8 @@ node_url=http://nodejs.org/dist
 node_dir=node-v0.1.104
 node_tarball=$(node_dir).tar.gz
 
-run:
-	./$(node_dir)/node helloworld.js
+runbot:
+	./$(node_dir)/node bot.js
 
 nodebuild: $(node_dir)
 	cd $< && ./configure && make
