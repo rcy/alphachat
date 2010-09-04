@@ -8,11 +8,16 @@ couch.getDoc("",                // get the db info for the update_seq
 cmd = {};
 cmd.join = function(doc){
   console.log("JOIN: " + doc.sender);
-  //couch.saveDoc({});
+  couch.saveDoc({ type:'message',
+                  cmd:'chat',
+                  sender:'bot',
+                  body:doc.sender+' has joined'
+                });
+  setTimeout(function() { couch.saveDoc({ type:'message',cmd:'chat',sender:'bot',body:'hello '+doc.sender});}, 10000);
 };
 
 function handler(doc) {
-  if (doc.type === 'message') {
+  if (doc.type === 'message' && doc.sender !== 'bot') {
     console.log("MESSAGE: " + doc._id + " cmd == " + doc.cmd);
     cmd[doc.cmd] && cmd[doc.cmd](doc);
   } else {

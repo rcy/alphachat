@@ -16,9 +16,7 @@ couch.getDoc = function(docid, callback) {
     response.setEncoding('utf8');
     //console.log('STATUS:' + response.statusCode);
     var data = "";
-    response.on('data', function(chunk) {
-      data += chunk;
-    });
+    response.on('data', function(chunk) { data += chunk; });
     response.on('end', function() {
       var doc = JSON.parse(data);
       callback && callback(doc);
@@ -26,9 +24,29 @@ couch.getDoc = function(docid, callback) {
   });
 };
 
+couch.saveDoc = function(doc, callback) {
+  var client = http.createClient(this.port, this.host);
+  var request = client.request('POST', 
+                               '/'+this.db,
+                               {'host': this.host, 
+                                'Content-Type': 'application/json'});
+  request.write(JSON.stringify(doc));
+  request.end();
+  request.on('response', function(response) {
+    console.log("STATUS: ", response.statusCode);
+    response.setEncoding('utf8');
+    var data = "";
+    response.on('data', function(chunk) { data += chunk; });
+    response.on('end', function() {
+      console.log("documentsaved: " + data);
+      callback && callback();
+    });                
+  });
+};
+
 // listen for changes on the db.
-// callback is called with the fetched document (+ args)
-couch.feed = function(since, callback, args) {
+// callback is called with the fetched document
+couch.feed = function(since, callback) {
   var client = http.createClient(this.port, this.host);
   var query = querystring.stringify({'feed':'continuous',
                                      'since':since,
@@ -51,7 +69,7 @@ couch.feed = function(since, callback, args) {
           var line = lines[i];
           if (line !== "") {
             //console.log('line:'+line+'*');
-            callback && callback(JSON.parse(line).doc, args);
+            callback && callback(JSON.parse(line).doc);
           }
         }
       }
