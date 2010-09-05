@@ -12,6 +12,7 @@ cmd.join = function(doc){
   couch.saveDoc({ type:'message',
                   cmd:'chat',
                   sender:'bot',
+                  target:'lobby',
                   body:doc.sender+' has joined'
                 });
   setTimeout(function() { couch.saveDoc({ type:'message',cmd:'chat',sender:'bot',body:'hello '+doc.sender});}, 10000);

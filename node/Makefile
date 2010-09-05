@@ -5,6 +5,9 @@ node_tarball=$(node_dir).tar.gz
 runbot:
 	./$(node_dir)/node bot.js
 
+server:
+	./$(node_dir)/node server.js
+
 nodebuild: $(node_dir)
 	cd $< && ./configure && make
 
