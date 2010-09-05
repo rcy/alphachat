@@ -6,8 +6,9 @@ body {
   margin:0;
 }
 
-#account {
-  float: right;
+#ex {
+  background: orange;
+  color: green;
 }
 
 #status {

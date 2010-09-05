@@ -7,11 +7,31 @@
   <body>
     <div id="items"></div>
     <div id="toolbar">
-      <div id="account"></div>
+      <div id="ex">hello</div>
       <div id="status">--</div>
       <div id="input"><form><input type="text" value="foo"></form></div>
     </div>
   </body>
   <script src="vendor/couchapp/loader.js"></script>
   <script src="client.js"></script>
+  <script>
+    $(document).ready(function() {
+      setTimeout(function() {
+        $.couch.app(function(app) {
+          app.db.info({ success: function(db_info) { 
+            STARTSEQ = db_info.update_seq;
+            $(window).evently("window", app);
+            //$("#account").evently("account", app);
+            //$("#profile").evently("profile", app);
+            $("#input").evently("input", app);
+            $("#ex").evently("ex", app);
+            //$.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
+            //$.evently.connect("#account","#input", ["loggedIn", "loggedOut"]);
+            //$.evently.connect("#profile","#input", ["profileReady"]);
+            $("#items").evently("items", app);
+            clientStart();
+          }});
+        })}, 500 /* safari needs a big number here to not show loading spinner */ );
+    });
+  </script>
 </html>

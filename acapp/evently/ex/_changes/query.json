@@ -1,6 +1,6 @@
 {
-  "view" : "recent-items",
+  "view": "ex-items",
   "descending" : "true",
-  "limit" : 5,
+  "limit" : 1,
   "type" : "newRows"
 }

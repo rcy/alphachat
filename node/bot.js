@@ -1,5 +1,6 @@
 couch = require('./couch.js');
 couch.db = 'cac';
+//couch.host = 'rcy.couchone.com'
 couch.getDoc("",                // get the db info for the update_seq
              function(doc) {
                couch.feed(doc.update_seq, handler);

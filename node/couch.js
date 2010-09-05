@@ -10,7 +10,8 @@ couch.db = 'mydb';
 // callback is called with the document associated with docid
 couch.getDoc = function(docid, callback) {
   var client = http.createClient(this.port, this.host);
-  var request = client.request('GET', '/'+this.db+'/'+docid);
+  var request = client.request('GET', '/'+this.db+'/'+docid,
+                               {'host': this.host});
   request.end();
   request.on('response', function(response) {
     response.setEncoding('utf8');
@@ -18,6 +19,7 @@ couch.getDoc = function(docid, callback) {
     var data = "";
     response.on('data', function(chunk) { data += chunk; });
     response.on('end', function() {
+      console.log('data: ' + data);
       var doc = JSON.parse(data);
       callback && callback(doc);
     });
