@@ -3,10 +3,11 @@ fs = require('fs');
 var h = exports;
 
 contentType = function(filename) {
-  return 'text/html';
+  return 'text/html'; // FIXME
 };
 
-staticFile = function(filename, res) {
+h.staticFile = function(filename, res) {
+  filename = './static/' + filename;
   fs.stat(filename, function(err, stats) {
     if (err || !stats.isFile()) {
       res.writeHead(400, {'Content-Type': 'text/plain'});
@@ -27,14 +28,5 @@ staticFile = function(filename, res) {
 };
 
 h.index = function(req, res) {
-  staticFile('./static/index.html', res);
-};
-
-h.favicon = function(req, res) {
-  staticFile('./static/favicon.ico', res);
-};
-
-h.js = function(req, res) {
-  var file = req.url.split('/')[2];
-  staticFile('./static/'+file, res);
+  h.staticFile('index.html', res);
 };

@@ -2,9 +2,7 @@ var http = require('http');
 var h = require('./handlers.js')
 
 routes = {
-  '': h.index,
-  'favicon.ico': h.favicon,
-  'js': h.js
+  '': h.index
 };
 
 var server = http.createServer();
@@ -20,14 +18,14 @@ server.on('request', function (req, res) {
 
   console.log(req.socket.remoteAddress + ' ' + req.method + ' ' + req.url);
   var urlparts = req.url.split('/');
-  console.log(urlparts);
+  //console.log(urlparts);
   var handler = routes[urlparts[1]];
 
   if (handler) {
     handler(req, res);
   } else {
-    res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.end('404');
+    h.staticFile(req.url, res);
+    //res.writeHead(404, {'Content-Type': 'text/plain'});
+    //res.end('404');
   }
 });
-
