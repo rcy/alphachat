@@ -1,5 +1,5 @@
 function() {
-  $.log('focus');
+  //$.log('focus');
   GLOBAL.focus = true;
   GLOBAL.unread = 0;
   updateTitle();

@@ -1,5 +1,5 @@
 function() {
-  $.log('blur');
+  //$.log('blur');
   GLOBAL.focus = false;
   updateTitle();
 }
