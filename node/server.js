@@ -31,10 +31,16 @@ server.on('request', function (req, res) {
 });
 
 // socket.io
-var socket = io.listen(server);
+var socket = io.listen(server, 
+                       {transports: ['websocket', /*'flashsocket',*/ 'htmlfile', 
+                                     'xhr-multipart', 'xhr-polling', 'jsonp-polling']});
+
+console.log(socket.options.transports);
 socket.on('connection', function(client) {
   b_join(socket, client);
+  client.send('{"dummy":"hello"}');
   client.on('message', function(data) {
+    console.log('message: ' + data);
     b_msg(socket, client, data);
   });
   client.on('disconnect', function() {
