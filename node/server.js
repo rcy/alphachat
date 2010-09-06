@@ -1,5 +1,6 @@
 var http = require('http');
 var h = require('./handlers.js')
+var io = require('./socket.io')
 
 routes = {
   '': h.index
@@ -28,4 +29,16 @@ server.on('request', function (req, res) {
     //res.writeHead(404, {'Content-Type': 'text/plain'});
     //res.end('404');
   }
+});
+
+// socket.io
+var socket = io.listen(server);
+socket.on('connection', function(client) {
+  console.log('connection');
+  client.on('message', function() {
+    console.log('message');
+  });
+  client.on('disconnect', function() {
+    console.log('disconnect');
+  });
 });
