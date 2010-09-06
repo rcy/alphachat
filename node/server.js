@@ -35,8 +35,12 @@ var socket = io.listen(server,
                        {transports: ['websocket', /*'flashsocket',*/ 'htmlfile', 
                                      'xhr-multipart', 'xhr-polling', 'jsonp-polling']});
 
+GLOBAL = {};
+GLOBAL.clientCount = 0;
+
 console.log(socket.options.transports);
 socket.on('connection', function(client) {
+  GLOBAL.clientCount += 1;
   b_join(socket, client);
   client.send('{"dummy":"hello"}');
   client.on('message', function(data) {
@@ -44,6 +48,7 @@ socket.on('connection', function(client) {
     b_msg(socket, client, data);
   });
   client.on('disconnect', function() {
+    GLOBAL.clientCount -= 1;
     b_part(socket, client);
   });
 });
@@ -61,3 +66,7 @@ b_part = function(socket, client) {
 b_msg = function(socket, client, message) {
   broadcast(socket, {client: client.sessionId, cmd:'privmsg', body:message});
 }
+
+setInterval(function() { 
+  socket.broadcast(JSON.stringify({users: GLOBAL.clientCount}));
+},1000);

@@ -2,15 +2,20 @@ io.setPath('/js/');
 socket = new io.Socket(null, {port:8124, transports:['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']});
 socket.connect();
 socket.on('connect', function(){
-  $("#status").html("connected");
+  $("#status .conn").html("connected");
 });
 socket.on('disconnect', function(){
-  $("#status").html("disconnected");
+  $("#status .conn").html("disconnected");
 });
 socket.on('message', function(data){
   var obj = JSON.parse(data);
-  $("#items").append('<div>'+obj.cmd+': '+obj.client+' '+obj.body+'</div>');
-  scrollDown();
+  console && console.log(data);
+  if (obj.users) {
+    $("#status .users").html(obj.users);
+  } else {
+    $("#items").append('<div>'+obj.cmd+': '+obj.client+' '+obj.body+'</div>');
+    scrollDown();
+  }
 });
 
 scrollDown = function() {
