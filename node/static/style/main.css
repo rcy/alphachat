@@ -6,11 +6,6 @@ body {
   margin:0;
 }
 
-#ex {
-  background: orange;
-  color: green;
-}
-
 #status {
   background:black;
   color:white;
@@ -18,7 +13,7 @@ body {
 
 #items {
   background:#eee;
-  padding-bottom: 3em;
+  padding-bottom: 4em;
 }
 
 #toolbar {

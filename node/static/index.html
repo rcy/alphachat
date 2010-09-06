@@ -6,11 +6,13 @@
   <body>
     <div id="items"></div>
     <div id="toolbar">
-      <div id="ex">NODE!</div>
-      <div id="status">--</div>
-      <div id="input"><form class="chat"><input type="text" value="foo"></form></div>
+      <div id="status">status bar</div>
+      <form class="chat">
+        <input type="text" value="<type message here>" name="input">
+      </form>
     </div>
   </body>
+  <script src="js/jquery-1.4.2.min.js"></script>
   <script src="js/socket.io.js"></script>
   <script src="js/client.js"></script>
 </html>

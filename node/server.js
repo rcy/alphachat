@@ -7,8 +7,7 @@ routes = {
 };
 
 var server = http.createServer();
-
-server.listen(8124, "127.0.0.1");
+server.listen(8124, "0.0.0.0");
 
 server.on('request', function (req, res) {
   process.addListener('uncaughtException', function (err) {
@@ -34,11 +33,25 @@ server.on('request', function (req, res) {
 // socket.io
 var socket = io.listen(server);
 socket.on('connection', function(client) {
-  console.log('connection');
-  client.on('message', function() {
-    console.log('message');
+  b_join(socket, client);
+  client.on('message', function(data) {
+    b_msg(socket, client, data);
   });
   client.on('disconnect', function() {
-    console.log('disconnect');
+    b_part(socket, client);
   });
 });
+
+// message send helpers b_==broadcast, s_==send
+broadcast = function(socket, obj) {
+  socket.broadcast(JSON.stringify(obj));
+}
+b_join = function(socket, client) {
+  broadcast(socket, {client:client.sessionId, cmd:'join'});
+}
+b_part = function(socket, client) {
+  broadcast(socket, {client: client.sessionId, cmd:'part'});
+}
+b_msg = function(socket, client, message) {
+  broadcast(socket, {client: client.sessionId, cmd:'privmsg', body:message});
+}
