@@ -32,7 +32,7 @@ server.on('request', function (req, res) {
 
 // socket.io
 var socket = io.listen(server, 
-                       {transports: ['websocket', /*'flashsocket',*/ 'htmlfile', 
+                       {transports: ['websocket', 'flashsocket', 'htmlfile', 
                                      'xhr-multipart', 'xhr-polling', 'jsonp-polling']});
 
 GLOBAL = {};
