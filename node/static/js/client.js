@@ -8,13 +8,19 @@ socket.on('disconnect', function(){
   $("#status .conn").html("disconnected");
 });
 socket.on('message', function(data){
+  console && console.log(data);
   var obj = JSON.parse(data);
-  //console && console.log(data);
+
+  // move this
   if (obj.users) {
     $("#status .users").html(obj.users);
+  }
+
+  var h = handler[obj.cmd];
+  if (h) {
+    h(obj);
   } else {
-    $("#items").append('<div>'+obj.cmd+': '+obj.client+' '+obj.body+'</div>');
-    scrollDown();
+    console && (console.log("missing handler:"), console.log(obj));
   }
 });
 
@@ -32,3 +38,13 @@ $("form.chat").submit(function(e) {
   inp.val('');
   return false;
 });
+// message handlers
+handler = {};
+handler.privmsg = function(obj) {
+  $("#items").append('<div>'+obj.client+': '+obj.body+'</div>');
+  scrollDown();
+};
+  //  else {
+  //   $("#items").append('<div>'+obj.cmd+': '+obj.client+' '+obj.body+'</div>');
+  //   scrollDown();
+  // }
