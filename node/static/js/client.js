@@ -8,29 +8,21 @@ socket.on('disconnect', function(){
   $("#status .conn").html("disconnected");
 });
 socket.on('message', function(data){
-  console && console.log(data);
+  util.log(data);
   var obj = JSON.parse(data);
-
-  // move this
-  if (obj.users) {
-    $("#status .users").html(obj.users);
-  }
+  $("#status .users").html(obj.connections || -1);
 
   var h = handler[obj.cmd];
   if (h) {
     h(obj);
   } else {
-    console && (console.log("missing handler:"), console.log(obj));
+    util.log("missing handler:"); util.log(obj);
   }
 });
 
-scrollDown = function() {
-  window.scrollBy(0, 100000000000000000);
-};
-
 $("form.chat input").focus().select();
 
-$(window).bind('resize', function() { scrollDown();});
+$(window).bind('resize', function() { util.scrollDown();});
 
 $("form.chat").submit(function(e) { 
   var inp = $(this).find("input");
@@ -42,9 +34,5 @@ $("form.chat").submit(function(e) {
 handler = {};
 handler.privmsg = function(obj) {
   $("#items").append('<div>'+obj.client+': '+obj.body+'</div>');
-  scrollDown();
+  util.scrollDown();
 };
-  //  else {
-  //   $("#items").append('<div>'+obj.cmd+': '+obj.client+' '+obj.body+'</div>');
-  //   scrollDown();
-  // }

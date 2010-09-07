@@ -4,6 +4,9 @@ var io = require('./socket.io');
 var h = require('./handlers.js');
 var game = require('./game.js');
 
+GLOBAL={};
+GLOBAL.connections = 0;
+
 routes = {
   '': h.index
 };
@@ -36,8 +39,8 @@ var socket = io.listen(server,
 
 console.log(socket.options.transports);
 socket.on('connection', function(client) {
+  GLOBAL.connections += 1;
   game.room.lobby.players.push(client);
-  console.log(game.room.lobby.players.length);
 
   client.on('message', function(data) {
     console.log('message: ' + data);
@@ -45,6 +48,7 @@ socket.on('connection', function(client) {
   });
 
   client.on('disconnect', function() {
+    GLOBAL.connections -= 1;
     b_part(socket, client);
   });
 });
@@ -64,6 +68,6 @@ b_msg = function(socket, client, message) {
 }
 // returns a jsonified obj with some extra properties added
 function msg(obj) {
-  obj.users = game.room.lobby.players.length;
+  obj.connections = GLOBAL.connections;
   return JSON.stringify(obj);
 }
