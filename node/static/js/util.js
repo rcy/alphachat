@@ -1,3 +1,11 @@
-util = {};
-util.log = function(obj) { console && JSON && console.log(JSON.stringify(obj)); };
-util.scrollDown = function() { window.scrollBy(0, 100000000000000000); };
+util = {
+  log: function(obj) { 
+    typeof(console) != 'undefined' 
+      && typeof(JSON) != 'undefined'
+      && console.log(JSON.stringify(obj)); 
+  },
+
+  scrollDown: function() { 
+    window.scrollBy(0, 100000000000000000); 
+  }
+};
