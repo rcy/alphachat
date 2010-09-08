@@ -11,12 +11,13 @@ function msg(obj) {
   return obj;
 }
 
+// server message handlers
 exports.messageHandler = {
   privmsg: function(c, o) {
     c.broadcast(msg(o));
     c.send(msg(o));
   },
   announce: function(c, o) {
-    c.send(msg({cmd:'motd', body:'welcome to alphachat'}));
+    c.send(msg({cmd:'motd', body:'Welcome to Alphachat'}));
   }
 };
