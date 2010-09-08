@@ -3,9 +3,9 @@ var io = require('./socket.io');
 
 var h = require('./handlers.js');
 var game = require('./game.js');
+var GLOBAL = require('./globals.js');
 
-GLOBAL={};
-GLOBAL.connections = 0;
+game.setglobs(GLOBAL);
 
 routes = {
   '': h.index
@@ -37,37 +37,23 @@ var socket = io.listen(server,
                        {transports: ['websocket', 'flashsocket', 'htmlfile', 
                                      'xhr-multipart', 'xhr-polling', 'jsonp-polling']});
 
+function warn(obj) { console.log('WARNING:0: ', obj); }
+
 console.log(socket.options.transports);
 socket.on('connection', function(client) {
   GLOBAL.connections += 1;
-  game.room.lobby.players.push(client);
 
-  client.on('message', function(data) {
-    console.log('message: ' + data);
-    b_msg(socket, client, data);
+  client.on('message', function(obj) {
+    console.log('message: [' + client.sessionId + '] ' + obj);
+    if (obj && game && game.messageHandler && game.messageHandler[obj.cmd]) {
+      game.messageHandler[obj.cmd](client, obj);
+    } else {
+      warn("no handler for: " + obj);
+    }
   });
 
   client.on('disconnect', function() {
     GLOBAL.connections -= 1;
-    b_part(socket, client);
+    warn("clean up data structures containing this client");
   });
 });
-
-// message send helpers b_==broadcast, s_==send
-broadcast = function(socket, obj) {
-  socket.broadcast(msg(obj));
-}
-b_join = function(socket, client) {
-  broadcast(socket, {client:client.sessionId, cmd:'join'});
-}
-b_part = function(socket, client) {
-  broadcast(socket, {client: client.sessionId, cmd:'part'});
-}
-b_msg = function(socket, client, message) {
-  broadcast(socket, {client: client.sessionId, cmd:'privmsg', body:message});
-}
-// returns a jsonified obj with some extra properties added
-function msg(obj) {
-  obj.connections = GLOBAL.connections;
-  return JSON.stringify(obj);
-}

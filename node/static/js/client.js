@@ -3,13 +3,13 @@ socket = new io.Socket(null, {port:8124, transports:['websocket', 'htmlfile', 'x
 socket.connect();
 socket.on('connect', function(){
   $("#status .conn").html("connected");
+  send(socket, 'announce', 'NAME?');
 });
 socket.on('disconnect', function(){
   $("#status .conn").html("disconnected");
 });
-socket.on('message', function(data){
-  util.log(data);
-  var obj = JSON.parse(data);
+socket.on('message', function(obj){
+  util.log(obj);
   $("#status .users").html(obj.connections || -1);
 
   var h = handler[obj.cmd];
@@ -26,13 +26,22 @@ $(window).bind('resize', function() { util.scrollDown();});
 
 $("form.chat").submit(function(e) { 
   var inp = $(this).find("input");
-  socket.send(inp.val());
+  send(socket, 'privmsg', inp.val());
   inp.val('');
   return false;
 });
+
+send = function(socket, cmd, body) {
+  socket.send({cmd:cmd, body:body});
+};
+
 // message handlers
 handler = {};
 handler.privmsg = function(obj) {
   $("#items").append('<div>'+obj.client+': '+obj.body+'</div>');
   util.scrollDown();
+};
+handler.motd = function(obj) {
+  $("#items").append('<h1>'+obj.body+'</h1>');
+  send(socket, 'ready');
 };

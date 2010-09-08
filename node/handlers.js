@@ -4,6 +4,9 @@ var h = exports;
 
 encoding = function(filename) {
   var types = {'.jpg': 'binary',
+               '.html': 'utf8',
+               '.css': 'utf8',
+               '.js': 'utf8',
                '.swf': 'binary',
                '.ico': 'binary'};
   var match = filename.match(/(\.[^.]+)$/);
@@ -12,7 +15,7 @@ encoding = function(filename) {
     if (encoding) {
       return encoding;
     } else {
-      console.log('WARNING: no encoding match for: ' + filename);
+      console.log('WARNING:0: no encoding match for: ' + filename);
       return 'utf8';
     }
   }
@@ -31,7 +34,7 @@ contentType = function(filename) {
     if (type) {
       return type;
     } else {
-      console.log('WARNING: no contenttype match for: ' + filename);
+      console.log('WARNING:0: no contenttype match for: ' + filename);
       return 'text/plain';
     }
   }
