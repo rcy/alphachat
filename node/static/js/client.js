@@ -18,6 +18,7 @@ socket.on('message', function(obj){
   } else {
     util.log("missing handler:"); util.log(obj);
   }
+  util.scrollDown();
 });
 
 $("form.chat input").focus().select();

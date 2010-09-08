@@ -6,6 +6,9 @@ handler = {
   },
   motd: function(obj) {
     $("#items").append('<h1>'+obj.body+'</h1>');
-    send(socket, 'ready');
-  }
+    send(socket, 'play');
+  },
+  play: function(obj) {
+    $("#items").append('<h2>'+obj.body+'</h2>');
+  }  
 };
