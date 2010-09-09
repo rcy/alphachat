@@ -1,9 +1,9 @@
 -*- outline -*-
 * add voting game logic
 * disable the form input until connected to a game, or in open chat
-* print stuff in the right colors
-* add vote messages
 * write templates for the rest of the server messages
 * load motd from disk on server
 * add repl to server
 * push messages to database
+* add surf away mollyguard
+* timeout reconnect attempts
