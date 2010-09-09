@@ -4,6 +4,12 @@
 
 exports.setglobs = function(g) { GLOBAL = g; };
 
+var NUMPLAYERS = 1;
+var GAMETIME = 60000; // milliseconds
+var VOTETIME = 6000;
+
+lobby = [];
+
 // returns an obj with some extra properties added
 function msg(obj) {
   obj.connections = GLOBAL.connections;
@@ -14,6 +20,13 @@ function send(c, o) {
   var o = msg(o);
   console.log('send: --> [' + c.sessionId + '] ' + JSON.stringify(o));
   c.send(o);
+}
+// FIXME: this is a hack, just make send take an array 
+function asend(cs, o) {
+  var i;
+  for (i in cs) {
+    send(cs[i], o);
+  }
 }
 function broadcast(c,o) {
   var o = msg(o);
@@ -28,19 +41,48 @@ exports.messageHandler = {
       console.log(lobby);
       return;
     }
-
+    o.sender = c.sessionId;
     broadcast(c,o);
     send(c,o);
   },
   announce: function(c, o) {
-    send(c,{cmd:'motd', body:'Welcome to Alphachat'});
-    lobby.push(c);
+    send(c,{cmd:'motd', head:'Welcome to Alphachat 0.1', body:'Chat with other 2 other players for a few minutes.  Afterwards, choose who you liked better.'});
   },
   play: function(c, o) {
-    // see if there are 2 other players waiting
-    send(c,{cmd:'play', body:'please wait for other players...'});
-    c.timer = setInterval(function () {
-      c.send(msg({cmd:'play', body:'please keep waiting for other players...'}));
-    }, 10000);
+    send(c,{cmd:'waiting', body:'waiting for other players...'});
+
+    lobby.push(c);
+
+    if (lobby.length >= NUMPLAYERS) {
+      // send first players off into a game
+      setupGame(lobby.splice(0,NUMPLAYERS));
+    }
   }
 };
+
+// see if theres enough for a game
+function setupGame(players) {
+  // make a room
+
+  //var room = new Room(players);
+
+  var colors = ['red','green','blue'];
+
+  // send each announcement that the game has started
+  for (var i in players) {
+    send(players[i],
+         { cmd:'gameon', 
+           room:'foo', 
+           clear:true, 
+           color:colors[i],
+           time:GAMETIME });
+  }
+
+  // set up timers for game and voting stages
+  setTimeout(function () {
+    asend(players, {cmd:'vote', time:VOTETIME});
+    setTimeout(function () {
+      asend(players, {cmd:'results'});
+    }, VOTETIME);
+  }, GAMETIME);
+}

@@ -1,14 +1,22 @@
+template = {
+  motd: '<div class="motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
+  privmsg: '<div>{{sender}}: {{body}}</div>',
+  waiting: '<div>{{body}}</div>',
+  gameon: '<div class="gameon">Your color is {{color}}.  The game will last {{seconds}} seconds.</div>'
+};  
+
 // client message handlers
 handler = {
   privmsg: function(obj) {
-    $("#items").append('<div>'+obj.client+': '+obj.body+'</div>');
     util.scrollDown();
   },
   motd: function(obj) {
-    $("#items").append('<h1>'+obj.body+'</h1>');
-    send(socket, 'play');
+    obj.button='<button onclick="play()">PLAY ALPHACHAT</button>';
   },
-  play: function(obj) {
-    $("#items").append('<h2>'+obj.body+'</h2>');
+  waiting: function(obj) {
+  },
+  gameon: function(obj) {
+    $("#items").html("");
+    obj.seconds = obj.time / 1000;
   }  
 };
