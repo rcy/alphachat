@@ -39,12 +39,12 @@ var socket = io.listen(server,
 
 function warn(obj) { console.log('WARNING:0: ', obj); }
 
-console.log(socket.options.transports);
+//console.log(socket.options.transports);
 socket.on('connection', function(client) {
   GLOBAL.connections += 1;
 
   client.on('message', function(obj) {
-    console.log('message: [' + client.sessionId + '] ' + obj);
+    console.log('recv: <-- [' + client.sessionId + '] ' + JSON.stringify(obj));
     if (obj && game && game.messageHandler && game.messageHandler[obj.cmd]) {
       game.messageHandler[obj.cmd](client, obj);
     } else {

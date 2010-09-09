@@ -10,21 +10,35 @@ function msg(obj) {
   return obj;
 }
 
+function send(c, o) {
+  var o = msg(o);
+  console.log('send: --> [' + c.sessionId + '] ' + JSON.stringify(o));
+  c.send(o);
+}
+function broadcast(c,o) {
+  var o = msg(o);
+  console.log('bcast: --> [' + c.sessionId + '] ' + JSON.stringify(o));
+  c.broadcast(o);
+}
+
 // server message handlers
 exports.messageHandler = {
   privmsg: function(c, o) {
-    c.broadcast(msg(o));
-    c.send(msg(o));
-    console.log(c.timer);
-    clearTimeout(c.timer);
-    console.log(c.timer);
+    if (o.body === 'debug') {
+      console.log(lobby);
+      return;
+    }
+
+    broadcast(c,o);
+    send(c,o);
   },
   announce: function(c, o) {
-    c.send(msg({cmd:'motd', body:'Welcome to Alphachat'}));
+    send(c,{cmd:'motd', body:'Welcome to Alphachat'});
+    lobby.push(c);
   },
   play: function(c, o) {
     // see if there are 2 other players waiting
-    c.send(msg({cmd:'play', body:'please wait for other players...'}));
+    send(c,{cmd:'play', body:'please wait for other players...'});
     c.timer = setInterval(function () {
       c.send(msg({cmd:'play', body:'please keep waiting for other players...'}));
     }, 10000);
