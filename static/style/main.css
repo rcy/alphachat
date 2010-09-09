@@ -41,3 +41,13 @@ form.chat input {
 .users {
     float: right;
 }
+
+.privmsg-red {
+    color: red;
+}
+.privmsg-green {
+    color: green;
+}
+.privmsg-blue {
+    color: blue;
+}

@@ -4,7 +4,7 @@
 
 exports.setglobs = function(g) { GLOBAL = g; };
 
-var NUMPLAYERS = 1;
+var NUMPLAYERS = 2;
 var GAMETIME = 60000; // milliseconds
 var VOTETIME = 6000;
 
@@ -42,11 +42,13 @@ exports.messageHandler = {
       return;
     }
     o.sender = c.sessionId;
+    o.color = c.game.color;
     broadcast(c,o);
     send(c,o);
   },
   announce: function(c, o) {
     send(c,{cmd:'motd', head:'Welcome to Alphachat 0.1', body:'Chat with other 2 other players for a few minutes.  Afterwards, choose who you liked better.'});
+    c.game = {};
   },
   play: function(c, o) {
     send(c,{cmd:'waiting', body:'waiting for other players...'});
@@ -70,19 +72,30 @@ function setupGame(players) {
 
   // send each announcement that the game has started
   for (var i in players) {
+    color = colors[i];
+    players[i].game.color = color;
     send(players[i],
          { cmd:'gameon', 
            room:'foo', 
            clear:true, 
-           color:colors[i],
+           color:color,
            time:GAMETIME });
   }
 
   // set up timers for game and voting stages
-  setTimeout(function () {
-    asend(players, {cmd:'vote', time:VOTETIME});
-    setTimeout(function () {
-      asend(players, {cmd:'results'});
-    }, VOTETIME);
-  }, GAMETIME);
+  setTimeout(function() {
+    asend(players, {cmd:'ready'});
+    setTimeout(function() {
+      asend(players, {cmd:'set'});
+      setTimeout(function() {
+        asend(players, {cmd:'go'});
+        setTimeout(function () {
+          asend(players, {cmd:'vote', time:VOTETIME});
+          setTimeout(function () {
+            asend(players, {cmd:'results'});
+          }, VOTETIME);
+        }, GAMETIME);
+      }, 3000); // go
+    }, 3000); // set
+  }, 1000); // ready
 }

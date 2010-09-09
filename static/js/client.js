@@ -37,7 +37,7 @@ socket.on('message', function(obj){
 function display(sel, obj) {
   if (sel && obj && template[obj.cmd]) {
     var html = Mustache.to_html(template[obj.cmd], obj);
-    util.log(html);
+    //util.log(html);
     sel && sel.append(html);
   } else {
     util.log(["no template for", obj]);
