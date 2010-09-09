@@ -5,7 +5,7 @@
 exports.setglobs = function(g) { GLOBAL = g; };
 
 var NUMPLAYERS = 2;
-var GAMETIME = 6000; // milliseconds
+var GAMETIME = 60000; // milliseconds
 var VOTETIME = 10000;
 
 lobby = [];

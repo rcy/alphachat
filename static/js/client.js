@@ -1,5 +1,5 @@
 io.setPath('/js/');
-socket = new io.Socket(null, {port:8124, transports:['websocket', 'htmlfile', 'xhr-multipart', 'flashsocket', 'xhr-polling', 'jsonp-polling']});
+socket = new io.Socket();
 
 function reconnect() {
   util.log("connecting...");

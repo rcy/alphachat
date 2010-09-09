@@ -38,8 +38,11 @@ form.chat input {
     width: 100%;
 }
 
+.conn {
+    color: gray;
+}
 .users {
-    float: right;
+    color: #444;
 }
 
 .privmsg-red {

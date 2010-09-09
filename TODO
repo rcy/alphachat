@@ -7,3 +7,4 @@
 * push messages to database
 * add surf away mollyguard
 * timeout reconnect attempts
+* show transport on client
