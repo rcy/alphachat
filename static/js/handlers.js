@@ -1,8 +1,8 @@
 template = {
   motd: '<div class="motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
-  privmsg: '<div class="privmsg-{{color}}">{{color}}: {{body}}</div>',
+  privmsg: '<div class="privmsg {{color}}">{{color}}: {{body}}</div>',
   waiting: '<div class="waiting">{{body}}</div>',
-  gameon: '<div class="gameon">Your color is {{color}}.  The game will last {{seconds}} seconds.</div>',
+  gameon: '<div class="gameon">Your color is <span class="{{color}}">{{color}}</span>.  You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}} The game will last {{seconds}} seconds.</div>',
   ready: '<div class="ready">Ready?</div>',
   set: '<div class="set">Set.</div>',
   go: '<div class="go">GO!</div>',
