@@ -50,7 +50,11 @@ $(window).bind('resize', function() { util.scrollDown();});
 
 $("form.chat").submit(function(e) { 
   var inp = $(this).find("input");
-  send(socket, 'privmsg', inp.val());
+  if (inp.val().charAt(0) === '/') {
+    send(socket, 'command', inp.val().substring(1).split(/\s+/));
+  } else {
+    send(socket, 'privmsg', inp.val());
+  }
   inp.val('');
   return false;
 });

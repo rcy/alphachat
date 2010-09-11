@@ -4,9 +4,10 @@
 
 exports.setglobs = function(g) { GLOBAL = g; };
 
-var NUMPLAYERS = 3;
-var GAMETIME = 60000; // milliseconds
-var VOTETIME = 10000;
+GAME = {};
+GAME.numplayers = 3;
+GAME.gametime = 60000; // milliseconds
+GAME.votetime = 10000;
 
 lobby = [];
 
@@ -36,11 +37,18 @@ function broadcast(c,o) {
 
 // server message handlers
 exports.messageHandler = {
-  privmsg: function(c, o) {
-    if (o.body === 'debug') {
-      console.log(lobby);
-      return;
+  command: function(c, o) {
+    var args = o.body;
+    if (args[0] === 'set') {
+      if (args[1]) {
+        // FIXME: gaping hole, allow setting game vars from any chat client
+        GAME[args[1]] = args[2];
+      } else {
+        send(c, GAME);
+      }
     }
+  },
+  privmsg: function(c, o) {
     o.sender = c.sessionId;
     o.color = c.game.color;
     broadcast(c,o);
@@ -57,9 +65,9 @@ exports.messageHandler = {
 
     lobby.push(c);
 
-    if (lobby.length >= NUMPLAYERS) {
+    if (lobby.length >= GAME.numplayers) {
       // send first players off into a game
-      setupGame(lobby.splice(0,NUMPLAYERS));
+      setupGame(lobby.splice(0, GAME.numplayers));
     }
   },
   vote: function(c, o) {
@@ -88,7 +96,7 @@ function setupGame(players) {
                        roomName:room.name, 
                        color:players[i].game.color, 
                        opponents:players[i].game.opponents,
-                       time:GAMETIME 
+                       time:GAME.gametime 
                      });
   }
 
@@ -100,11 +108,11 @@ function setupGame(players) {
       setTimeout(function() {
         asend(players, {cmd:'go'});
         setTimeout(function () {
-          asend(players, {cmd:'vote', time:VOTETIME});
+          asend(players, {cmd:'vote', time:GAME.votetime});
           setTimeout(function () {
             asend(players, {cmd:'results'});
-          }, VOTETIME);
-        }, GAMETIME);
+          }, GAME.votetime);
+        }, GAME.gametime);
       }, 3000); // go
     }, 3000); // set
   }, 1000); // ready
