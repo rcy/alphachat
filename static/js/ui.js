@@ -1,23 +1,49 @@
-function display(sel, obj) {
-  if (sel && obj && template[obj.cmd]) {
-    var html = Mustache.to_html(template[obj.cmd], obj);
-    //util.log(html);
-    sel && sel.append(html);
-  } else {
-    util.log(["no template for", obj]);
-  }
-}
-$("form.chat input").focus();
+var ui = {
+  log: function(l) {console && console.log(l)},
 
-$(window).bind('resize', function() { util.scrollDown();});
+  template: {
+    motd: '<div class="motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
+    privmsg: '<div class="privmsg {{color}}">{{color}}: {{body}}</div>',
+    waiting: '<div class="waiting">{{body}}</div>',
+    init: '<div class="gameon">Your color is <span class="{{color}}">{{color}}</span>.  You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}} The game will last {{seconds}} seconds.</div>',
+    wait: '<div class="wait">{{reason}}</div>',
+    go: '<div class="go">GO!</div>',
+    vote: '<div class="vote">GAME OVER<br />Choose who you liked best {{{opp1button}}} or {{{opp2button}}}.<br />You have {{seconds}} seconds to vote.</div>',
+    results: '<div class="results">RESULTS: {{red}}: {{red_votes}} {{green}}:{{green_votes}} {{blue}}:{{blue_votes}}</div>{{{replaybutton}}}',
+    canChat: '<hr />'
+  },
 
-$("form.chat").submit(function(e) { 
-  var inp = $(this).find("input");
-  if (inp.val().charAt(0) === '/') {
-    send(socket, 'command', inp.val().substring(1).split(/\s+/));
-  } else {
-    send(socket, 'privmsg', inp.val());
+  render: function(player, obj) {
+    var sel = $("#items");
+    if (sel && obj && this.template[obj.cmd]) {
+      var html = Mustache.to_html(this.template[obj.cmd], obj);
+      //this.log(html);
+      sel && sel.append(html);
+    } else {
+      this.log(["WARN: no template for", obj]);
+    }
+    this.scroll();    
+  },
+
+  canChat: function(enabled) {
+    var i = $("form.chat input");
+    if (enabled) {
+      i.removeAttr('disabled');
+      //i.show();
+      i.focus();
+    } else {
+      //i.hide();
+      i.attr('disabled', true);
+    }
+  },
+
+  scroll: function() { 
+    window.scrollBy(0, 1000000);
+  },
+
+  clear: function() {
+    $("#items").html('');
   }
-  inp.val('');
-  return false;
-});
+};
+
+$(window).bind('resize', function() { ui.scroll();});

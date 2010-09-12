@@ -1,12 +1,12 @@
-var chat = new Game({name:'ryan'});
+var chat = new Game();
 
 chat.connect();
 
 chat.on('connect', function(player) {
-  player.announce();
+  player.announce('bot');
 });
 chat.on('disconnect', function(player) {
-  //setInterval(chat.connect, 1000);
+  player.canChat = false;
 });
 chat.on('motd', function(player, obj) {
   // obj.html - welcome message
@@ -31,6 +31,8 @@ chat.on('vote', function(player, obj) {
 chat.on('results', function(player, obj) {
   // obj.players[]
   // obj.votes[]
+  console.log('waiting 10 seconds to reannounce');
+  setTimeout(function() {player.announce('bot')}, 10000);
 });
 chat.on('privmsg', function(player, obj) {
   // obj.room
@@ -44,3 +46,8 @@ chat.on('wait', function(player, obj) {
 chat.on('canChat', function(player, obj) {
   // obj.enabled
 });
+
+setInterval(function() {
+  if (chat.player.canChat)
+    chat.player.privmsg("hello");
+}, 10000);

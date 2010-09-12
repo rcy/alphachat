@@ -2,25 +2,33 @@
   <head>
     <title>Alphachat</title>
     <link rel="stylesheet" href="style/main.css" type="text/css">
+    <script src="js/3/mustache.js"></script>
+    <script src="js/3/json.js"></script> <!-- for ie/safari -->
+    <script src="js/3/jquery-1.4.2.min.js"></script>
+    <script src="js/3/socket.io.js"></script>
   </head>
   <body>
-    <div id="items"></div>
+    <div id="items">
+      <h1 align="center">alphachat</h1>
+      <div id="signin" align="center">
+        <form class="signin">
+          <label for="input">nick: </label>
+          <input type="text" value="">
+        </form>
+      </div>
+    </div>
     <div id="toolbar">
       <div id="status">
         <span class="conn">loading...</span>
-        <span class="users">undefined</span>
-        <span class="vote">vote</span>
+        <span class="users"></span>
+        <span class="vote"></span>
       </div>
       <form class="chat">
-        <input type="text" value="" name="input">
+        <input type="text" value="">
       </form>
     </div>
   </body>
-  <script src="js/mustache.js"></script>
-  <script src="js/json.js"></script> <!-- for ie/safari -->
-  <script src="js/jquery-1.4.2.min.js"></script>
-  <script src="js/socket.io.js"></script>
-  <script src="js/util.js"></script>
-  <script src="js/handlers.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/client.js"></script>
 </html>

@@ -5,8 +5,8 @@
 exports.setglobs = function(g) { GLOBAL = g; };
 
 GAME = {};
-GAME.numplayers = 1;
-GAME.gametime = 2000; // milliseconds
+GAME.numplayers = 3;
+GAME.gametime = 10000; // milliseconds
 GAME.votetime = 1000;
 
 lobby = [];
@@ -49,24 +49,29 @@ exports.messageHandler = {
     }
   },
   privmsg: function(c, o) {
-    o.sender = c.sessionId;
+    //o.sender = c.sessionId;
     o.color = c.game.color;
-    broadcast(c,o);
-    send(c,o);
+    o.name = c.game.name;
+    asend(c.game.room.players,o);
+    //send(c,o);
   },
   announce: function(c, o) {
-    send(c,{cmd:'motd', 
-            head:'Welcome to Alphachat 0.1', 
-            body:'Chat with other players for a few minutes.  Afterwards, choose who you liked better.'});
+    if (!o.name) {
+      send(c, {cmd:'error', msg:'name missing'});
+      return;
+    }
+
     c.game = {};
+    c.game.name = o.name;
+    send(c, {cmd:'canChat', enabled:false});
+    send(c, {cmd:'motd', 
+             head:'Welcome to Alphachat 0.1', 
+             body:'Chat with other players for a few minutes.  Afterwards, choose who you liked better.'});
   },
   play: function(c, o) {
     send(c,{cmd:'wait', reason:'need_players'});
-
     lobby.push(c);
-
     if (lobby.length >= GAME.numplayers) {
-      // send first players off into a game
       setupGame(lobby.splice(0, GAME.numplayers));
     }
   },
@@ -89,9 +94,7 @@ function setupGame(players) {
     var opps = colors.slice(0, players.length);
     players[i].game.color = opps.splice(i, 1)[0];
     players[i].game.opponents = opps;
-
     players[i].game.room = room;
-
     send(players[i], { cmd:'init',
                        roomName:room.name, 
                        color:players[i].game.color, 
