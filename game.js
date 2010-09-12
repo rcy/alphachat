@@ -5,9 +5,9 @@
 exports.setglobs = function(g) { GLOBAL = g; };
 
 GAME = {};
-GAME.numplayers = 3;
-GAME.gametime = 60000; // milliseconds
-GAME.votetime = 10000;
+GAME.numplayers = 1;
+GAME.gametime = 2000; // milliseconds
+GAME.votetime = 1000;
 
 lobby = [];
 
@@ -61,7 +61,7 @@ exports.messageHandler = {
     c.game = {};
   },
   play: function(c, o) {
-    send(c,{cmd:'waiting', body:'waiting for other players...'});
+    send(c,{cmd:'wait', reason:'need_players'});
 
     lobby.push(c);
 
@@ -92,7 +92,7 @@ function setupGame(players) {
 
     players[i].game.room = room;
 
-    send(players[i], { cmd:'gameon',
+    send(players[i], { cmd:'init',
                        roomName:room.name, 
                        color:players[i].game.color, 
                        opponents:players[i].game.opponents,
@@ -102,18 +102,21 @@ function setupGame(players) {
 
   // set up timers for game and voting stages
   setTimeout(function() {
-    asend(players, {cmd:'ready'});
+    asend(players, {cmd:'wait', reason:'ready'});
     setTimeout(function() {
-      asend(players, {cmd:'set'});
+      asend(players, {cmd:'wait', reason:'set'});
       setTimeout(function() {
         asend(players, {cmd:'go'});
+        asend(players, {cmd:'canChat', enabled:true});
         setTimeout(function () {
+          asend(players, {cmd:'canChat', enabled:false});
           asend(players, {cmd:'vote', time:GAME.votetime});
           setTimeout(function () {
             asend(players, {cmd:'results'});
+            asend(players, {cmd:'canChat', enabled:true});
           }, GAME.votetime);
         }, GAME.gametime);
-      }, 3000); // go
-    }, 3000); // set
-  }, 1000); // ready
+      }, 500); // go
+    }, 500); // set
+  }, 500); // ready
 }
