@@ -3,7 +3,7 @@ var ui = {
 
   template: {
     motd: '<div class="motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
-    privmsg: '<div class="privmsg {{color}}">{{color}}: {{body}}</div>',
+    privmsg: '<div class="privmsg {{color}}">{{nick}}: {{body}}</div>',
     waiting: '<div class="waiting">{{body}}</div>',
     init: '<div class="gameon">Your color is <span class="{{color}}">{{color}}</span>.  You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}} The game will last {{seconds}} seconds.</div>',
     wait: '<div class="wait">{{reason}}</div>',
@@ -35,6 +35,10 @@ var ui = {
       //i.hide();
       i.attr('disabled', true);
     }
+  },
+
+  playAgain: function() {
+    $("#status .action").html('play again');
   },
 
   scroll: function() { 

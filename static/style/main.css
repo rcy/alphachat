@@ -39,13 +39,15 @@ form.chat input {
 }
 
 #status .conn {
+    float: right;
     color: gray;
 }
-#status .users {
-    color: #444;
+#status .action {
+    color: #ddd;
 }
-#status .vote {
-    color: #888;
+#status .action:hover {
+    color: #fff;
+    cursor: pointer;
 }
 
 .red {

@@ -49,11 +49,11 @@ exports.messageHandler = {
     }
   },
   privmsg: function(c, o) {
-    //o.sender = c.sessionId;
     o.color = c.game.color;
-    o.name = c.game.name;
+    if (c.game.room.state == 'postgame') {
+      o.name = c.game.name;
+    }
     asend(c.game.room.players,o);
-    //send(c,o);
   },
   announce: function(c, o) {
     if (!o.name) {
@@ -117,6 +117,7 @@ function setupGame(players) {
           setTimeout(function () {
             asend(players, {cmd:'results'});
             asend(players, {cmd:'canChat', enabled:true});
+            room.state = 'postgame';
           }, GAME.votetime);
         }, GAME.gametime);
       }, 500); // go

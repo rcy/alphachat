@@ -19,6 +19,12 @@ chat.on('motd', function(player, obj) {
   doPlay();
 });
 chat.on('privmsg', function(player, obj) {
+  // the names are revealed in the post game chat, show them if available
+  if (obj.name) {
+    obj.nick = obj.name;
+  } else {
+    obj.nick = obj.color;
+  }
   render(player, obj);
 });
 chat.on('canChat', function(player, obj) {
@@ -36,7 +42,10 @@ chat.on('vote', function(player, obj) {
   obj.seconds = obj.time / 1000;
   render(player, obj);
 });
-chat.on('results', render);
+chat.on('results', function(player, obj) {
+  render(player, obj);
+  ui.playAgain();
+});
 
 $("form.signin input").focus();
 $("form.signin").submit(function(e) {
