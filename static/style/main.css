@@ -24,14 +24,14 @@ p {
 }
 .login {
     border-radius: 15px;
-    margin-top: 5em;
+    margin-top: 3em;
     margin-left: auto;
     margin-right: auto;
-    width: 300px;
+    width: 25%;
     background: gray;
     color: black;
     text-align: center;
-    padding: 3em 1em;
+    padding: 1em 1em;
 }
 form input {
     background: #4cc;
@@ -52,6 +52,11 @@ form input {
   position: fixed;
   bottom: 0;
   width: 80%;
+}
+#topbar {
+    position: fixed;
+    top: 0;
+    width:80%;
 }
 
 form {
