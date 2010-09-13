@@ -4,8 +4,6 @@ add vote messages, and server handlers
 * room creation
 send room name to client
 accept messages to that room only from clients during game
-* disable the form input until connected to a game, or in open chat
-* write templates for the rest of the server messages
 * load motd from disk on server
 * add repl to server
 * push messages to database
@@ -15,6 +13,5 @@ accept messages to that room only from clients during game
 * fix ie issues
 * test on ff2
 * test all transports
-* make it clearer what color you are
 * add configuration file for server
-* all reading different server config files, for dev, test and prod
+reading different server config files, for dev, test and prod

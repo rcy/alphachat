@@ -2,7 +2,6 @@
 
 body {
   font-family:monospace;
-  padding:0;
   margin:0;
 }
 
@@ -16,25 +15,20 @@ body {
   width: 100%;
 }
 
-p {
-  padding:0;
-  margin:0;
-}
-
 form {
-    padding: 0;
     margin: 0;
 }
 form.chat input {
-    padding: 0;
     margin: 0;
-    background-color:white;
+    border: 0;
+    background-color:#ddd;
     width: 100%;
 }
 
 #status {
-  background:#ddd;
-  color:white;
+    padding: 2px;
+    background:#eee;
+    color:black;
 }
 
 #status .conn {
@@ -46,10 +40,10 @@ form.chat input {
     background: #fff;
 }
 #status .vote .pick {
-    background: yellow;
+    border: solid 1px black;
 }
 #status .action {
-    color: #ddd;
+    color: #333;
 }
 #status .action:hover {
     color: #fff;
