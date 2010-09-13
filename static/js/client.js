@@ -55,9 +55,9 @@ $("form.signin input").focus();
 $("form.signin").submit(function(e) {
   try {
     var inp = $(this).find('input');
-    chat.player.announce(inp.val());
-    $(this).hide();
-    //inp.val('');
+    $('.login').fadeOut(1000);
+    $('.wrapper').fadeIn(1000);
+    setTimeout(function(){chat.player.announce(inp.val())}, 1000);
   } catch (e) {
     console && console.error(e);
   }

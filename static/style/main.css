@@ -24,7 +24,7 @@ p {
 }
 .login {
     border-radius: 15px;
-    margin-top: 3em;
+    margin-top: 2em;
     margin-left: auto;
     margin-right: auto;
     width: 25%;
@@ -53,12 +53,6 @@ form input {
   bottom: 0;
   width: 80%;
 }
-#topbar {
-    position: fixed;
-    top: 0;
-    width:80%;
-}
-
 form {
     margin: 0;
 }
