@@ -45,6 +45,9 @@ form input {
     padding-bottom: 4em;
 }
 
+.dummy {
+    background: black;
+}
 #toolbar {
   position: fixed;
   bottom: 0;
