@@ -1,5 +1,9 @@
 /* add styles here */
 
+html {
+    height: 101%;               /*always show scrollbar*/
+}
+
 body {
   font-family:monospace;
   margin:0;
@@ -34,11 +38,25 @@ p {
     padding: 1em 1em;
 }
 form input {
-    background: #4cc;
     font-family:monospace;
 }
+form input .red {
+    background: #f99;
+    color: red;
+}
+form input .green {
+    background: #9f9;
+    color: green;
+}
+form input .blue{
+    background: #99f;
+    color: blue;
+}
+
 .login form input {
     width: 8em;
+    background: #333;
+    color: #fff;
 }
 
 #items {
