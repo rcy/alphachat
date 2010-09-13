@@ -8,26 +8,28 @@
     <script src="js/3/socket.io.js"></script>
   </head>
   <body>
-    <div id="items">
-      <div class="login">
-        <h1>alphachat</h1>
-        <div id="signin">
-          <form class="signin">
-            <label for="input">nick: </label>
-            <input type="text" value="">
-          </form>
+    <div class="wrapper">
+      <div id="items">
+        <div class="login">
+          <h1>alphachat</h1>
+          <div id="signin">
+            <form class="signin">
+              <label for="input">nick: </label>
+              <input type="text" value="">
+            </form>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="toolbar">
-      <div id="status">
-        <span class="conn">loading...</span>
-        <span class="self"></span>
-        <span class="vote"></span>
-        <span class="action"></span>
-        &nbsp;
+      <div id="toolbar">
+        <div id="status">
+          <span class="conn">loading...</span>
+          <span class="self"></span>
+          <span class="vote"></span>
+          <span class="action"></span>
+          &nbsp;
+        </div>
+        <form class="chat"><input type="text" value=""></form>
       </div>
-      <form class="chat"><input type="text" value=""></form>
     </div>
   </body>
   <script src="js/game.js"></script>

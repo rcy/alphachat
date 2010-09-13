@@ -7,6 +7,13 @@ body {
   color: white;
 }
 
+.wrapper {
+    width: 80%;
+    height: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 p {
     margin:0;
     padding:0;
@@ -35,13 +42,13 @@ form input {
 }
 
 #items {
-    padding-bottom: 3em;
+    padding-bottom: 4em;
 }
 
 #toolbar {
   position: fixed;
-  bottom: 0;
-  width: 100%;
+  bottom: 1em;
+  width: 80%;
 }
 
 form {
@@ -85,6 +92,8 @@ form.chat input {
     color: yellow;
     cursor: pointer;
 }
+
+.server { text-align: center; }
 
 .red {
     color: red;

@@ -2,14 +2,14 @@ var ui = {
   log: function(l) {console && console.log(l)},
 
   template: {
-    motd: '<div class="motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
+    motd: '<div class="server motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
     privmsg: '<div class="privmsg {{color}}">{{nick}}: {{body}}</div>',
-    waiting: '<div class="waiting">{{body}}</div>',
-    init: '<p class="gameon">Your color is <span class="{{color}}">{{color}}</span></p><p>You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}}</p>The game will last {{seconds}} seconds.</p>',
-    wait: '{{reason}} ',
-    go: 'GO!',
-    vote: '<div class="vote"><p>GAME OVER</p><p>You have {{seconds}} seconds finalize your pick.</p></div>',
-    results: '<div class="results">RESULTS: {{red}}: {{red_votes}} {{green}}:{{green_votes}} {{blue}}:{{blue_votes}}</div>{{{replaybutton}}}',
+    waiting: '<div class="server waiting">{{body}}</div>',
+    init: '<div class="server"><p>Your color is <span class="{{color}}">{{color}}</span></p><p>You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}}</p>The game will last {{seconds}} seconds.</p><br /></div>',
+    wait: '<p class="server">{{reason}}</p>',
+    go: '<p class="server">GO!</p>',
+    vote: '<div class="server vote"><h2>GAME OVER</h2><p>You have {{seconds}} seconds finalize your pick.</p></div>',
+    results: '<div class="server results">RESULTS: {{red}}: {{red_votes}} {{green}}:{{green_votes}} {{blue}}:{{blue_votes}}</div>{{{replaybutton}}}',
     canChat: '<hr />',
     // these aren't actually message commands
     choices: '{{#choices}}<span class="{{.}}">{{.}}</span>{{/choices}}"'
