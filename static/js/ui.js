@@ -40,8 +40,15 @@ var ui = {
   },
 
   playAgain: function() {
-    $("#status .vote").html('');
-    $("#status .action").html('play again');
+    var v = $("#status .vote");
+    v.html(v.text());
+
+    $("#status .action")
+      .html('play again')
+      .click(function() { 
+        $(this).html('');
+        chat.player.announce(chat.player.name);
+      });
   },
 
   scroll: function() { 
@@ -54,7 +61,7 @@ var ui = {
 
   showChoices: function(pick, options) {
     var hs = $.map(options, function(o) {
-      return Mustache.to_html('<span class="option {{color}} {{pick}}">{{color}}</span>',
+      return Mustache.to_html('<span class="option {{color}} {{pick}}" onclick=chat.player.pick("{{color}}")>{{color}}</span>',
                               {pick: function() { return pick === o ? "pick" : ""; },
                                color: o});
     });

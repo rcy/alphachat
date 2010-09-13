@@ -29,11 +29,6 @@ function asend(cs, o) {
     send(cs[i], o);
   }
 }
-function broadcast(c,o) {
-  var o = msg(o);
-  console.log('bcast: --> [' + c.sessionId + '] ' + JSON.stringify(o));
-  c.broadcast(o);
-}
 
 // server message handlers
 exports.messageHandler = {
@@ -60,7 +55,6 @@ exports.messageHandler = {
       send(c, {cmd:'error', msg:'name missing'});
       return;
     }
-
     c.game = {};
     c.game.name = o.name;
     send(c, {cmd:'canChat', enabled:false});
@@ -75,18 +69,19 @@ exports.messageHandler = {
       setupGame(lobby.splice(0, GAME.numplayers));
     }
   },
-  vote: function(c, o) {
-    // client must vote for a color in the room that they are in
+  pick: function(c, o) {
+    // client must pick a color in the room that they are in
     var valid = false;
     for (var i in c.game.opponents) {
-      if (o.choice === c.game.opponents[i]) {
+      if (o.pick === c.game.opponents[i]) {
         valid = true;
         break;
       }
     }
     if (valid) {
-      c.game.vote = o.vote;
-      console.log(c.game.color + ' voted for ' + o.vote);
+      c.game.pick = o.pick;
+      console.log(c.game.color + ' chose ' + o.pick);
+      send(c, {cmd:'pick', pick:o.pick});
     }
   }
 };

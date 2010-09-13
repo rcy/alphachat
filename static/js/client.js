@@ -48,7 +48,9 @@ chat.on('results', function(player, obj) {
   render(player, obj);
   ui.playAgain();
 });
-
+chat.on('pick', function(player, obj) {
+  ui.showChoices(obj.pick, player.opponents);
+});
 $("form.signin input").focus();
 $("form.signin").submit(function(e) {
   try {

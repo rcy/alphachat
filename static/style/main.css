@@ -3,6 +3,8 @@
 body {
   font-family:monospace;
   margin:0;
+  background: black;
+  color: white;
 }
 
 p {
@@ -14,17 +16,25 @@ p {
     margin: 0;
 }
 .login {
-    margin-top: 100px;
+    border-radius: 15px;
+    margin-top: 5em;
     margin-left: auto;
     margin-right: auto;
     width: 300px;
     background: gray;
+    color: black;
     text-align: center;
-    padding: 1em;
+    padding: 3em 1em;
+}
+form input {
+    background: #4cc;
+    font-family:monospace;
+}
+.login form input {
+    width: 8em;
 }
 
 #items {
-    margin-left: 1em;
     padding-bottom: 3em;
 }
 
@@ -40,13 +50,12 @@ form {
 form.chat input {
     margin: 0;
     border: 0;
-    background:#ddd;
     width: 100%;
 }
 
 #status {
     padding: 2px;
-    background:#eee;
+    background:#111;
     color:black;
 }
 
@@ -54,18 +63,26 @@ form.chat input {
     float: right;
     color: gray;
 }
+#status .vote .option {
+    border-radius: 3;
+    border: solid 2px #333;
+}
 #status .vote .option:hover {
     cursor: pointer;
-    background: #fff;
+    border: solid 2px #cc0;
+}
+#status .vote .pick:hover {
+    border: solid 2px #ff0;
 }
 #status .vote .pick {
-    border: solid 1px black;
+    border-radius: 3;
+    border: solid 2px yellow;
 }
 #status .action {
-    color: #333;
+    color: #ddd;
 }
 #status .action:hover {
-    color: #fff;
+    color: yellow;
     cursor: pointer;
 }
 

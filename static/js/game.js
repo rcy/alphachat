@@ -80,6 +80,6 @@ Player.prototype.privmsg = function(text) {
   this.game.send('privmsg', {body: text});
 };
 // send to request joining a game
-Player.prototype.vote = function(color) {
-  this.game.send('vote', {choice: color});
+Player.prototype.pick = function(color) {
+  this.game.send('pick', {pick: color});
 };
