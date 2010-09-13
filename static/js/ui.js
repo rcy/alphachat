@@ -8,7 +8,7 @@ var ui = {
     init: '<p class="gameon">Your color is <span class="{{color}}">{{color}}</span></p><p>You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}}</p>The game will last {{seconds}} seconds.</p>',
     wait: '{{reason}} ',
     go: 'GO!',
-    vote: '<div class="vote">GAME OVER<br />Choose who you liked best {{{opp1button}}} or {{{opp2button}}}.<br />You have {{seconds}} seconds to vote.</div>',
+    vote: '<div class="vote"><p>GAME OVER</p><p>You have {{seconds}} seconds finalize your pick.</p></div>',
     results: '<div class="results">RESULTS: {{red}}: {{red_votes}} {{green}}:{{green_votes}} {{blue}}:{{blue_votes}}</div>{{{replaybutton}}}',
     canChat: '<hr />',
     // these aren't actually message commands
