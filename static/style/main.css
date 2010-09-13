@@ -7,8 +7,7 @@ body {
 }
 
 #items {
-  background:#eee;
-  padding-bottom: 4em;
+  padding-bottom: 3em;
 }
 
 #toolbar {
@@ -22,9 +21,9 @@ p {
   margin:0;
 }
 
-form.chat {
-  background-color:black;
-  color: green;
+form {
+    padding: 0;
+    margin: 0;
 }
 form.chat input {
     padding: 0;
@@ -34,13 +33,20 @@ form.chat input {
 }
 
 #status {
-  background:black;
+  background:#ddd;
   color:white;
 }
 
 #status .conn {
     float: right;
     color: gray;
+}
+#status .vote .option:hover {
+    cursor: pointer;
+    background: #fff;
+}
+#status .vote .pick {
+    background: yellow;
 }
 #status .action {
     color: #ddd;

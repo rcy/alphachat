@@ -23,6 +23,7 @@ var Game = function() {
     case 'init':
       self.player.opponents = obj.opponents;
       self.player.color = obj.color;
+      self.player.name = obj.name;
     case 'canChat':
       self.player.canChat = obj.enabled;
       break;

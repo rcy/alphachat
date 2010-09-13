@@ -34,6 +34,8 @@ chat.on('canChat', function(player, obj) {
 chat.on('init', function(player, obj) {
   ui.clear();
   obj.seconds = obj.time / 1000;
+  ui.showSelf({color:obj.color, name:player.name});
+  ui.showChoices('green', player.opponents);
   render(player, obj);
 });
 chat.on('wait', render);

@@ -10,11 +10,13 @@ var ui = {
     go: '<div class="go">GO!</div>',
     vote: '<div class="vote">GAME OVER<br />Choose who you liked best {{{opp1button}}} or {{{opp2button}}}.<br />You have {{seconds}} seconds to vote.</div>',
     results: '<div class="results">RESULTS: {{red}}: {{red_votes}} {{green}}:{{green_votes}} {{blue}}:{{blue_votes}}</div>{{{replaybutton}}}',
-    canChat: '<hr />'
+    canChat: '<hr />',
+    // these aren't actually message commands
+    choices: '{{#choices}}<span class="{{.}}">{{.}}</span>{{/choices}}"'
   },
 
-  render: function(player, obj) {
-    var sel = $("#items");
+  render: function(player, obj, sel) {
+    var sel = sel || $("#items");
     if (sel && obj && this.template[obj.cmd]) {
       var html = Mustache.to_html(this.template[obj.cmd], obj);
       //this.log(html);
@@ -38,6 +40,7 @@ var ui = {
   },
 
   playAgain: function() {
+    $("#status .vote").html('');
     $("#status .action").html('play again');
   },
 
@@ -47,6 +50,19 @@ var ui = {
 
   clear: function() {
     $("#items").html('');
+  },
+
+  showChoices: function(pick, options) {
+    var hs = $.map(options, function(o) {
+      return Mustache.to_html('<span class="option {{color}} {{pick}}">{{color}}</span>',
+                              {pick: function() { return pick === o ? "pick" : ""; },
+                               color: o});
+    });
+    var html = 'pick: '+hs.join(' ');
+    $("#status .vote").html(html);
+  },
+  showSelf: function(obj) {
+    $("#status .self").html(Mustache.to_html('<span class="self {{color}}">{{name}} is {{color}}</span>', obj));
   }
 };
 

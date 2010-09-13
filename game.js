@@ -6,8 +6,8 @@ exports.setglobs = function(g) { GLOBAL = g; };
 
 GAME = {};
 GAME.numplayers = 3;
-GAME.gametime = 10000; // milliseconds
-GAME.votetime = 1000;
+GAME.gametime = 1000 * 5;
+GAME.votetime = 1000 * 5;
 
 lobby = [];
 
@@ -77,6 +77,17 @@ exports.messageHandler = {
   },
   vote: function(c, o) {
     // client must vote for a color in the room that they are in
+    var valid = false;
+    for (var i in c.game.opponents) {
+      if (o.choice === c.game.opponents[i]) {
+        valid = true;
+        break;
+      }
+    }
+    if (valid) {
+      c.game.vote = o.vote;
+      console.log(c.game.color + ' voted for ' + o.vote);
+    }
   }
 };
 
@@ -96,7 +107,8 @@ function setupGame(players) {
     players[i].game.opponents = opps;
     players[i].game.room = room;
     send(players[i], { cmd:'init',
-                       roomName:room.name, 
+                       roomName:room.name,
+                       name:players[i].game.name,
                        color:players[i].game.color, 
                        opponents:players[i].game.opponents,
                        time:GAME.gametime 
