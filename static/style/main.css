@@ -5,8 +5,27 @@ body {
   margin:0;
 }
 
+p {
+    margin:0;
+    padding:0;
+}
+
+.login h1 {
+    margin: 0;
+}
+.login {
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+    background: gray;
+    text-align: center;
+    padding: 1em;
+}
+
 #items {
-  padding-bottom: 3em;
+    margin-left: 1em;
+    padding-bottom: 3em;
 }
 
 #toolbar {
@@ -21,7 +40,7 @@ form {
 form.chat input {
     margin: 0;
     border: 0;
-    background-color:#ddd;
+    background:#ddd;
     width: 100%;
 }
 
