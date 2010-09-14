@@ -17,7 +17,9 @@ var Game = function() {
     self.callbacks.disconnect(self.player);
   });
   this.socket.on('message', function(obj){
-    self.log(["recv: <-- ", obj]);
+    if (obj.cmd !== 'privmsg') 
+      self.log(["recv: <-- ", obj]);
+
     self.player.messageCount += 1;
     switch (obj.cmd) {
     case 'init':
@@ -28,6 +30,7 @@ var Game = function() {
       self.player.canChat = obj.enabled;
       break;
     case 'motd':
+    case 'privmsg':
       break;
     default:
       self.log(["WARNING: unhandled case: ", obj]);
@@ -59,7 +62,10 @@ Game.prototype.disconnect = function() {
 Game.prototype.send = function(cmd, obj) {
   var obj = obj || {};
   obj.cmd = cmd;
-  this.log(["send: --> ", obj]);
+
+  if (obj.cmd !== 'privmsg')
+    this.log(["send: --> ", obj]);
+
   this.socket.send(obj);
 };
 

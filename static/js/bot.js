@@ -3,7 +3,7 @@ var chat = new Game();
 chat.connect();
 
 chat.on('connect', function(player) {
-  player.announce('bot');
+  player.announce('bot'+Math.random()*1000);
 });
 chat.on('disconnect', function(player) {
   player.canChat = false;
