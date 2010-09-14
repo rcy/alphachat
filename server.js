@@ -62,6 +62,7 @@ socket.on('connection', function(client) {
 
   client.on('disconnect', function() {
     GLOBAL.connections -= 1;
+    game.messageHandler.disconnect(client);
     warn("clean up data structures containing this client");
   });
 });

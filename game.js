@@ -35,6 +35,14 @@ function asend(cs, o) {
 
 // server message handlers
 GAME.messageHandler = {
+  // not a message handler, but a server event
+  disconnect: function(c) {
+    if (c.game && c.game.room) {
+      c.game.room.delPlayer(c);
+      asend(c.game.room.players, {cmd:'disconnect', color:c.sessionId});
+    }
+  },
+
   command: function(c, o) {
     var args = o.body;
     if (args[0] === 'set') {
