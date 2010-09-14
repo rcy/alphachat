@@ -31,8 +31,10 @@ chat.on('vote', function(player, obj) {
 chat.on('results', function(player, obj) {
   // obj.players[]
   // obj.votes[]
-  console.log('waiting 10 seconds to reannounce');
-  setTimeout(function() {player.announce('bot')}, 10000);
+  setTimeout(function() {
+    player.part();
+    player.play();
+  },Math.random()*10000);
 });
 chat.on('privmsg', function(player, obj) {
   // obj.room

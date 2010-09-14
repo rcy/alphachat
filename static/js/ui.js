@@ -11,6 +11,7 @@ var ui = {
     vote: '<div class="server vote"><h2>GAME OVER</h2><p>You have {{seconds}} seconds finalize your pick.</p></div>',
     results: '<div class="server results">RESULTS: {{red}}: {{red_votes}} {{green}}:{{green_votes}} {{blue}}:{{blue_votes}}</div>{{{replaybutton}}}',
     canChat: '<hr />',
+    part: '<p class="server part {{color}}">{{color}} has left</p>',
     // these aren't actually message commands
     choices: '{{#choices}}<span class="{{.}}">{{.}}</span>{{/choices}}"'
   },
@@ -45,9 +46,9 @@ var ui = {
 
     $("#status .action")
       .html('play again')
-      .click(function() { 
+      .click(function() {
         $(this).html('');
-        chat.player.announce(chat.player.name);
+        chat.player.part();
       });
   },
 

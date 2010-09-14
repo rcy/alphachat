@@ -1,17 +1,23 @@
 -*- outline -*-
-* add voting game logic
-add vote messages, and server handlers
-* room creation
-send room name to client
+*high
+** voting game logic
+show results at end
+** room creation
+send room name to client (maybe not necessary)
 accept messages to that room only from clients during game
-* load motd from disk on server
-* add repl to server
-* push messages to database
-* add surf away mollyguard
-* timeout reconnect attempts
-* show transport on client
-* fix ie issues
-* test on ff2
-* test all transports
-* add configuration file for server
+** fix play again link
+*mid
+** test on ff3
+** test on ff2
+** add repl to server
+** push messages to database
+** timeout reconnect attempts
+** fix ie issues
+** test all transports
+** add configuration file for server
 reading different server config files, for dev, test and prod
+*low
+** add surf away mollyguard
+** show transport on client
+** ignore empty submits
+** trottling

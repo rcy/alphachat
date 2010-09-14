@@ -4,12 +4,13 @@
 
 exports.setglobs = function(g) { GLOBAL = g; };
 
-GAME = {};
+GAME = exports;
 GAME.numplayers = 3;
-GAME.gametime = 1000 * 5;
-GAME.votetime = 1000 * 5;
+GAME.gametime = 1000 * 60;
+GAME.votetime = 1000 * 10;
 
-lobby = [];
+var emptyRoom = require('./room.js');
+GAME.lobby = Object.create(emptyRoom);
 
 // returns an obj with some extra properties added
 function msg(obj) {
@@ -19,7 +20,9 @@ function msg(obj) {
 
 function send(c, o) {
   var o = msg(o);
-  console.log('send: --> [' + c.sessionId + '] ' + JSON.stringify(o));
+  if (o.cmd !== 'privmsg') {
+    console.log('send: --> [' + c.sessionId + '] ' + JSON.stringify(o));
+  }
   c.send(o);
 }
 // FIXME: this is a hack, just make send take an array 
@@ -31,7 +34,7 @@ function asend(cs, o) {
 }
 
 // server message handlers
-exports.messageHandler = {
+GAME.messageHandler = {
   command: function(c, o) {
     var args = o.body;
     if (args[0] === 'set') {
@@ -44,11 +47,13 @@ exports.messageHandler = {
     }
   },
   privmsg: function(c, o) {
-    o.color = c.game.color;
-    if (c.game.room.state == 'postgame') {
-      o.name = c.game.name;
+    if (c.game.room) {
+      o.color = c.game.color;
+      if (c.game.room.state == 'postgame') {
+        o.name = c.game.name;
+      }
+      asend(c.game.room.players,o);
     }
-    asend(c.game.room.players,o);
   },
   announce: function(c, o) {
     if (!o.name) {
@@ -63,10 +68,15 @@ exports.messageHandler = {
              body:'Chat with other players for a few minutes.  Afterwards, choose who you liked better.'});
   },
   play: function(c, o) {
-    send(c,{cmd:'wait', reason:'need_players'});
-    lobby.push(c);
-    if (lobby.length >= GAME.numplayers) {
-      setupGame(lobby.splice(0, GAME.numplayers));
+    if (c.game.room) {
+      send(c,{cmd:'error', reason:'already in room'});
+    } else {
+      send(c,{cmd:'wait', reason:'need_players'});
+      GAME.lobby.addPlayer(c);
+      c.game.room = GAME.lobby;
+      if (GAME.lobby.players.length >= GAME.numplayers) {
+        setupGame(GAME.lobby.players.splice(0, GAME.numplayers));
+      }
     }
   },
   pick: function(c, o) {
@@ -83,6 +93,21 @@ exports.messageHandler = {
       console.log(c.game.color + ' chose ' + o.pick);
       send(c, {cmd:'pick', pick:o.pick});
     }
+  },
+  part: function(c, o) {
+    if (!c.game.room) {
+      send(c,{cmd:'error', reason:'not in room'});
+    } else {
+      // announce the part
+      asend(c.game.room.players, {cmd:'part', color:c.game.color});
+
+      // remove the player
+      c.game.room.delPlayer(c);
+      delete c.game.room;
+
+      // that player can no longer send privmsgs
+      send(c, {cmd:'canChat', enabled:false});
+    }
   }
 };
 
@@ -91,7 +116,7 @@ function setupGame(players) {
   var colors = ['red','green','blue','purple','orange','yellow','pink','black'];
 
   // make a room
-  var room = Object.create(lobby);
+  var room = Object.create(emptyRoom);
   room.name = Math.floor(Math.random()*1000)+'-'+Date.now();  // FIXME
   room.players = players;
 
@@ -115,19 +140,25 @@ function setupGame(players) {
     asend(players, {cmd:'wait', reason:'ready'});
     setTimeout(function() {
       asend(players, {cmd:'wait', reason:'set'});
-      setTimeout(function() {
-        asend(players, {cmd:'go'});
-        asend(players, {cmd:'canChat', enabled:true});
-        setTimeout(function () {
-          asend(players, {cmd:'canChat', enabled:false});
-          asend(players, {cmd:'vote', time:GAME.votetime});
-          setTimeout(function () {
-            asend(players, {cmd:'results'});
-            asend(players, {cmd:'canChat', enabled:true});
-            room.state = 'postgame';
-          }, GAME.votetime);
-        }, GAME.gametime);
-      }, 500); // go
+      setTimeout(function() { gameOn(room);}, 500); // go
     }, 500); // set
   }, 500); // ready
+}
+
+function gameOn(room) {
+  var players = room.players;
+  room.state = 'game';
+
+  asend(players, {cmd:'go'});
+  asend(players, {cmd:'canChat', enabled:true});
+  setTimeout(function () {
+    room.state = 'vote';
+    asend(players, {cmd:'canChat', enabled:false});
+    asend(players, {cmd:'vote', time:GAME.votetime});
+    setTimeout(function () {
+      room.state = 'postgame';
+      asend(players, {cmd:'results'});
+      asend(players, {cmd:'canChat', enabled:true});
+    }, GAME.votetime);
+  }, GAME.gametime);
 }

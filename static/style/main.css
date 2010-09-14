@@ -114,6 +114,10 @@ form.chat input {
 }
 
 .server { text-align: center; }
+.server.part { 
+    text-align: left;
+    color: gray;
+}
 
 .red {
     color: red;

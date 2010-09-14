@@ -83,3 +83,7 @@ Player.prototype.privmsg = function(text) {
 Player.prototype.pick = function(color) {
   this.game.send('pick', {pick: color});
 };
+// send to leave currently joined room
+Player.prototype.part = function() {
+  this.game.send('part');
+};

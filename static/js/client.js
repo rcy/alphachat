@@ -10,7 +10,7 @@ chat.on('disconnect', function(){
   $("#status .conn").html("disconnected");
 });
 
-function doPlay() { ui.clear(); chat.player.play(); }
+function doPlay() { chat.player.play(); }
 function render(player, obj) {ui.render(player,obj)};
 
 chat.on('motd', function(player, obj) {
@@ -51,6 +51,11 @@ chat.on('results', function(player, obj) {
 chat.on('pick', function(player, obj) {
   ui.showChoices(obj.pick, player.opponents);
 });
+chat.on('part', function(player, obj) {
+  render(player, obj);
+  player.play();
+});
+
 $("form.signin input").focus();
 $("form.signin").submit(function(e) {
   try {
