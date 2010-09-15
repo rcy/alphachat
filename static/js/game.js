@@ -29,12 +29,10 @@ var Game = function() {
     case 'canChat':
       self.player.canChat = obj.enabled;
       break;
-    case 'motd':
-    case 'privmsg':
-      break;
     default:
-      self.log(["WARNING: unhandled case: ", obj]);
+      //self.log(["WARNING: unhandled case: ", obj]);
     }
+
     var cb = self.callbacks[obj.cmd];
     if (cb) {
       cb(self.player, obj);
