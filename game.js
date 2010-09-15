@@ -1,5 +1,4 @@
 var sys = require('sys');
-exports.setglobs = function(g) { GLOBAL = g; };
 
 GAME = exports;
 GAME.numplayers = 3;

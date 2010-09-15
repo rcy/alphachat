@@ -3,9 +3,6 @@ var io = require('./socket.io');
 
 var h = require('./handlers.js');
 var game = require('./game.js');
-var GLOBAL = require('./globals.js');
-
-game.setglobs(GLOBAL);
 
 routes = {
   '': h.index
@@ -47,8 +44,6 @@ function warn(obj) { console.log('WARNING:0: ', obj); }
 
 //console.log(socket.options.transports);
 socket.on('connection', function(client) {
-  GLOBAL.connections += 1;
-
   client.on('message', function(obj) {
     if (obj.cmd !== 'privmsg') {
       console.log('recv: <-- [' + client.sessionId + '] ' + JSON.stringify(obj));
@@ -61,7 +56,6 @@ socket.on('connection', function(client) {
   });
 
   client.on('disconnect', function() {
-    GLOBAL.connections -= 1;
     game.messageHandler.disconnect(client);
     warn("clean up data structures containing this client");
   });
