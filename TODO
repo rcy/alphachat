@@ -2,22 +2,19 @@
 *high
 ** voting game logic
 show results at end
-** room creation
-send room name to client (maybe not necessary)
-accept messages to that room only from clients during game
-** fix play again link
 *mid
 ** test on ff3
 ** test on ff2
-** add repl to server
 ** push messages to database
 ** timeout reconnect attempts
 ** fix ie issues
 ** test all transports
 ** add configuration file for server
 reading different server config files, for dev, test and prod
+** message validation
+accept messages to that room only from clients during game
 *low
 ** add surf away mollyguard
 ** show transport on client
-** ignore empty submits
+** ignore empty chat messages
 ** trottling

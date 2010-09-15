@@ -1,4 +1,4 @@
-var room = exports;
+room = exports;
 
 room.players = [];
 room.addPlayer = function(player) { 
