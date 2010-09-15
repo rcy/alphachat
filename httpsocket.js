@@ -2,9 +2,9 @@ var sys = require('sys');
 var static = require('node-static');
 var io = require('./socket.io');
 
-exports.start = function(addr, port, docdir, handlers) {
+exports.start = function(port, docdir, handlers) {
   //
-  // Create a node-static server to serve docdir on addr:port
+  // Create a node-static server to serve docdir on port
   //
   var file = new(static.Server)(docdir, { cache: 7200, headers: {} });
 
@@ -26,7 +26,7 @@ exports.start = function(addr, port, docdir, handlers) {
   });
   server.listen(port);
 
-  sys.puts("> node-static is listening on http://"+addr+":"+port);
+  sys.puts("> node-static is listening on http://127.0.0.1"+port);
 
   //
   // setup socket.io layer
