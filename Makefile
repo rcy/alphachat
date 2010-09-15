@@ -1,5 +1,7 @@
-runserver:
-	./$(node_dir)/node server.js
+NODE_PATH=$HOME/.node_libraries
+
+game:
+	./$(node_dir)/node ./game.js
 
 # 'make nodebuild' to fetch and compile node
 node_url=http://nodejs.org/dist
