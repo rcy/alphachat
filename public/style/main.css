@@ -1,7 +1,7 @@
 /* add styles here */
 
 html {
-    height: 101%;               /*always show scrollbar*/
+/*    height: 101%;*/               /*always show scrollbar*/
 }
 
 body {
@@ -40,15 +40,15 @@ p {
 form input {
     font-family:monospace;
 }
-form input .red {
+form input.red {
     background: #f99;
     color: red;
 }
-form input .green {
+form input.green {
     background: #9f9;
     color: green;
 }
-form input .blue{
+form input.blue {
     background: #99f;
     color: blue;
 }

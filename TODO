@@ -1,7 +1,9 @@
 -*- outline -*-
 *high
-** voting game logic
-show results at end
+** remove junk from modeline
+** scroll chat all the way down to start
+** pop up vote box at end
+** pop up results box at end
 *mid
 ** test on ff3
 ** test on ff2
