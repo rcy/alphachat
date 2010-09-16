@@ -45,7 +45,14 @@ chat.on('vote', function(player, obj) {
   render(player, obj);
 });
 chat.on('results', function(player, obj) {
-  render(player, obj);
+  render(player, {cmd:'colorpick', color:'red', pick:obj.picks['red']});
+  render(player, {cmd:'colorpick', color:'green', pick:obj.picks['green']});
+  render(player, {cmd:'colorpick', color:'blue', pick:obj.picks['blue']});
+  if (obj.winner)
+    render(player, {cmd:'winner', winner:obj.winner});
+  else
+    render(player, {cmd:'tie'});
+
   ui.playAgain();
 });
 chat.on('pick', function(player, obj) {
