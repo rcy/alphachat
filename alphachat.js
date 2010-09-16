@@ -141,7 +141,7 @@ var gameOn = function(room) {
   var players = room.players;
   room.state = 'game';
 
-  send(players, {cmd:'go'});
+  send(players, {cmd:'go', time:ac.gametime});
 
   // each player makes a default vote
   for (var i in players) {

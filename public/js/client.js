@@ -39,7 +39,14 @@ chat.on('init', function(player, obj) {
   render(player, obj);
 });
 chat.on('wait', render);
-chat.on('go', render);
+chat.on('go', function(player, obj) {
+  render(player, obj);
+  time = {total: obj.time, start: Date.now()};
+  clearInterval(time.timer);
+  time.timer = setInterval(function() {
+    $("#status .time").html(Math.round((time.total - (Date.now() - time.start)) / 1000));
+  }, 1000);
+});
 chat.on('vote', function(player, obj) {
   obj.seconds = obj.time / 1000;
   render(player, obj);

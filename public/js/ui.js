@@ -5,7 +5,7 @@ var ui = {
     motd: '<div class="server motd"><h1>{{head}}</h1><p>{{body}}</p>{{{button}}}',
     privmsg: '<div class="privmsg"><span class="{{color}}">{{nick}}:</span> {{body}}</div>',
     waiting: '<div class="server waiting">{{body}}</div>',
-    init: '<div class="server"><p>Your color is <span class="{{color}}">{{color}}</span></p><p>You are playing against {{#opponents}}<span class="{{.}}">{{.}}</span> {{/opponents}}</p>The game will last {{seconds}} seconds.</p><br /></div>',
+    init: '<div class="server"><p>Your color is <span class="{{color}}">{{color}}</span></p><br/><br/>The game will last {{seconds}} seconds.</p><br /></div>',
     wait: '<p class="server">{{reason}}</p>',
     go: '<p class="server">GO!</p>',
 
@@ -63,7 +63,7 @@ var ui = {
   },
 
   clear: function() {
-    $("#items").html('');
+    $("#items").html('<div style="height:100%"></div>');
   },
 
   showChoices: function(pick, options) {
@@ -73,7 +73,7 @@ var ui = {
                                color: o});
     });
     var html = 'pick: '+hs.join(' ');
-    //$("#status .vote").html(html);
+    $("#status .vote").html(html);
   },
   showSelf: function(obj) {
     $("form.chat input").addClass(obj.color);
