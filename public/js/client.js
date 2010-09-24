@@ -100,7 +100,9 @@ $("form.chat").submit(function(e) {
   try {
     if (chat.player.canChat) {
       var inp = $(this).find('input');
-      chat.player.privmsg(inp.val());
+      if (inp.val().length > 0) {
+        chat.player.privmsg(inp.val());
+      }
       inp.val('');
     }
   } catch (e) {
