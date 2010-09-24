@@ -70,12 +70,25 @@ chat.on('part', function(player, obj) {
   player.play();
 });
 
+$(".login").animate({
+  width: "25%",
+  height: "250px",
+  opacity: "toggle",
+  fontSize: "toggle",
+  marginLeft: "37%"
+}, 'slow');
+
 $("form.signin input").focus();
 $("form.signin").submit(function(e) {
   try {
     var inp = $(this).find('input');
-    $('.login').fadeOut(1000);
-    $('.wrapper').fadeIn(1000);
+    $(".login").animate({
+      width: "toggle",
+      height: "toggle",
+      opacity: "toggle",
+      marginLeft: "99%",
+      fontSize: "toggle"
+    }, 'slow', function() {$('.wrapper').fadeIn(1000)});
     setTimeout(function(){chat.player.announce(inp.val())}, 1000);
   } catch (e) {
     console && console.error(e);

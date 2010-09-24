@@ -29,13 +29,14 @@ p {
 .login {
     border-radius: 15px;
     margin-top: 2em;
-    margin-left: auto;
-    margin-right: auto;
-    width: 25%;
+    margin-left: 0%;
+    padding: 0px;
+    display: none;
+    width: 0;
+    height: 0;
     background: gray;
     color: black;
     text-align: center;
-    padding: 1em 1em;
 }
 form input {
     font-family:monospace;
