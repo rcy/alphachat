@@ -1,2 +1,2 @@
 game:
-	node ./server.js
+	node ./server.js 8124
