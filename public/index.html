@@ -8,7 +8,14 @@
     <script src="js/3/socket.io.js"></script>
   </head>
   <body>
-    <div class="login">
+
+    <div id="votebox" style="display: none">
+      <div class="header">vote</div>
+      <div class="choice red selected">red</div>
+      <div class="choice blue">blue</div>
+    </div>
+
+    <div id="login">
       <h1>alphachat</h1>
       <div id="signin">
         <form class="signin">
@@ -17,12 +24,13 @@
         </form>
       </div>
     </div>
-    <div class="wrapper" style="display:none">
+
+    <div class="wrapper" style="display: none">
       <div id="items">
       </div>
       <div id="toolbar">
         <div id="status">
-          <span class="conn">loading...</span>
+          <span class="conn">connecting...</span>
           <span class="vote"></span>&nbsp;
           <span class="time">1000</span>&nbsp;
           <span class="action"></span>

@@ -1,10 +1,9 @@
 var chat = new Game();
-
-chat.connect();
-ui.canChat(false);
+g_nick = "nick";
 
 chat.on('connect', function(player){
   $("#status .conn").html("connected");
+  chat.player.announce(g_nick)
 });
 chat.on('disconnect', function(){
   $("#status .conn").html("disconnected");
@@ -70,26 +69,14 @@ chat.on('part', function(player, obj) {
   player.play();
 });
 
-$(".login").animate({
-  width: "25%",
-  height: "250px",
-  opacity: "toggle",
-  fontSize: "toggle",
-  marginLeft: "37%"
-}, 'slow');
-
 $("form.signin input").focus();
 $("form.signin").submit(function(e) {
   try {
     var inp = $(this).find('input');
-    $(".login").animate({
-      width: "toggle",
-      height: "toggle",
-      opacity: "toggle",
-      marginLeft: "99%",
-      fontSize: "toggle"
-    }, 'slow', function() {$('.wrapper').fadeIn(1000)});
-    setTimeout(function(){chat.player.announce(inp.val())}, 1000);
+    $("#login").hide();
+    $('.wrapper').fadeIn(1000);
+    g_nick = inp.val();
+    chat.connect();
   } catch (e) {
     console && console.error(e);
   }

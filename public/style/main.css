@@ -11,6 +11,37 @@ body {
   color: white;
 }
 
+#votebox {
+    display: block;
+    position: absolute;
+    top: 0;
+    background: #d00;
+    color: black;
+    padding: 1em;
+    border-radius: 5px;
+}
+#votebox .header {
+    text-align: center;
+    font-size: 200%;
+    margin-bottom: .5em;
+    padding: 0;
+}
+#votebox .choice {
+    text-align: center;
+    background: white;
+    border-radius: 3px;
+    padding: .1em;
+    margin-bottom: 1em;
+    border: 3px solid white;
+}
+#votebox .choice:hover {
+    cursor: pointer;
+}
+#votebox .selected {
+    border: 3px solid black;
+}
+
+
 .wrapper {
     width: 80%;
     height: 100%;
@@ -23,21 +54,26 @@ p {
     padding:0;
 }
 
-.login h1 {
-    margin: 0;
-}
-.login {
+#login {
+    width: 50%;
+    margin: auto;
     border-radius: 15px;
     margin-top: 2em;
-    margin-left: 0%;
     padding: 0px;
-    display: none;
-    width: 0;
-    height: 0;
-    background: gray;
+    background: #ccc;
     color: black;
     text-align: center;
+    padding: 1em;
 }
+#login h1 {
+    margin: 0;
+}
+#login form input {
+    width: 8em;
+    background: #333;
+    color: #fff;
+}
+
 form input {
     font-family:monospace;
 }
@@ -52,12 +88,6 @@ form input.green {
 form input.blue {
     background: #99f;
     color: blue;
-}
-
-.login form input {
-    width: 8em;
-    background: #333;
-    color: #fff;
 }
 
 #items {

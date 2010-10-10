@@ -1,5 +1,9 @@
 -*- outline -*-
 *high
+** fix signin - connect sequence
+on ff with flash its slow to connect, if we are not connected before we finish signing in, it hangs
+** fix layout
+on ff there's overlap between the modeline and the chat window
 ** remove junk from modeline
 ** pop up vote box at end
 ** pop up results box at end
@@ -10,12 +14,9 @@
 ** timeout reconnect attempts
 ** fix ie issues
 ** test all transports
-** add configuration file for server
-reading different server config files, for dev, test and prod
-** message validation
-accept messages to that room only from clients during game
 *low
 ** add surf away mollyguard
 ** show transport on client
-** ignore empty chat messages
 ** trottling
+** add configuration file for server
+reading different server config files, for dev, test and prod
