@@ -11,52 +11,55 @@ body {
   color: white;
 }
 
-#votebox {
-    display: block;
-    position: absolute;
-    top: 0;
-    background: #d00;
-    color: black;
-    padding: 1em;
-    border-radius: 5px;
+p {
+    margin-left: 1em;
+    margin-right: 1em;
+    padding: 0;
 }
-#votebox .header {
+
+#votebox {
+    border: 2px solid darkgray;
+    background: gray;
+    color: black;
+    border-radius: 5px;
+    width: 90%;
+    margin: auto;
+    padding: .1em;
+    font-size: 150%;
     text-align: center;
+}
+#sidebar .red {
+    border: 2px solid red;
+    background: #d22;
+}
+#sidebar .green {
+    border: 2px solid green;
+    background: #2b2;
+}
+#sidebar .blue {
+    border: 2px solid blue;
+    background: #22e;
+}
+
+#votebox .header {
+    margin-bottom: .5em;
+    padding: 0;
+}
+#votebox .vote {
     font-size: 200%;
     margin-bottom: .5em;
     padding: 0;
 }
-#votebox .choice {
-    text-align: center;
-    background: white;
-    border-radius: 3px;
-    padding: .1em;
-    margin-bottom: 1em;
-    border: 3px solid white;
-}
-#votebox .choice:hover {
+#votebox:hover {
     cursor: pointer;
-}
-#votebox .selected {
-    border: 3px solid black;
-}
-
-
-.wrapper {
-    width: 80%;
-    height: 100%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-p {
-    margin:0;
-    padding:0;
 }
 
 #login {
-    width: 50%;
-    margin: auto;
+    position: absolute;
+    z-index: 100;
+    display: block;
+    width: 30%;
+    margin-left: 35%;
     border-radius: 15px;
     margin-top: 2em;
     padding: 0px;
@@ -91,65 +94,35 @@ form input.blue {
 }
 
 #items {
+    background: #000;
+    margin: 0;
+    padding: 0;
+    overflow-y: scroll;
+    position: absolute;
+    top: 3em;
+    left: 20%;
+    bottom: 2.3em;
+    width: 80%;
     padding-bottom: 4em;
 }
 
-.dummy {
-    background: black;
-}
 #toolbar {
-  position: fixed;
-  bottom: 0;
-  width: 80%;
+    z-index: 100;
+    background: #555;
+    margin-left: auto;
+    margin-right: auto;
+    height: 3em;
+    position: fixed;
+    width: 100%;
 }
 form {
     margin: 0;
 }
-form.chat input {
+#chat form input {
     margin: 0;
+    margin-left: 20%;
     border: 0;
-    width: 100%;
-}
-
-#status {
-    padding: 2px;
-    background:#111;
-    color:gray;
-}
-
-#status .time {
-}
-#status .conn {
-    float: right;
-    color: gray;
-}
-#status .vote .option {
-    border-radius: 3;
-    border: solid 2px #333;
-}
-#status .vote .option:hover {
-    cursor: pointer;
-    border: solid 2px #cc0;
-}
-#status .vote .pick:hover {
-    border: solid 2px #ff0;
-}
-#status .vote .pick {
-    border-radius: 3;
-    border: solid 2px yellow;
-}
-#status .action {
-    color: #ddd;
-}
-#status .action:hover {
-    color: yellow;
-    cursor: pointer;
-}
-
-.server { text-align: center; }
-.server.part { 
-    text-align: left;
-    color: gray;
+    width: 80%;
 }
 
 .red {
@@ -160,4 +133,35 @@ form.chat input {
 }
 .blue {
     color: blue;
+}
+
+#chat {
+    position: absolute;
+    width: 100%;
+    bottom: 1em;
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar {
+    float: left; 
+    background: #222;
+    width: 20%;
+    height: 100%;
+    position: relative;
+}
+
+
+#sidebar .pad {
+     margin-top: 5em;
+}
+#info {
+    background: gray;
+    border: 3px solid lightgray;
+    color: black;
+    margin: 1em;
+    border-radius: 3px;
+}
+#info h1 {
+    text-align: center;
 }
