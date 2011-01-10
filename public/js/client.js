@@ -6,6 +6,7 @@ chat.on('connect', function(player){
   chat.player.announce(g_nick)
 });
 chat.on('disconnect', function(){
+  alert("disconnected");
   $("#status .conn").html("disconnected");
 });
 
@@ -34,7 +35,6 @@ chat.on('init', function(player, obj) {
   ui.clear();
   obj.seconds = obj.time / 1000;
   ui.showSelf({color:obj.color, name:player.name});
-  ui.showChoices('green', player.opponents);
   render(player, obj);
 });
 chat.on('wait', render);
@@ -62,28 +62,30 @@ chat.on('results', function(player, obj) {
   ui.playAgain();
 });
 chat.on('pick', function(player, obj) {
-  ui.showChoices(obj.pick, player.opponents);
+  ui.updatePick(obj);
 });
 chat.on('part', function(player, obj) {
   render(player, obj);
   player.play();
 });
 
-$("form.signin input").focus();
-$("form.signin").submit(function(e) {
-  try {
-    var inp = $(this).find('input');
-    $("#login").hide();
-    $('.wrapper').fadeIn(1000);
-    g_nick = inp.val();
-    chat.connect();
-  } catch (e) {
-    console && console.error(e);
-  }
-  return false;
-});
+chat.connect();
 
-$("form.chat").submit(function(e) {
+// $("form.signin input").focus();
+// $("form.signin").submit(function(e) {
+//   try {
+//     var inp = $(this).find('input');
+//     $("#login").hide();
+//     $('.wrapper').fadeIn(1000);
+//     g_nick = inp.val();
+//     chat.connect();
+//   } catch (e) {
+//     console && console.error(e);
+//   }
+//   return false;
+// });
+
+$("#chat form").submit(function(e) {
   try {
     if (chat.player.canChat) {
       var inp = $(this).find('input');

@@ -19,7 +19,9 @@ var ui = {
     canChat: '<hr />',
     part: '<p class="server part {{color}}">{{color}} has left</p>',
     // these aren't actually message commands
-    choices: '{{#choices}}<span class="{{.}}">{{.}}</span>{{/choices}}"'
+    choices: '{{#choices}}<span class="{{.}}">{{.}}</span>{{/choices}}"',
+    
+    sidebar_you: 'you'
   },
 
   render: function(player, obj, sel) {
@@ -35,7 +37,7 @@ var ui = {
   },
 
   canChat: function(enabled) {
-    var i = $("form.chat input");
+    var i = $("#chat input");
     if (enabled) {
       i.removeAttr('disabled');
       //i.show();
@@ -59,25 +61,30 @@ var ui = {
   },
 
   scroll: function() { 
-    window.scrollBy(0, 1000000);
+    $("#items").scrollTop(1000000);
   },
 
   clear: function() {
     $("#items").html('<div style="height:100%"></div>');
   },
 
-  showChoices: function(pick, options) {
-    var hs = $.map(options, function(o) {
-      return Mustache.to_html('<span class="option {{color}} {{pick}}" onclick=chat.player.pick("{{color}}")>{{color}}</span>',
-                              {pick: function() { return pick === o ? "pick" : ""; },
-                               color: o});
-    });
-    var html = 'pick: '+hs.join(' ');
-    $("#status .vote").html(html);
-  },
   showSelf: function(obj) {
-    $("form.chat input").addClass(obj.color);
+    $("#chat input").addClass(obj.color);
+
+    $("#info").html('you are: ' + obj.color);
+    $("#info").addClass(obj.color);
+    $("#info").show();
+
+    $("#votebox").html('<p>Your vote:</p><div class="vote">???</div><p>click to change</p>');
+    $("#votebox").removeClass("red green blue");
+    $("#votebox").show();
     //$("#status .self").html(Mustache.to_html('<span class="self {{color}}">{{name}} is {{color}}</span>', obj));
+  },
+
+  updatePick: function(obj) {
+    $("#votebox").removeClass("red green blue");
+    $("#votebox").addClass(obj.pick);
+    $("#votebox .vote").html(obj.pick);
   }
 };
 
