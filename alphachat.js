@@ -2,8 +2,8 @@ var sys = require('sys');
 
 ac = exports;
 ac.numplayers = 3;
-ac.gametime = 1000 * 6;
-ac.votetime = 1000 * 5;
+ac.gametime = 1000 * 60;
+ac.votetime = 1000 * 10;
 
 var emptyRoom = require('./room.js');
 ac.lobby = Object.create(emptyRoom);
