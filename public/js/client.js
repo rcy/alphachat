@@ -99,3 +99,20 @@ $("#chat form").submit(function(e) {
   }
   return false;
 });
+
+$("#votebox").click(function(e) {
+  try {
+    if (chat.player.canVote) {
+      // toggle the pick
+      for (var i in chat.player.opponents) {
+        if (chat.player.opponents[i] != chat.player.picked) {
+          chat.player.pick(chat.player.opponents[i]);
+          break;
+        }
+      }
+    }
+  } catch (e) {
+    console && console.error(e);
+  }
+  return false;
+});

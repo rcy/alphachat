@@ -29,6 +29,12 @@ var Game = function() {
     case 'canChat':
       self.player.canChat = obj.enabled;
       break;
+    case 'canVote':
+      self.player.canVote = obj.enabled;
+      break;
+    case 'pick':
+      self.player.picked = obj.pick;
+      break;
     default:
       //self.log(["WARNING: unhandled case: ", obj]);
     }

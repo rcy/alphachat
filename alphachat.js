@@ -50,6 +50,7 @@ ac.handlers = {
                body:'Chat with other players for a few minutes.  Afterwards, choose who you liked better.'});
   },
   play: function(c, o) {
+    send([c],{cmd:'canVote', enabled:false});
     if (c.game.room) {
       send([c],{cmd:'error', reason:'already in room'});
     } else {
@@ -147,7 +148,7 @@ var gameOn = function(room) {
   for (var i in players) {
     registerPick(players[i], rndelt(players[i].game.opponents));
   }
-
+  send(players, {cmd:'canVote', enabled:true});
   send(players, {cmd:'canChat', enabled:true});
   setTimeout(function () {
     room.state = 'vote';
@@ -159,6 +160,7 @@ var gameOn = function(room) {
       results['cmd'] = 'results';
       send(players, results);
       send(players, {cmd:'canChat', enabled:true});
+      send(players, {cmd:'canVote', enabled:false});
     }, ac.votetime);
   }, ac.gametime);
 };
