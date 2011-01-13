@@ -113,5 +113,8 @@ $("#votebox").click(function(e) {
   } catch (e) {
     console && console.error(e);
   }
+
+  $("#chat input").focus();
+
   return false;
 });
