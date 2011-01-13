@@ -6,7 +6,6 @@ chat.on('connect', function(player){
   chat.player.announce(g_nick)
 });
 chat.on('disconnect', function(){
-  alert("disconnected");
   $("#status .conn").html("disconnected");
 });
 
