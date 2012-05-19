@@ -4,7 +4,7 @@ table
   - for (var i in games)
     tr
       td #{games[i].name}
-      td #{games[i].players.length}/#{games[i].num_players}
+      td #{games[i].players.length}/#{games[i].players_needed}
       td
         form(method='get', action='game/'+games[i]._id)
           button join
@@ -13,6 +13,6 @@ form(method='post')
   span
     input(name='name', placeholder='game name')
   span
-    input(name='num_players', placeholder='number of players')
+    input(name='players_needed', placeholder='number of players')
   span
     button create

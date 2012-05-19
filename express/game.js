@@ -19,7 +19,7 @@ Game.prototype.create = function(game, callback) {
 Game.prototype.save = function(game, callback) {
   this.find_by_id(game._id, function(error, doc) {
     doc.players = game.players;
-    doc.num_players = game.num_players;
+    doc.players_needed = game.players_needed;
     callback(null, doc);
   });
 }

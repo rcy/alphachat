@@ -32,7 +32,7 @@ Game = require('./game').Game;
 games = new Game();
 
 // create some dummy data
-games.create({name:'alphachat classic',num_players:3}, function(){});
+games.create({name:'alphachat classic',players_needed:3}, function(){});
 
 // Routes
 app.get('/', function(req,res) {
@@ -47,7 +47,7 @@ app.get('/games', function(req,res) {
 
 app.post('/games', function(req,res,data) {
   games.create({ name: req.param('name'),
-                 num_players: req.param('num_players') },
+                 players_needed: req.param('num_players') },
                function(error, docs) {
                  res.redirect('/');
                });
@@ -74,10 +74,21 @@ app.listen(3000, function(){
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', function(socket) {
   console.log('connection!');
+
   socket.on('disconnect', function() {
     console.log('disconnect');
   });
+
   socket.on('join', function(data) {
-    console.log('join',data);
+    console.log('join', data);
+    games.find_by_id(data.game_id, function(error, doc) {
+      if (doc) {
+        console.log(doc);
+        doc.players.push(socket);
+        socket.emit('gamedata', { name: doc.name, players: doc.players.length, players_needed: doc.players_needed });
+      } else {
+        socket.emit('error', { message: 'bad id' });
+      }
+    });
   });
 });

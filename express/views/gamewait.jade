@@ -1,13 +1,4 @@
-- title='Game Wait: ' + game.name
-h1= game.name
-
-Waiting for more players...
-
-p We have: #{game.players.length} / #{game.num_players}
-
-
-
+script(src="/js/jquery.min.js")
 script(src="/socket.io/socket.io.js")
-script.
-  var socket = io.connect();
-  socket.emit('join', {game: #{game._id} })
+script(src="/js/game.js")
+script join(#{game._id})
