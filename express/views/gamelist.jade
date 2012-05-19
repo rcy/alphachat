@@ -1,0 +1,17 @@
+h1= 'Game List'
+
+table
+  - for (var i in games)
+    tr
+      td #{games[i].name}
+      td #{games[i].players.length}/#{games[i].num_players}
+      td
+        a(href='game/'+games[i]._id) join
+
+form(method='post')
+  span
+    input(name='name', placeholder='game name')
+  span
+    input(name='num_players', placeholder='number of players')
+  span
+    button create

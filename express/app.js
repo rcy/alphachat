@@ -3,8 +3,7 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , routes = require('./routes');
+var express = require('express');
 
 var app = module.exports = express.createServer();
 
@@ -29,9 +28,32 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-// Routes
+Game = require('./game').Game;
+games = new Game();
 
-app.get('/', routes.index);
+// Routes
+app.get('/', function(req,res) {
+  games.all(function(error, docs) {
+    console.log(docs[0]);
+    console.log(docs[0] && docs[0]._id);
+    res.render('gamelist', { title:'Game List', games:docs })
+  })
+});
+
+app.post('/', function(req,res,data) {
+  games.create({ name: req.param('name'),
+                 num_players: req.param('num_players') },
+               function(error, docs) {
+                 res.redirect('/');
+               });
+});
+
+
+// /game/id
+app.get('/gamewait', function(req,res) {
+  var game = s.games[0];
+  res.render('gamewait', { game:game });
+});
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
