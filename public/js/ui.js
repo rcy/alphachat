@@ -71,6 +71,15 @@ var ui = {
   showSelf: function(obj) {
     $("#chat input").addClass(obj.color);
 
+        // <h1>You are<br />{{color}}</h1>
+        // <p>
+        //   You are chatting with {{opp1}} and {{opp2}}.  You have
+        //   {{minutes}} minutes to vote for the person you prefer and to
+        //   convince them to vote for you.
+        // </p>
+        // <p>
+        //   Be the Alphachatter!
+        // </p>
     $("#info").html('you are: ' + obj.color);
     $("#info").addClass(obj.color);
     $("#info").show();

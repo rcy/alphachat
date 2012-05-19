@@ -68,7 +68,7 @@ chat.on('part', function(player, obj) {
   player.play();
 });
 
-chat.connect();
+//chat.connect();
 
 // $("form.signin input").focus();
 // $("form.signin").submit(function(e) {

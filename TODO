@@ -1,23 +1,17 @@
 -*- org -*-
-* TODO [#A] fix signin - connect sequence
-** TODO make multipages
-** TODO on ff with flash its slow to connect, if we are not connected before we finish signing in, it hangs
-this might be done, check
-* DONE [#A] fix layout
-  CLOSED: [2011-01-09 Sun 13:55]
-on ff there's overlap between the modeline and the chat window
-* DONE [#A] remove junk from modeline
-  CLOSED: [2011-01-08 Sat 23:56]
-* TODO [#A] pop up vote box at end
-* TODO [#A] pop up results box at end
-* TODO [#B] test on ff3
-* TODO [#B] test on ff2
+* TODO [#A] add ability to setup nick/account
+* TODO [#A] put up replay button after game is over
 * TODO [#B] push messages to database
 * TODO [#B] timeout reconnect attempts
 * TODO [#B] fix ie issues
 * TODO [#B] test all transports
+* TODO [#B] show disconnects to other users as parts
+* TODO [#B] show connected status
 * TODO [#C] add surf away mollyguard
 * TODO [#C] show transport on client
 * TODO [#C] trottling
 * TODO [#C] add configuration file for server
 reading different server config files, for dev, test and prod
+* TODO [#C] hard to see red on red in chat input
+
+

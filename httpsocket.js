@@ -1,6 +1,6 @@
-var sys = require('sys');
+var sys = require('util');
 var static = require('node-static');
-var io = require('./socket.io');
+var io = require('socket.io');
 
 exports.start = function(port, docdir, handlers) {
   //
@@ -26,27 +26,28 @@ exports.start = function(port, docdir, handlers) {
   });
   server.listen(port);
 
-  sys.puts("> node-static is listening on http://127.0.0.1"+port);
+  sys.puts("> node-static is listening on http://127.0.0.1:"+port);
 
   //
   // setup socket.io layer
   //
   var socket = io.listen(server);
   socket.on('connection', function(client) {
-    client.on('message', function(obj) {
+    client.on('cmd', function(obj) {
       if (handlers && obj && handlers[obj.cmd]) {
         handlers[obj.cmd](client, obj);
       } else {
         sys.puts("no handler for: " + sys.inspect(obj));
+        sys.puts(typeof obj);
       }
     });
     client.on('disconnect', function() {
-      handlers 
-        && handlers['disconnect'] 
+      handlers
+        && handlers['disconnect']
         && handlers['disconnect'](client);
     });
   });
   sys.puts('registered handlers: ' + sys.inspect(handlers));
-  
+
   return server;
 }

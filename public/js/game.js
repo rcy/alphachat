@@ -1,8 +1,8 @@
-io.setPath('/js/');
+//io.setPath('/js/');
 
 var Game = function() {
   var self = this;
-  this.socket = new io.Socket();
+  this.socket = io.connect();
   this.player = new Player(this);
 
   this.socket.on('connect', function(){
@@ -16,8 +16,8 @@ var Game = function() {
     self.player.connected = false;
     self.callbacks.disconnect(self.player);
   });
-  this.socket.on('message', function(obj){
-    if (obj.cmd !== 'privmsg') 
+  this.socket.on('cmd', function(obj){
+    if (obj.cmd !== 'privmsg')
       self.log(["recv: <-- ", obj]);
 
     self.player.messageCount += 1;
@@ -48,8 +48,8 @@ var Game = function() {
   });
 };
 
-Game.prototype.log = function(obj) { 
-  typeof(console) != 'undefined' 
+Game.prototype.log = function(obj) {
+  typeof(console) != 'undefined'
     && typeof(JSON) != 'undefined'
     && console.log(JSON.stringify(obj));
 };
@@ -57,9 +57,9 @@ Game.prototype.callbacks = {};
 Game.prototype.on = function(cmd, fn) {
   this.callbacks[cmd] = fn;
 };
-Game.prototype.connect = function() {
-  return this.socket.connect();
-};
+// Game.prototype.connect = function() {
+//   this.socket =
+// };
 Game.prototype.disconnect = function() {
   return this.socket.disconnect();
 };
@@ -70,7 +70,7 @@ Game.prototype.send = function(cmd, obj) {
   if (obj.cmd !== 'privmsg')
     this.log(["send: --> ", obj]);
 
-  this.socket.send(obj);
+  this.socket.emit('cmd', obj);
 };
 
 var Player = function(game) {

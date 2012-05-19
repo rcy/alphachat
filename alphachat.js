@@ -1,4 +1,4 @@
-var sys = require('sys');
+var sys = require('util');
 
 ac = exports;
 ac.numplayers = 3;
@@ -11,7 +11,7 @@ ac.rooms = [ac.lobby]
 
 function send(cs, o) {
   for (var i in cs) {
-    cs[i].send(o);
+    cs[i].emit('cmd', o);
     if (o.cmd !== 'privmsg') {
       console.log('send: --> [' + cs[i].sessionId + '] ' + sys.inspect(o));
     }
@@ -45,8 +45,8 @@ ac.handlers = {
     c.game = {};
     c.game.name = o.name;
     send([c], {cmd:'canChat', enabled:false});
-    send([c], {cmd:'motd', 
-               head:'Welcome to Alphachat 0.1', 
+    send([c], {cmd:'motd',
+               head:'Welcome to Alphachat 0.1',
                body:'Chat with other players for a few minutes.  Afterwards, choose who you liked better.'});
   },
   play: function(c, o) {
@@ -101,9 +101,9 @@ function setupGame(players) {
     send([players[i]], { cmd:'init',
                        roomName:room.name,
                        name:players[i].game.name,
-                       color:players[i].game.color, 
+                       color:players[i].game.color,
                        opponents:players[i].game.opponents,
-                       time:ac.gametime 
+                       time:ac.gametime
                      });
   }
 

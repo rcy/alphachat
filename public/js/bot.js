@@ -1,6 +1,6 @@
 var chat = new Game();
 
-chat.connect();
+//chat.connect();
 
 chat.on('connect', function(player) {
   player.announce('bot'+Math.random()*1000);

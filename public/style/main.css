@@ -71,27 +71,27 @@ p {
 #login h1 {
     margin: 0;
 }
-#login form input {
-    width: 8em;
-    background: #333;
-    color: #fff;
-}
+/* #login form input { */
+/*     width: 8em; */
+/*     background: #333; */
+/*     color: #fff; */
+/* } */
 
-form input {
-    font-family:monospace;
-}
-form input.red {
-    background: #f99;
-    color: red;
-}
-form input.green {
-    background: #9f9;
-    color: green;
-}
-form input.blue {
-    background: #99f;
-    color: blue;
-}
+/* form input { */
+/*     font-family:monospace; */
+/* } */
+/* form input.red { */
+/*     background: #f99; */
+/*     color: red; */
+/* } */
+/* form input.green { */
+/*     background: #9f9; */
+/*     color: green; */
+/* } */
+/* form input.blue { */
+/*     background: #99f; */
+/*     color: blue; */
+/* } */
 
 #items {
     background: #000;
@@ -144,7 +144,7 @@ form {
 }
 
 #sidebar {
-    float: left; 
+    float: left;
     background: #222;
     width: 20%;
     height: 100%;
