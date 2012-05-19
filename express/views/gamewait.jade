@@ -4,3 +4,10 @@ h1= game.name
 Waiting for more players...
 
 p We have: #{game.players.length} / #{game.num_players}
+
+
+
+script(src="/socket.io/socket.io.js")
+script.
+  var socket = io.connect();
+  socket.emit('join', {game: #{game._id} })

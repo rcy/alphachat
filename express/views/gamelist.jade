@@ -6,8 +6,8 @@ table
       td #{games[i].name}
       td #{games[i].players.length}/#{games[i].num_players}
       td
-        form(method='post', action='join/'+games[i]._id)
-          input(type='submit', value='join')
+        form(method='get', action='game/'+games[i]._id)
+          button join
 
 form(method='post')
   span
