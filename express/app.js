@@ -31,11 +31,12 @@ app.configure('production', function(){
 Game = require('./game').Game;
 games = new Game();
 
+// create some dummy data
+games.create({name:'alphachat classic',num_players:3}, function(){});
+
 // Routes
 app.get('/', function(req,res) {
   games.all(function(error, docs) {
-    console.log(docs[0]);
-    console.log(docs[0] && docs[0]._id);
     res.render('gamelist', { title:'Game List', games:docs })
   })
 });
@@ -48,11 +49,35 @@ app.post('/', function(req,res,data) {
                });
 });
 
+app.post('/join/:id', function(req,res,data) {
+  games.find_by_id(req.params.id, function(error, doc) {
+    if (error) {
+      res.send("error: " + error.text);
+    } else {
+      if (doc) {
+        doc.players.push('me');
+        games.save(doc, function() {
+          res.redirect('/game/'+req.params.id);
+        });
+      } else {
+        res.send('not found');
+      }
+    }
+  });
+});
 
-// /game/id
-app.get('/gamewait', function(req,res) {
-  var game = s.games[0];
-  res.render('gamewait', { game:game });
+app.get('/game/:id', function(req, res) {
+  games.find_by_id(req.params.id, function(error, doc) {
+    if (error) {
+      res.send("error: " + error.text);
+    } else {
+      if (doc) {
+        res.render('gamewait', { title:'Game Wait', game: doc });
+      } else {
+        res.send('not found');
+      }
+    }
+  });
 });
 
 app.listen(3000, function(){

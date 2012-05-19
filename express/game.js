@@ -16,8 +16,22 @@ Game.prototype.create = function(game, callback) {
   callback(null, this.data);
 }
 
+Game.prototype.save = function(game, callback) {
+  this.find_by_id(game._id, function(error, doc) {
+    doc.players = game.players;
+    doc.num_players = game.num_players;
+    callback(null, doc);
+  });
+}
+
 Game.prototype.find_by_id = function(id, callback) {
-  // TODO
+  for (var i = 0; i < this.data.length; i++) {
+    if (this.data[i]._id == id) {
+      callback(null, this.data[i]);
+      return;
+    }
+  }
+  callback();
 }
 
 exports.Game = Game;
