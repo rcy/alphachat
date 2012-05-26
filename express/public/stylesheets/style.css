@@ -1,8 +1,28 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+    font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+#content {
+    padding: 50px;
+    background: #aaa;
+}
+
+#player-list {
+    float: left;
+    width: 25%;
+}
+
+#chat {
+    float: left;
+    background: orange;
+}
+
+#connected {
+    background: pink;
+    padding-left: .5em;
+}
+#connected.connected {
+    background: lime;
 }

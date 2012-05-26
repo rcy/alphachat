@@ -1,7 +1,14 @@
-#chat
-  h1 alphachat gets backbone
-  ul#player-list
-  ul#msg-list
+#app
+
+  #connected
+    span making socket connection...
+
+  #content
+    h1 alphachat gets backbone
+    ul#player-list
+    #chat
+      ul#msg-list
+      input.chat(type="text")
 
 !=partial('templates')
 !=partial('js')
