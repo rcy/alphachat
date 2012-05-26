@@ -86,10 +86,14 @@ io.sockets.on('connection', function(socket) {
         console.log(doc);
         doc.players.push(socket);
         io.sockets.emit('join', { name: socket.id });
-        io.sockets.emit('chat', { body: 'hello world' });
+        io.sockets.emit('chat', { sender: 'server', body: 'hello '+socket.id });
       } else {
         socket.emit('error', { message: 'bad id' });
       }
     });
+  });
+
+  socket.on('chat', function(data) {
+    io.sockets.emit('chat', {sender: socket.id, body: data.body});
   });
 });

@@ -17,6 +17,8 @@ var App = new AppView;
 
 var socket = io.connect();
 
+socket.on('error', function(d) { alert('error'); console.log('error', d); });
+
 socket.emit('join', {game_id: 1})
 
 socket.on('connect', function(client) {
@@ -33,10 +35,13 @@ socket.on('join', function(d) {
 });
 
 socket.on('chat', function(d) {
-  Messages.add({body: d.body});
+  var p = new Player({name: d.sender});
+  Messages.add({body: d.body, player: p});
 });
 
-socket.on('error', function(d) {
-  alert('error');
-  console.log('error',d);
+$('form.chat').on('submit', function(e) {
+  e.preventDefault();
+  var $input = $(e.currentTarget).find('input');
+  socket.emit('chat', {body: $input.val()});
+  $input.val('');
 });
