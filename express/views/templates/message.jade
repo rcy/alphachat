@@ -1,0 +1,6 @@
+//- -*- html -*-
+script#message-template(type="text/template").
+  <div class="message">
+    <span class="player" style="color: <%= player.get('color') %>"><%= player.get('name') %></span>:
+    <span class="body"><%= body %></span>
+  </div>
