@@ -37,6 +37,7 @@ socket.on('join', function(d) {
 socket.on('chat', function(d) {
   var p = new Player({name: d.sender});
   Messages.add({body: d.body, player: p});
+  $("#msg-list").scrollTop($("#msg-list")[0].scrollHeight);
 });
 
 $('form.chat').on('submit', function(e) {

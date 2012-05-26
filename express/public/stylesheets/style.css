@@ -1,6 +1,7 @@
 body {
     padding: 0;
     margin: 0;
+    font-family: mono;
     font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -13,15 +14,15 @@ body {
     width: 25%;
 }
 
-#chat {
-    float: left;
-    background: orange;
-}
-
 #connected {
     background: pink;
     padding-left: .5em;
 }
 #connected.connected {
     background: lime;
+}
+
+#msg-list {
+    height: 300px;
+    overflow-y: scroll;
 }

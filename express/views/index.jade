@@ -1,15 +1,26 @@
-#app
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container-fluid
+      a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collaps")
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.brand(href="#") Alphachat gets Backbone
 
-  #connected
-    span making socket connection...
+.container-fluid
+  #app
+    #connected
+      span making socket connection...
 
-  #content
-    h1 alphachat gets backbone
-    ul#player-list
-    #chat
-      ul#msg-list
-      form.chat
-        input(type="text")
+    .row-fluid
+      .span2
+        h1 players
+        ul#player-list
+      .span10
+        h1 messages
+        ul#msg-list
+        form.chat
+          input(type="text")
 
 !=partial('templates')
 !=partial('js')
