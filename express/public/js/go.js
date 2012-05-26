@@ -43,6 +43,8 @@ socket.on('chat', function(d) {
 $('form.chat').on('submit', function(e) {
   e.preventDefault();
   var $input = $(e.currentTarget).find('input');
-  socket.emit('chat', {body: $input.val()});
-  $input.val('');
+  if ($input.val() != '') {
+    socket.emit('chat', {body: $input.val()});
+    $input.val('');
+  }
 });

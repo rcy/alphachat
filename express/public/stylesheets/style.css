@@ -15,11 +15,6 @@ body {
 }
 
 #connected {
-    background: pink;
-    padding-left: .5em;
-}
-#connected.connected {
-    background: lime;
 }
 
 #msg-list {

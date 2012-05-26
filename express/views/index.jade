@@ -9,16 +9,13 @@
 
 .container-fluid
   #app
-    #connected
-      span making socket connection...
-
     .row-fluid
       .span2
         h1 players
         ul#player-list
       .span10
-        h1 messages
         ul#msg-list
+        span#connected(class="label label-important") disconnected
         form.chat
           input(type="text")
 

@@ -102,12 +102,14 @@ var AppView = Backbone.View.extend({
 
   connect: function() {
     this.connectedEl.html('connected');
-    this.connectedEl.addClass('connected');
+    this.connectedEl.removeClass('label-important');
+    this.connectedEl.addClass('label-success');
   },
 
   disconnect: function() {
     this.connectedEl.html('disconnected');
-    this.connectedEl.removeClass('connected');
+    this.connectedEl.removeClass('label-success');
+    this.connectedEl.addClass('label-important');
   }
 
 });
