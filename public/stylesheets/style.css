@@ -24,6 +24,9 @@ body {
     margin: 0;
     background: #eee;
 }
-form input {
+form.chat input {
     width: 100%;
+}
+input.nick {
+    width: 25%;
 }

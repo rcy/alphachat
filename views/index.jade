@@ -1,23 +1,24 @@
-.navbar.navbar-fixed-top
-  .navbar-inner
-    .container-fluid
-      a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collaps")
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
-      a.brand(href="#") Alphachat gets Backbone
-
 .container-fluid
-  #app
-    .row-fluid
-      .span2
-        h1 players
-        ul#player-list
-      .span10
-        ul#msg-list
-        span#connected(class="label label-important") disconnected
-        form.chat
-          input(type="text", placeholder="Type message here and press enter", spellcheck="false")
+  .hero-unit
+    h1 alphachat
+    p be the best
+    p
+      form(action="play")
+        input.nick(type="text", placeholder="Nickname", name="nick")
+        input(type="submit", value="Play!")
 
-!=partial('templates')
-!=partial('js')
+    .row
+      .span4
+        h2 chat
+        p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      .span4
+        h2 vote
+        p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      .span4
+        h2 win
+        p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+
+script(src="/js/jquery-1.7.1.js")
+script.
+  console.log($('input.nick'));
+  $('input.nick').focus();

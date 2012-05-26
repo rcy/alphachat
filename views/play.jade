@@ -1,0 +1,14 @@
+.container-fluid
+  #app
+    .row-fluid
+      .span2
+        h1 players
+        ul#player-list
+      .span10
+        ul#msg-list
+        span#connected(class="label label-important") disconnected
+        form.chat
+          input(type="text", placeholder="Type message here and press enter", spellcheck="false")
+
+!=partial('templates')
+!=partial('js')

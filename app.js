@@ -36,7 +36,11 @@ games.create({name:'alphachat classic',players_needed:3}, function(){});
 
 // Routes
 app.get('/', function(req,res) {
-  res.render('index', { title:'Game List' })
+  res.render('index');
+});
+
+app.get('/play', function(req,res) {
+  res.render('play');
 });
 
 app.get('/games', function(req,res) {

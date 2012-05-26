@@ -13,4 +13,14 @@ html
 
     link(rel="stylesheet", href="/stylesheets/bootstrap-responsive.css")
 
-  body!= body
+  body
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container-fluid
+          a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collaps")
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.brand(href="#") Alphachat gets Backbone
+
+    div!= body
