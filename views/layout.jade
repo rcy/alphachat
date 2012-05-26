@@ -9,6 +9,7 @@ html
     style.
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        padding-bottom: 40px;
       }
 
     link(rel="stylesheet", href="/stylesheets/bootstrap-responsive.css")
@@ -17,10 +18,10 @@ html
     .navbar.navbar-fixed-top
       .navbar-inner
         .container
-          a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collaps")
+          a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
             span.icon-bar
             span.icon-bar
             span.icon-bar
           a.brand(href="#") Alphachat gets Backbone
 
-    div!= body
+    != body
