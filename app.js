@@ -67,7 +67,7 @@ app.get('/game/:id', function(req, res) {
   });
 });
 
-app.listen(3000, function(){
+app.listen(9469, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
