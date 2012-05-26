@@ -40,6 +40,8 @@ socket.on('chat', function(d) {
   $("#msg-list").scrollTop($("#msg-list")[0].scrollHeight);
 });
 
+$('form.chat input').focus();
+
 $('form.chat').on('submit', function(e) {
   e.preventDefault();
   var $input = $(e.currentTarget).find('input');
