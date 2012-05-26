@@ -73,7 +73,7 @@ app.listen(3000, function(){
 
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', function(socket) {
-  console.log('connection!', socket);
+  //console.log('connection!', socket);
 
   socket.on('disconnect', function() {
     console.log('disconnect');
@@ -83,10 +83,9 @@ io.sockets.on('connection', function(socket) {
     console.log('join', data);
     games.find_by_id(data.game_id, function(error, doc) {
       if (doc) {
-        console.log(doc);
         doc.players.push(socket);
         io.sockets.emit('join', { name: socket.id });
-        io.sockets.emit('chat', { sender: 'server', body: 'hello '+socket.id });
+        socket.emit('chat', { sender: 'server', body: 'hello '+socket.id });
       } else {
         socket.emit('error', { message: 'bad id' });
       }
