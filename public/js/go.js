@@ -46,5 +46,6 @@ $('form.chat').on('submit', function(e) {
   if ($input.val() != '') {
     socket.emit('chat', {body: $input.val()});
     $input.val('');
+    $input.attr('placeholder','');
   }
 });
