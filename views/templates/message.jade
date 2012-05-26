@@ -2,5 +2,5 @@
 script#message-template(type="text/template").
   <div class="message">
     <span class="player" style="color: <%= player.get('color') %>"><%= player.get('name') %></span>:
-    <span class="body"><%= body %></span>
+    <span class="body"><%= _.escape(body) %></span>
   </div>
