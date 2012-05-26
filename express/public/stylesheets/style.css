@@ -25,4 +25,10 @@ body {
 #msg-list {
     height: 300px;
     overflow-y: scroll;
+    padding: 0;
+    margin: 0;
+    background: #eee;
+}
+form input {
+    width: 100%;
 }
