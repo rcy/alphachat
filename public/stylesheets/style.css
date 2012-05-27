@@ -14,3 +14,12 @@ input.nick {
 div.message span.time {
     color: gray;
 }
+
+/* turn off easing on progress bar */
+#timer.progress .bar {
+  -webkit-transition: none;
+     -moz-transition: none;
+      -ms-transition: none;
+       -o-transition: none;
+          transition: none;
+}

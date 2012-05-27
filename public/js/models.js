@@ -81,6 +81,63 @@ var MessageView = Backbone.View.extend({
   }
 });
 
+var Timer = Backbone.Model.extend({
+  defaults: {
+    duration: 60,
+    percent: 100
+  },
+  initialize: function() {
+  },
+  start: function(duration) {
+    this.jsTimer && clearTimeout(this.jsTimer);
+    this.set('duration', duration || this.defaults.duration);
+    this.set('percent', 100);
+    this.set('start_time', Date.now());
+    this.update();
+    this.trigger('start', duration);
+  },
+  update: function() {
+    var that = this;
+    var percent = (100 - ((Date.now() - this.get('start_time')) / (1000*this.get('duration')) * 100));
+    if (percent < 0) percent = 0;
+    this.set('percent', percent); // this triggers view update
+    if (percent > 0) {
+      this.jsTimer = setTimeout(function() { that.update(); }, 100);
+    } else {
+      // trigger some event that timer is done so App can respond
+      this.trigger('finish');
+    }
+  }
+});
+
+var TimerView = Backbone.View.extend({
+  el: $("#timer"),
+  initialize: function() {
+    this.model.bind('change', this.update, this);
+    this.model.bind('start', this.render, this);
+    this.model.bind('start', this.active, this);
+    this.render();
+  },
+  template: _.template($('#timer-template').html()),
+  render: function() {
+    this.$el.html(this.template());
+  },
+  active: function() {
+    this.$el.addClass('active');
+  },
+  update: function() {
+    var $bar = this.$el.find('.bar');
+    var percent = this.model.get('percent');
+    $bar.css('width', percent + '%');
+
+    this.$el.removeClass('progress-warning').removeClass('progress-danger');
+    if (percent < 10)
+      this.$el.addClass('progress-danger');
+    else if (percent < 50)
+      this.$el.addClass('progress-warning');
+  }
+});
+
 
 var AppView = Backbone.View.extend({
   el: $("#app"),
@@ -90,6 +147,20 @@ var AppView = Backbone.View.extend({
     Messages.bind('add', this.addMessage, this);
     Players.bind('add', this.addPlayer, this);
     this.connectedEl = this.$('#connected');
+
+    this.timer = new Timer();
+    this.timer.bind('finish', this.timer_finish, this);
+    this.timerView = new TimerView({model: this.timer});
+
+    this.start_timer();
+  },
+
+  start_timer: function(seconds) {
+    this.timer.start(seconds);
+  },
+  timer_finish: function() {
+    console.log('timer finish');
+    this.start_timer();
   },
 
   addMessage: function(msg) {

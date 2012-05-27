@@ -2,17 +2,16 @@
   .row
     .span2
       .well
-        h4 time left: 30s
-        .progress.progress-striped.active
-          .bar(style="width: 50%;")          
+        h4 time remaining:
+        #timer.progress.progress-striped
         h4 players:
         ul#player-list.nav.nav-pills.nav-stacked
     .span10
       .well
         ul#msg-list.unstyled
-      span#connected(class="label label-important") disconnected
-      form.chat
-        input(type="text", placeholder="Type message and press enter", spellcheck="false")
+        span#connected(class="label label-important") disconnected
+        form.chat
+          input(type="text", placeholder="Type message and press enter", spellcheck="false")
 
 !=partial('templates')
 !=partial('js')
