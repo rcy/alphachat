@@ -1,14 +1,16 @@
-.container
-  #app
-    .row
-      .span2
-        h1 players
-        ul#player-list
-      .span10
-        ul#msg-list
-        span#connected(class="label label-important") disconnected
-        form.chat
-          input(type="text", placeholder="Type message and press enter", spellcheck="false")
+#app.container
+  .row
+    .span2
+      h1 players
+      ul#player-list
+    .span10
+      ul#msg-list
+      span#connected(class="label label-important") disconnected
+      form.chat
+        input(type="text", placeholder="Type message and press enter", spellcheck="false")
 
 !=partial('templates')
 !=partial('js')
+
+script.
+  socket.emit('join', {game_id: 1, nick: '#{nick}'})

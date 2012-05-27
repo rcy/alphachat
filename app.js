@@ -40,7 +40,7 @@ app.get('/', function(req,res) {
 });
 
 app.get('/play', function(req,res) {
-  res.render('play');
+  res.render('play', {nick: req.param('nick')});
 });
 
 app.get('/games', function(req,res) {
@@ -93,18 +93,18 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('join', function(data) {
     console.log('join', data);
-    games.find_by_id(data.game_id, function(error, doc) {
-      if (doc) {
-        doc.players.push(socket);
-        io.sockets.emit('join', { name: socket.id });
-        socket.emit('chat', { sender: 'server', body: 'hello '+socket.id });
-      } else {
-        socket.emit('error', { message: 'bad id' });
-      }
-    });
+    var nick = data.nick;
+    io.sockets.emit('join', { socket_id: socket.id, name: nick, color: random_color() });
+    socket.emit('chat', { sender: 'server', body: 'hello '+nick });
   });
 
   socket.on('chat', function(data) {
     io.sockets.emit('chat', {sender: socket.id, body: data.body});
   });
 });
+
+// todo: remove this, just return a unique index an let the client figure out the color
+function random_color() {
+  var c = ['red', 'green', 'blue', 'orange', 'purple'];
+  return c[Math.floor(Math.random()*c.length)];
+}

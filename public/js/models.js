@@ -1,7 +1,8 @@
 var Player = Backbone.Model.extend({
   defaults: {
     name: 'nobody',
-    color: 'green'
+    color: 'black',
+    socket_id: 0  // the server refers to players by the websocket id
   },
   initialize: function() {
     console.log('initialize Player', this.get('name'));
@@ -98,6 +99,10 @@ var AppView = Backbone.View.extend({
   addPlayer: function(player) {
     var view = new PlayerView({model: player});
     this.$("#player-list").append(view.render().el);
+  },
+
+  socketPlayer: function(socket_id) {
+    return Players.where({socket_id: socket_id})[0];
   },
 
   connect: function() {
