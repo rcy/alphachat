@@ -1,25 +1,12 @@
-#content {
-    padding: 50px;
-}
-
-#player-list {
-    float: left;
-    width: 25%;
-}
-
-#connected {
-}
-
 #msg-list {
     height: 300px;
     overflow-y: scroll;
-    padding: 0;
-    margin: 0;
-    background: #eee;
 }
+
 form.chat input {
     width: 100%;
 }
+
 input.nick {
     width: 25%;
 }

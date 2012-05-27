@@ -1,10 +1,15 @@
 #app.container
   .row
     .span2
-      h1 players
-      ul#player-list
+      .well
+        h4 time left: 30s
+        .progress.progress-striped.active
+          .bar(style="width: 50%;")          
+        h4 players:
+        ul#player-list.nav.nav-pills.nav-stacked
     .span10
-      ul#msg-list
+      .well
+        ul#msg-list.unstyled
       span#connected(class="label label-important") disconnected
       form.chat
         input(type="text", placeholder="Type message and press enter", spellcheck="false")
