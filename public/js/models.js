@@ -50,6 +50,7 @@ var Message = Backbone.Model.extend({
   },
   initialize: function() {
     console.log('initialize Message');
+    this.set('time', (new Date).toString().split(/ /)[4]);
   }
 });
 

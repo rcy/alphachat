@@ -23,3 +23,7 @@ form.chat input {
 input.nick {
     width: 25%;
 }
+
+div.message span.time {
+    color: gray;
+}
