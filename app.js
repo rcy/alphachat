@@ -28,12 +28,6 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-Game = require('./game').Game;
-games = new Game();
-
-// create some dummy data
-games.create({name:'alphachat classic',players_needed:3}, function(){});
-
 // Routes
 app.get('/', function(req,res) {
   res.render('index');
@@ -41,34 +35,6 @@ app.get('/', function(req,res) {
 
 app.get('/play', function(req,res) {
   res.render('play', {nick: req.param('nick')});
-});
-
-app.get('/games', function(req,res) {
-  games.all(function(error, docs) {
-    res.render('gamelist', { title:'Game List', games:docs })
-  })
-});
-
-app.post('/games', function(req,res,data) {
-  games.create({ name: req.param('name'),
-                 players_needed: req.param('num_players') },
-               function(error, docs) {
-                 res.redirect('/');
-               });
-});
-
-app.get('/game/:id', function(req, res) {
-  games.find_by_id(req.params.id, function(error, doc) {
-    if (error) {
-      res.send("error: " + error.text);
-    } else {
-      if (doc) {
-        res.render('gamewait', { title:'Game Wait', game: doc });
-      } else {
-        res.send('not found');
-      }
-    }
-  });
 });
 
 var port = process.env.PORT || 3000;
