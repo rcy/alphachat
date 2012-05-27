@@ -83,7 +83,7 @@ var MessageView = Backbone.View.extend({
 
 var Timer = Backbone.Model.extend({
   defaults: {
-    duration: 60,
+    duration: 600,
     percent: 100
   },
   initialize: function() {
