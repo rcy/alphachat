@@ -1,11 +1,11 @@
 var Player = Backbone.Model.extend({
   defaults: {
-    name: 'nobody',
+    nick: 'nobody',
     color: 'black',
-    socket_id: 0  // the server refers to players by the websocket id
+    socketid: 0 // not really used client side, server should hide?
   },
   initialize: function() {
-    console.log('initialize Player', this.get('name'));
+    console.log('initialize Player', this.attributes);
   },
   vote: function() {
     console.log('vote');
@@ -17,7 +17,7 @@ var PlayerList = Backbone.Collection.extend({
   initialize: function() {
     console.log('initialize PlayerList');
     this.bind("add", function(player) {
-      console.log('added player: '+player.get('name'));
+      console.log('added player: '+player.get('nick'));
     });
   }
 });
@@ -38,7 +38,7 @@ var PlayerView = Backbone.View.extend({
     return this;
   },
   vote: function() {
-    console.log('click vote', this.model.get('name'));
+    console.log('click vote', this.model.get('nick'));
     this.model.vote();
   }
 });
@@ -173,8 +173,8 @@ var AppView = Backbone.View.extend({
     this.$("#player-list").append(view.render().el);
   },
 
-  socketPlayer: function(socket_id) {
-    return Players.where({socket_id: socket_id})[0];
+  socketPlayer: function(socketid) {
+    return Players.where({socketid: socketid})[0];
   },
 
   connect: function() {

@@ -12,18 +12,27 @@ socket.on('disconnect', function() {
   App.disconnect();
 });
 
-socket.on('join', function(d) {
-  var p = new Player({name: d.name, color: d.color, socket_id: d.socket_id});
+socket.on('join', function(doc) {
+  console.log('got: join: ',doc);
+  var p = new Player(doc);
   Players.add(p);
 });
 
 socket.on('chat', function(d) {
+  console.log('chat: ', d);
   var p = App.socketPlayer(d.sender);
   if (p) {
     Messages.add({body: d.body, player: p});
     $("#msg-list").scrollTop($("#msg-list")[0].scrollHeight);
   } else {
     console.log('unknown player sent chat:', d);
+  }
+});
+
+socket.on('names', function(docs) {
+  for (var i in docs) {
+    var p = new Player(docs[i]);
+    Players.add(p);
   }
 });
 

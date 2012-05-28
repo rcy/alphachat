@@ -51,7 +51,7 @@ io.configure(function () {
 });
 
 io.sockets.on('connection', function(socket) {
-  //console.log('connection!', socket);
+  console.log('connection!', socket.id);
 
   socket.on('disconnect', function() {
     console.log('disconnect');
@@ -59,12 +59,21 @@ io.sockets.on('connection', function(socket) {
 
   socket.on('join', function(data) {
     console.log('join', data);
-    var nick = data.nick;
-    io.sockets.emit('join', { socket_id: socket.id, name: nick, color: random_color() });
-    socket.emit('chat', { sender: 'server', body: 'hello '+nick });
+    console.log('join socket', socket.id);
+    var player = new Player({nick: data.nick, socketid: socket.id});
+
+    // send the new player everyone who's in the game
+    socket.emit('names', game.players);
+
+    // add this player to the game
+    game.players.push(player);
+
+    // send everyone the new players info
+    io.sockets.emit('join', player);
   });
 
   socket.on('chat', function(data) {
+    console.log('chat from',socket.id)
     io.sockets.emit('chat', {sender: socket.id, body: data.body});
   });
 });
@@ -74,3 +83,43 @@ function random_color() {
   var c = ['red', 'green', 'blue', 'orange', 'purple'];
   return c[Math.floor(Math.random()*c.length)];
 }
+
+// mongoose
+var mongoose = require('mongoose')
+mongoose.connect('mongodb://localhost/alphachat');
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
+
+mongoose.connection.on('open', function() {
+  console.log('mongo.connection open');
+});
+mongoose.connection.on('error', function(msg) {
+  console.log('mongo.connection error',msg);
+  process.exit(1);
+});
+
+var playerSchema = new Schema({
+  nick:     { type: String, required: true },
+  socketid: { type: String, required: true },
+});
+
+var Player = mongoose.model('Player', playerSchema);
+
+var gameSchema = new Schema({
+  players: [playerSchema]
+});
+
+var Game = mongoose.model('Game', gameSchema);
+
+game = new Game();
+// p = new Player({nick: 'realplayer', color: 'pink'});
+// console.log(p);
+
+// game.players.push({nick: 'rcy', color: 'green'})
+// game.players.push({nick: 'bob', color: 'yellow'})
+// game.players.push(p)
+// game.save(function(err,doc) {
+//   console.log('callback on game save:', err, doc);
+// });
+// p.nick = 'unrealplayer';
+// p.save();
