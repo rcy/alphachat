@@ -106,7 +106,8 @@ function random_color() {
 
 // mongoose
 var mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost/alphachat');
+var mongo_url = process.env.MONGOHQ_URL || 'mongodb://localhost/alphachat';
+mongoose.connect(mongo_url);
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
