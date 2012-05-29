@@ -30,10 +30,16 @@ socket.on('chat', function(d) {
 });
 
 socket.on('names', function(docs) {
+  console.log('names', docs);
   for (var i in docs) {
     var p = new Player(docs[i]);
     Players.add(p);
   }
+});
+
+socket.on('part', function(doc) {
+  console.log('part', doc);
+  Players.remove(Players.get(doc._id));
 });
 
 $('form.chat input').focus();

@@ -1,4 +1,5 @@
 var Player = Backbone.Model.extend({
+  idAttribute: "_id",
   defaults: {
     nick: 'nobody',
     color: 'black',
@@ -31,7 +32,11 @@ var PlayerView = Backbone.View.extend({
     "click span": "vote"
   },
   initialize: function() {
-      this.model.bind('change', this.render, this);
+    this.model.bind('change', this.render, this);
+    this.model.bind('remove', this.remove, this);
+  },
+  remove: function() {
+    this.$el.fadeOut();
   },
   render: function() {
     this.$el.html(this.template(this.model.toJSON()));

@@ -53,23 +53,43 @@ io.configure(function () {
 io.sockets.on('connection', function(socket) {
   console.log('connection!', socket.id);
 
+  var remove = function() {
+    console.log('remove');
+    Player.findOne({'socketid': socket.id}).run(function(err, doc) {
+      console.log('removing:', doc);
+      if (err) return console.log(err);
+      if (doc) {
+        io.sockets.emit('part', doc);
+        doc.remove();
+      }
+    });
+  }
+
   socket.on('disconnect', function() {
     console.log('disconnect');
+    remove();
+  });
+
+  socket.on('part', function() {
+    console.log('part');
+    remove();
   });
 
   socket.on('join', function(data) {
     console.log('join', data);
     console.log('join socket', socket.id);
-    var player = new Player({nick: data.nick, socketid: socket.id});
 
     // send the new player everyone who's in the game
-    socket.emit('names', game.players);
+    Player.find().where('game', game).run(function(err, docs) {
+      socket.emit('names', docs);
 
-    // add this player to the game
-    game.players.push(player);
-
-    // send everyone the new players info
-    io.sockets.emit('join', player);
+      // add this player to the game
+      var player = new Player({nick: data.nick, socketid: socket.id, game: game});
+      player.save(function(err, doc) {
+        // send everyone the new players info
+        io.sockets.emit('join', doc);
+      });
+    });
   });
 
   socket.on('chat', function(data) {
@@ -101,17 +121,30 @@ mongoose.connection.on('error', function(msg) {
 var playerSchema = new Schema({
   nick:     { type: String, required: true },
   socketid: { type: String, required: true },
+  game:     ObjectId
 });
 
 var Player = mongoose.model('Player', playerSchema);
 
 var gameSchema = new Schema({
-  players: [playerSchema]
 });
 
 var Game = mongoose.model('Game', gameSchema);
 
 game = new Game();
+game.save(function() {
+  console.log("game saved");
+});
+  // p1 = new Player({nick: "bob", socketid: "abc", game: game});
+  // p2 = new Player({nick: "bob", socketid: "abc", game: game});
+  // p2.save();
+  // p1.save(function(err) {
+  //   console.log('err:',err);
+  //   Player.find().where('game', game._id).run(function(err,docs) {
+  //     console.log('docs', docs);
+  //   });
+  // });
+
 // p = new Player({nick: 'realplayer', color: 'pink'});
 // console.log(p);
 
