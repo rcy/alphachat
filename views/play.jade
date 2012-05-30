@@ -1,17 +1,22 @@
-#app.container
-  .row
+#app.container-fluid
+  .row-fluid
     .span2
       .well
-        h4 time remaining:
-        #timer.progress.progress-striped
-        h4 players:
+        h4 Survivors
         ul#player-list.nav.nav-pills.nav-stacked
-    .span10
+    .span8
       .well
+        h1 Chat Round 1 of 8
+        #timer.progress.progress-striped
         ul#msg-list.unstyled
-        span#connected(class="label label-important") disconnected
         form.chat
           input(type="text", placeholder="Type message and press enter", spellcheck="false")
+    .span2
+      .well
+        h4 Jury
+        p
+          em No jury members
+        ul#jury-list.nav.nav-pills.nav-stacked
 
 !=partial('templates')
 !=partial('js')

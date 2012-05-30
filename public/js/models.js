@@ -93,7 +93,7 @@ var MessageView = Backbone.View.extend({
 
 var Timer = Backbone.Model.extend({
   defaults: {
-    duration: 600,
+    duration: 60,
     percent: 100
   },
   initialize: function() {
@@ -112,7 +112,7 @@ var Timer = Backbone.Model.extend({
     if (percent < 0) percent = 0;
     this.set('percent', percent); // this triggers view update
     if (percent > 0) {
-      this.jsTimer = setTimeout(function() { that.update(); }, 1000);
+      this.jsTimer = setTimeout(function() { that.update(); }, 100);
     } else {
       // trigger some event that timer is done so App can respond
       this.trigger('finish');
@@ -156,7 +156,7 @@ var AppView = Backbone.View.extend({
     this.$el.show();
     Messages.bind('add', this.addMessage, this);
     Players.bind('add', this.addPlayer, this);
-    this.connectedEl = this.$('#connected');
+    this.connectedEl = $('#connected');
 
     this.timer = new Timer();
     this.timer.bind('finish', this.timer_finish, this);
