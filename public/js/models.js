@@ -48,7 +48,8 @@ var PlayerView = Backbone.View.extend({
     return this;
   },
   vote: function() {
-    dispatcher.trigger('vote', this.model);
+    if (!this.model.get('selected'))
+      dispatcher.trigger('vote', this.model);
   }
 });
 
