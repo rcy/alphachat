@@ -96,6 +96,19 @@ io.sockets.on('connection', function(socket) {
     console.log('chat from',socket.id)
     io.sockets.emit('chat', {sender: socket.id, body: data.body});
   });
+
+  socket.on('vote', function(data) {
+    Player.findOne({'socketid': socket.id}).run(function(err, player) {
+      if (err) return console.log(err);
+      Player.findOne({'_id': data._id}).run(function(err, vote) {
+        if (err) return console.log(err);
+        player.vote = vote;
+        player.save(function(err,data) {
+          console.log('saved player', player);
+        });
+      });
+    });
+  });
 });
 
 // todo: remove this, just return a unique index an let the client figure out the color
@@ -122,6 +135,7 @@ mongoose.connection.on('error', function(msg) {
 var playerSchema = new Schema({
   nick:     { type: String, required: true },
   socketid: { type: String, required: true },
+  vote:     ObjectId, // vote is a player
   game:     ObjectId
 });
 
