@@ -1,17 +1,17 @@
+// use a event dispatcher to keep views decoupled
+var dispatcher = _.clone(Backbone.Events)
+
 var Player = Backbone.Model.extend({
   idAttribute: "_id",
   defaults: {
     nick: 'nobody',
     color: 'black',
+    selected: false,
     socketid: 0 // not really used client side, server should hide?
   },
   initialize: function() {
     console.log('initialize Player', this.attributes);
   },
-  vote: function() {
-    console.log('vote');
-    this.trigger('vote', this);
-  }
 });
 
 var PlayerList = Backbone.Collection.extend({
@@ -41,11 +41,14 @@ var PlayerView = Backbone.View.extend({
   },
   render: function() {
     this.$el.html(this.template(this.model.toJSON()));
+    if (this.model.get('selected'))
+      this.$el.addClass('active');
+    else
+      this.$el.removeClass('active');
     return this;
   },
   vote: function() {
-    console.log('click vote', this.model.get('nick'));
-    this.model.vote();
+    dispatcher.trigger('vote', this.model);
   }
 });
 
@@ -152,18 +155,20 @@ var AppView = Backbone.View.extend({
     this.$el.show();
     Messages.bind('add', this.addMessage, this);
     Players.bind('add', this.addPlayer, this);
-    Players.bind('vote', this.vote, this);
     this.connectedEl = this.$('#connected');
 
     this.timer = new Timer();
     this.timer.bind('finish', this.timer_finish, this);
     this.timerView = new TimerView({model: this.timer});
-
     this.start_timer();
+
+    dispatcher.bind('vote', this.vote, this);
   },
 
   vote: function(player) {
-    console.log('appview: vote', player);
+    _.each(Players.models, function(p) {
+      p.set('selected', (p == player));
+    });
     this.trigger('vote', player);
   },
 

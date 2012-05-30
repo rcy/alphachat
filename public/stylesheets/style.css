@@ -23,3 +23,8 @@ div.message span.time {
        -o-transition: none;
           transition: none;
 }
+
+#player-list .active a,
+#player-list .active a:hover {
+    background-color: #ff6347;
+}
