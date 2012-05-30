@@ -10,6 +10,7 @@ var Player = Backbone.Model.extend({
   },
   vote: function() {
     console.log('vote');
+    this.trigger('vote', this);
   }
 });
 
@@ -29,7 +30,7 @@ var PlayerView = Backbone.View.extend({
   tagName: 'li',
   template: _.template($('#player-template').html()),
   events: {
-    "click span": "vote"
+    "click a": "vote"
   },
   initialize: function() {
     this.model.bind('change', this.render, this);
@@ -107,7 +108,7 @@ var Timer = Backbone.Model.extend({
     if (percent < 0) percent = 0;
     this.set('percent', percent); // this triggers view update
     if (percent > 0) {
-      this.jsTimer = setTimeout(function() { that.update(); }, 100);
+      this.jsTimer = setTimeout(function() { that.update(); }, 1000);
     } else {
       // trigger some event that timer is done so App can respond
       this.trigger('finish');
@@ -151,6 +152,7 @@ var AppView = Backbone.View.extend({
     this.$el.show();
     Messages.bind('add', this.addMessage, this);
     Players.bind('add', this.addPlayer, this);
+    Players.bind('vote', this.vote, this);
     this.connectedEl = this.$('#connected');
 
     this.timer = new Timer();
@@ -158,6 +160,11 @@ var AppView = Backbone.View.extend({
     this.timerView = new TimerView({model: this.timer});
 
     this.start_timer();
+  },
+
+  vote: function(player) {
+    console.log('appview: vote', player);
+    this.trigger('vote', player);
   },
 
   start_timer: function(seconds) {

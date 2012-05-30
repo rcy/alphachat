@@ -2,6 +2,11 @@ var App = new AppView;
 
 var socket = io.connect();
 
+App.on('vote', function(player) {
+  console.log('toplevel got vote', player);
+  socket.emit('vote', player.attributes);
+});
+
 socket.on('error', function(d) { alert('error'); console.log('error', d); });
 
 socket.on('connect', function(client) {
