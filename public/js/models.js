@@ -188,7 +188,11 @@ var AppView = Backbone.View.extend({
 
   addPlayer: function(player) {
     var view = new PlayerView({model: player});
-    this.$("#player-list").append(view.render().el);
+    var $container;
+    if (player.get('self') === true)
+      this.$("#self").html(player.get('nick'));
+    else
+      this.$("#opponents").append(view.render().el);
   },
 
   socketPlayer: function(socketid) {

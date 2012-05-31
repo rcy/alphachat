@@ -80,14 +80,17 @@ io.sockets.on('connection', function(socket) {
     console.log('join socket', socket.id);
 
     // send the new player everyone who's in the game
-    Player.find().where('game', game).run(function(err, docs) {
-      socket.emit('names', docs);
+    Player.find().where('game', game).run(function(err, players) {
+      socket.emit('names', players);
 
       // add this player to the game
       var player = new Player({nick: data.nick, socketid: socket.id, game: game});
       player.save(function(err, doc) {
         // send everyone the new players info
-        io.sockets.emit('join', doc);
+        socket.broadcast.emit('join', doc);
+
+        // mark the player object returned to this player as self
+        socket.emit('join', {_id: doc._id, game: doc.game, nick: doc.nick, self: true, socketid: socket.id});
       });
     });
   });

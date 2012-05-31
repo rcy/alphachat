@@ -2,18 +2,25 @@
   .row-fluid
     .span2
       .well
-        h4 Survivors
-        ul#player-list.nav.nav-pills.nav-stacked
+        h3#self &nbsp;
+
+        hr
+
+        h4 
+          span.poppy(data-placement="right", data-title="Opponents", data-content="Highlighted player will be submitted as your choice for removal when the time runs out.") Your opponents
+        ul#opponents.player-list.nav.nav-pills.nav-stacked
     .span8
-      h1 Chat Round 1 of 8
-      #timer.progress.progress-striped
+      h1
+        span.poppy(data-title="Current round", data-content="<strong>Next up</strong>: Chat Round 2 of 8") Chat Round 1 of 8
+      #timer.progress.progress-striped.poppy(data-placement="top",data-title="Round timer", data-content="About a minute left")
       .well
         ul#msg-list.unstyled
         form.chat
           input(type="text", placeholder="Type message and press enter", spellcheck="false")
     .span2
       .well
-        h4 Jury
+        h3
+          span.poppy(data-placement="left", data-title="Jury Members", data-content="In the last round, these players will determine the final winner.") Jury
         p
           em No jury members
         ul#jury-list.nav.nav-pills.nav-stacked
@@ -22,4 +29,6 @@
 !=partial('js')
 
 script.
+  $(".alert").alert()
+  $(".poppy").popover({placement:'bottom'})
   socket.emit('join', {game_id: 1, nick: '#{nick}'})

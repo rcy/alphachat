@@ -11,8 +11,12 @@ input.nick {
     width: 25%;
 }
 
-div.message span.time {
+.message .time {
     color: gray;
+}
+
+.message .player {
+    font-weight: bold;
 }
 
 /* turn off easing on progress bar */
@@ -24,7 +28,7 @@ div.message span.time {
           transition: none;
 }
 
-#player-list .active a,
-#player-list .active a:hover {
+#opponents.player-list .active a,
+#opponents.player-list .active a:hover {
     background-color: #ff6347;
 }
