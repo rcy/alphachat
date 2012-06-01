@@ -46,7 +46,6 @@ io.configure(function () {
 
 io.sockets.on('connection', function(socket) {
   console.log('connection!', socket.id);
-  console.log('process environment', process.env);
 
   var remove = function() {
     console.log('remove');
