@@ -89,7 +89,7 @@ io.sockets.on('connection', function(socket) {
         // if there are enough opponents, start game
         var num_players = 2;
         if ((opponents.length + 1) >= num_players) {
-          var seconds = 10;
+          var seconds = 100;
           io.sockets.emit('start_timer', {seconds: seconds});
           setTimeout(function() {
             io.sockets.emit('stop_timer');
