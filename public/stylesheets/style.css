@@ -1,10 +1,6 @@
 #msg-list {
     height: 300px;
-    overflow-y: scroll;
-}
-
-form.chat input {
-    width: 100%;
+    overflow-y: auto;
 }
 
 input.nick {
@@ -32,3 +28,19 @@ input.nick {
 #opponents.player-list .active a:hover {
     background-color: #ff6347;
 }
+
+#app hr {
+    margin: 8px 0;
+}
+
+#chatbox {
+}
+
+#chatbox form {
+    margin:0;
+    width: 90%;
+}
+#chatbox input {
+    width: 100%;
+}
+

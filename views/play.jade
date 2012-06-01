@@ -1,7 +1,7 @@
 #app.container-fluid
   .row-fluid
     .span2
-      .well
+      .well.well-small
         h3#self &nbsp;
 
         hr
@@ -13,14 +13,15 @@
       h1
         span.poppy(data-title="Current round", data-content="<strong>Next up</strong>: Chat Round 2 of 8") Chat Round 1 of 8
       #timer.progress.progress-striped.poppy(data-placement="top",data-title="Round timer", data-content="About a minute left")
-      .well
+      #chatbox.well.well-small
         ul#msg-list.unstyled
         form.chat
           input(type="text", placeholder="Type message and press enter", spellcheck="false")
     .span2
-      .well
+      .well.well-small
         h3
           span.poppy(data-placement="left", data-title="Jury Members", data-content="In the last round, these players will determine the final winner.") Jury
+        hr
         p
           em No jury members
         ul#jury-list.nav.nav-pills.nav-stacked
