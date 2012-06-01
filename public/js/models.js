@@ -99,12 +99,18 @@ var Timer = Backbone.Model.extend({
   initialize: function() {
   },
   start: function(seconds) {
-    this.jsTimer && clearTimeout(this.jsTimer);
+    clearTimeout(this.tickTimer);
     this.set('seconds', seconds || this.defaults.seconds);
-    this.set('percent', 100);
+    this.set('percent', 101);
     this.set('start_time', Date.now());
     this.update();
     this.trigger('start', seconds);
+  },
+  stop: function() {
+    clearTimeout(this.tickTimer);
+  },
+  reset: function() {
+    this.set('percent', 100);
   },
   update: function() {
     var that = this;
@@ -112,10 +118,9 @@ var Timer = Backbone.Model.extend({
     if (percent < 0) percent = 0;
     this.set('percent', percent); // this triggers view update
     if (percent > 0) {
-      this.jsTimer = setTimeout(function() { that.update(); }, 100);
+      this.tickTimer = setTimeout(function() { that.update(); }, 100);
     } else {
-      // trigger some event that timer is done so App can respond
-      this.trigger('finish');
+      this.trigger('expire');
     }
   }
 });
@@ -123,30 +128,33 @@ var Timer = Backbone.Model.extend({
 var TimerView = Backbone.View.extend({
   el: $("#timer"),
   initialize: function() {
-    this.model.bind('change', this.update, this);
-    this.model.bind('start', this.render, this);
-    this.model.bind('start', this.active, this);
+    this.model.bind('start', this.start, this);
+    this.model.bind('change', this.render, this);
+    this.model.bind('expire', this.expire, this);
+    this.render();
+  },
+  start: function() {
+    this.$el.addClass('active');
     this.render();
   },
   template: _.template($('#timer-template').html()),
   render: function() {
     this.$el.html(this.template());
-  },
-  active: function() {
-    this.$el.addClass('active');
-  },
-  update: function() {
     var $bar = this.$el.find('.bar');
     var percent = this.model.get('percent');
     $bar.css('width', percent + '%');
 
-    this.$el.removeClass('progress-success').removeClass('progress-warning').removeClass('progress-danger');
     if (percent < 10)
-      this.$el.addClass('progress-danger');
+      this.$el.removeClass('progress-warning').addClass('progress-danger');
     else if (percent < 50)
-      this.$el.addClass('progress-warning');
-    else
-      this.$el.addClass('progress-success');
+      this.$el.removeClass('progress-success').addClass('progress-warning');
+    else if (percent == 100) {
+      this.$el.addClass('progress-info');
+    } else
+      this.$el.removeClass('progress-info').addClass('progress-success');
+  },
+  expire: function() {
+    console.log('client timer expired: ' + Date.now());
   }
 });
 
@@ -161,7 +169,7 @@ var AppView = Backbone.View.extend({
     this.connectedEl = $('#connected');
 
     this.timer = new Timer();
-    this.timer.bind('finish', this.timer_finish, this);
+    this.timer.reset();
     this.timerView = new TimerView({model: this.timer});
 
     dispatcher.bind('vote', this.vote, this);
@@ -178,9 +186,9 @@ var AppView = Backbone.View.extend({
     this.timer.start(obj.seconds);
   },
 
-  timer_finish: function() {
-    console.log('timer finish');
-    this.start_timer();
+  stop_timer: function(obj) {
+    this.timer.stop();
+    //alert('times up');
   },
 
   addMessage: function(msg) {

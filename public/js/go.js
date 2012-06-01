@@ -18,7 +18,7 @@ socket.on('disconnect', function() {
 });
 
 socket.on('join', function(doc) {
-  console.log('got: join: ',doc);
+  console.log('got: join: ', doc);
   var p = new Player(doc);
   Players.add(p);
 });
@@ -26,6 +26,11 @@ socket.on('join', function(doc) {
 socket.on('start_timer', function(data) {
   console.log('got: start_timer', data);
   App.start_timer(data);
+});
+
+socket.on('stop_timer', function(data) {
+  console.log('got: stop_timer', data);
+  App.stop_timer(data);
 });
 
 socket.on('chat', function(d) {

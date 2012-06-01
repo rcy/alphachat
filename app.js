@@ -40,6 +40,7 @@ var io = require('socket.io').listen(app);
 
 io.configure(function () {
   // websockets are not supported on heroku's cedar stack
+  console.log('process environment', process.env);
   io.set("transports", ["xhr-polling"]);
   io.set("polling duration", 10);
 });
@@ -87,8 +88,13 @@ io.sockets.on('connection', function(socket) {
         socket.emit('join', {_id: doc._id, game: doc.game, nick: doc.nick, self: true, socketid: socket.id});
 
         // if there are enough opponents, start game
-        if ((opponents.length + 1) >= 1) {
-          io.sockets.emit('start_timer', {seconds: 30});
+        var num_players = 2;
+        if ((opponents.length + 1) >= num_players) {
+          var seconds = 10;
+          io.sockets.emit('start_timer', {seconds: seconds});
+          setTimeout(function() {
+            io.sockets.emit('stop_timer'); 
+          }, seconds * 1000);
         }        
       });
     });
