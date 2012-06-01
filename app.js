@@ -1,14 +1,8 @@
-
-/**
- * Module dependencies.
- */
-
 var express = require('express');
 
 var app = module.exports = express.createServer();
 
 // Configuration
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -114,11 +108,6 @@ io.sockets.on('connection', function(socket) {
   });
 });
 
-// todo: remove this, just return a unique index an let the client figure out the color
-function random_color() {
-  var c = ['red', 'green', 'blue', 'orange', 'purple'];
-  return c[Math.floor(Math.random()*c.length)];
-}
 
 // mongoose
 var mongoose = require('mongoose')
@@ -153,24 +142,3 @@ game = new Game();
 game.save(function() {
   console.log("game saved");
 });
-  // p1 = new Player({nick: "bob", socketid: "abc", game: game});
-  // p2 = new Player({nick: "bob", socketid: "abc", game: game});
-  // p2.save();
-  // p1.save(function(err) {
-  //   console.log('err:',err);
-  //   Player.find().where('game', game._id).run(function(err,docs) {
-  //     console.log('docs', docs);
-  //   });
-  // });
-
-// p = new Player({nick: 'realplayer', color: 'pink'});
-// console.log(p);
-
-// game.players.push({nick: 'rcy', color: 'green'})
-// game.players.push({nick: 'bob', color: 'yellow'})
-// game.players.push(p)
-// game.save(function(err,doc) {
-//   console.log('callback on game save:', err, doc);
-// });
-// p.nick = 'unrealplayer';
-// p.save();
