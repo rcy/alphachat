@@ -78,7 +78,7 @@ io.sockets.on('connection', function(socket) {
       socket.emit('names', opponents);
 
       // add this player to the game
-      var player = new Player({nick: data.nick, socketid: socket.id, game: game});
+      var player = new Player({nick: random_nick(), socketid: socket.id, game: game});
       player.save(function(err, doc) {
         // send everyone the new player's info
         socket.broadcast.emit('join', doc);
@@ -92,9 +92,9 @@ io.sockets.on('connection', function(socket) {
           var seconds = 10;
           io.sockets.emit('start_timer', {seconds: seconds});
           setTimeout(function() {
-            io.sockets.emit('stop_timer'); 
+            io.sockets.emit('stop_timer');
           }, seconds * 1000);
-        }        
+        }
       });
     });
   });
@@ -117,6 +117,13 @@ io.sockets.on('connection', function(socket) {
     });
   });
 });
+
+function random_nick() {
+  var names = ["Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu", 
+               "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"];
+
+  return names[Math.floor(Math.random()*names.length)]
+}
 
 
 // mongoose
