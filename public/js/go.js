@@ -23,6 +23,11 @@ socket.on('join', function(doc) {
   Players.add(p);
 });
 
+socket.on('start_timer', function(data) {
+  console.log('got: start_timer', data);
+  App.start_timer(data);
+});
+
 socket.on('chat', function(d) {
   console.log('chat: ', d);
   var p = App.socketPlayer(d.sender);

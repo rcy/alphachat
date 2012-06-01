@@ -93,22 +93,22 @@ var MessageView = Backbone.View.extend({
 
 var Timer = Backbone.Model.extend({
   defaults: {
-    duration: 60,
+    seconds: 60,
     percent: 100
   },
   initialize: function() {
   },
-  start: function(duration) {
+  start: function(seconds) {
     this.jsTimer && clearTimeout(this.jsTimer);
-    this.set('duration', duration || this.defaults.duration);
+    this.set('seconds', seconds || this.defaults.seconds);
     this.set('percent', 100);
     this.set('start_time', Date.now());
     this.update();
-    this.trigger('start', duration);
+    this.trigger('start', seconds);
   },
   update: function() {
     var that = this;
-    var percent = (100 - ((Date.now() - this.get('start_time')) / (1000*this.get('duration')) * 100));
+    var percent = (100 - ((Date.now() - this.get('start_time')) / (1000*this.get('seconds')) * 100));
     if (percent < 0) percent = 0;
     this.set('percent', percent); // this triggers view update
     if (percent > 0) {
@@ -140,11 +140,13 @@ var TimerView = Backbone.View.extend({
     var percent = this.model.get('percent');
     $bar.css('width', percent + '%');
 
-    this.$el.removeClass('progress-warning').removeClass('progress-danger');
+    this.$el.removeClass('progress-success').removeClass('progress-warning').removeClass('progress-danger');
     if (percent < 10)
       this.$el.addClass('progress-danger');
     else if (percent < 50)
       this.$el.addClass('progress-warning');
+    else
+      this.$el.addClass('progress-success');
   }
 });
 
@@ -161,7 +163,6 @@ var AppView = Backbone.View.extend({
     this.timer = new Timer();
     this.timer.bind('finish', this.timer_finish, this);
     this.timerView = new TimerView({model: this.timer});
-    this.start_timer();
 
     dispatcher.bind('vote', this.vote, this);
   },
@@ -173,9 +174,10 @@ var AppView = Backbone.View.extend({
     this.trigger('vote', player);
   },
 
-  start_timer: function(seconds) {
-    this.timer.start(seconds);
+  start_timer: function(obj) {
+    this.timer.start(obj.seconds);
   },
+
   timer_finish: function() {
     console.log('timer finish');
     this.start_timer();
