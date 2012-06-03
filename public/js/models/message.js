@@ -3,8 +3,8 @@ define([
 ], function(Player) {
   var Message = Backbone.Model.extend({
     defaults: {
-      player: new Player(),
-      body: "Hi I'm me, I'm using this to sell you this"
+      player: null,
+      body: ""
     },
     initialize: function() {
       console.log('initialize Message');
