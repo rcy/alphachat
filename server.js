@@ -35,7 +35,7 @@ app.get('/', function(req,res) {
 });
 
 app.get('/play', function(req,res) {
-  res.render('play', {nick: req.param('nick')});
+  res.render('play');
 });
 
 var port = process.env.PORT || 3000;
