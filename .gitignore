@@ -2,3 +2,4 @@
 node-*
 tmp
 node_modules
+*.orig
