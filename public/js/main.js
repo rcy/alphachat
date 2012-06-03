@@ -1,8 +1,17 @@
+require.config({
+  paths: {
+    jquery: 'libs/jquery/jquery-1.7.1',
+    underscore: 'libs/underscore/underscore.min',  // from https://github.com/amdjs
+    backbone: 'libs/backbone/backbone.min' // from https://github.com/amdjs
+  }
+});
+
 require([
+  'jquery', 'underscore', 'backbone',
   'models/player', 'collections/player',
   'collections/message',
   'views/app'
-], function(Player, Players, Messages, AppView) {
+], function($, _, Backbone, Player, Players, Messages, AppView) {
   var App = new AppView;
 
   var socket = io.connect();
