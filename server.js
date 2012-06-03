@@ -12,7 +12,6 @@ app.configure(function(){
   app.use(express.session({ secret: 'your secret here' }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
-  app.use(require('connect-assets')());
 });
 
 app.configure('development', function(){

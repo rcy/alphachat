@@ -11,6 +11,5 @@
     , "jade": ">= 0.0.1"
     , "socket.io": "0.9.6"
     , "mongoose": ">= 2.6.5"
-    , "connect-assets": ">= 0.0.1"
   }
 }
