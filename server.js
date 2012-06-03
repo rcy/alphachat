@@ -14,11 +14,18 @@ app.configure(function(){
   app.use(express.static(__dirname + '/public'));
 });
 
+var io = require('socket.io').listen(app);
+
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
+  io.configure(function () {
+    // websockets are not supported on heroku's cedar stack
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 10);
+  });
   app.use(express.errorHandler());
 });
 
@@ -34,14 +41,6 @@ app.get('/play', function(req,res) {
 var port = process.env.PORT || 3000;
 app.listen(port, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-});
-
-var io = require('socket.io').listen(app);
-
-io.configure(function () {
-  // websockets are not supported on heroku's cedar stack
-  io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
 });
 
 io.sockets.on('connection', function(socket) {
@@ -87,7 +86,7 @@ io.sockets.on('connection', function(socket) {
         socket.emit('join', {_id: doc._id, game: doc.game, nick: doc.nick, self: true, socketid: socket.id});
 
         // if there are enough opponents, start game
-        var num_players = 2;
+        var num_players = 3;
         if ((opponents.length + 1) >= num_players) {
           var seconds = 100;
           io.sockets.emit('start_timer', {seconds: seconds});

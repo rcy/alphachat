@@ -33,6 +33,8 @@ define [
 
     start_timer: (obj) ->
       this.timer.start obj.seconds
+      # vote for one of the opponents automatically
+      this.vote Players.where({self: false})[0]
 
     stop_timer: (obj) ->
       this.timer.stop()

@@ -9,6 +9,7 @@ define [
       nick: 'nobody'
       color: 'black'
       selected: false
+      self: false
       socketid: 0     # remove this
 
     initialize: ->
