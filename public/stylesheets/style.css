@@ -26,7 +26,8 @@ input.nick {
 
 #opponents.player-list .active a,
 #opponents.player-list .active a:hover {
-    background-color: #ff6347;
+    background-color: black;
+    color: white;
 }
 
 #app hr {
