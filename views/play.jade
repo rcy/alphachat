@@ -4,16 +4,14 @@
       .well.well-small
         h3 You are 
           span#self
-
         hr
-
         h4 
-          span.poppy(data-placement="right", data-title="Opponents", data-content="Highlighted player will be submitted as your choice for removal when the time runs out.") Players
+          span Players
         ul#opponents.player-list
     .span8
       h1
-        span.poppy(data-title="Current round", data-content="<strong>Next up</strong>: Chat Round 2 of 8") Chat Round 1 of 8
-      #timer.progress.progress-striped.poppy(data-placement="top",data-title="Round timer", data-content="About a minute left")
+        span Waiting for more players
+      #timer.progress.progress-striped
       #chatbox.well.well-small
         ul#msg-list.unstyled
         form.chat
@@ -21,12 +19,13 @@
     .span2
       .well.well-small
         h3
-          span.poppy(data-placement="left", data-title="Jury Members"
-               , data-content="In the last round, these players will determine the final winner.") The Jury
+          span The Jury
         hr
         p
           em No jury members
         ul#jury-list.nav.nav-pills.nav-stacked
 
 !=partial('templates')
-!=partial('js')
+script(src="/socket.io/socket.io.js")
+script(src="/js/libs/require/require.js", data-main="/js/main")
+

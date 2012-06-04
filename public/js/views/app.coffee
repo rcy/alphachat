@@ -30,7 +30,10 @@ define [
       _.each Players.models, (p) ->
         p.set 'selected', (p == player)
 
+      this.$("#msg-list").append '<div><em>your vote is set to ' + player.get('nick') + '</em></div>'
       this.trigger 'vote', player
+      $('form.chat input').focus()
+      $("#msg-list").scrollTop $("#msg-list")[0].scrollHeight
 
     start_timer: (obj) ->
       this.timer.start obj.seconds
