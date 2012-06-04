@@ -15,15 +15,29 @@ define [
       this.model.bind 'change', this.render, this
       this.model.bind 'remove', this.remove, this
 
+    reset: ->
+      console.log "RESET"
+
     remove: ->
-      this.$el.fadeOut()
+      this.$el.fadeOut(5000)
 
     render: ->
-      this.$el.html(this.template(this.model.toJSON()))
-      if this.model.get 'selected'
-        this.$el.addClass 'active'
+      locals = this.model.toJSON()
+      this.$el.html(this.template(locals))
+
+      if locals.self
+        mynick = this.model.get('nick')
+        this.$el.html(mynick + ' (me) ')
+        $("#self").html mynick
       else
-        this.$el.removeClass 'active'
+        if this.model.get 'selected'
+          this.$el.addClass 'active'
+        else
+          this.$el.removeClass 'active'
+
+        if this.model.get 'self'
+          this.$el.addClass 'self'
+
       this
 
     vote: ->

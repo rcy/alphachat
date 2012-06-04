@@ -9,46 +9,36 @@ define [
 
   socket = io.connect()
 
-  socket.on 'error', (d) -> alert 'error'; console.log 'error', d
+  socket.on 'error', (data) -> alert 'error'; console.log 'error', data
 
-  app.on 'vote', (player) ->
-    console.log 'toplevel got vote', player
-    socket.emit 'vote', player.attributes
+  app.on 'vote', (player) -> socket.emit 'vote', player.id
 
   socket.on 'connect', (client) ->
     app.connect()
     socket.emit 'join'
 
-  socket.on 'disconnect', () ->
-    app.disconnect()
+  socket.on 'disconnect', () -> app.disconnect()
 
-  socket.on 'join', (doc) -> Players.add new Player(doc)
+  socket.on 'join', (nick) ->
+    console.log 'join', nick
+    Players.add new Player nick:nick, id:nick
 
-  socket.on 'start_timer', (data) ->
-    console.log 'got: start_timer', data
-    app.start_timer data
+  socket.on 'start_timer', (data) -> app.start_timer data
+  socket.on 'stop_timer', (data) -> app.stop_timer data
 
-  socket.on 'stop_timer', (data) ->
-    console.log 'got: stop_timer', data
-    app.stop_timer data
+  socket.on 'chat', (data) -> app.chat data
 
-  socket.on 'chat', (d) ->
-    console.log 'chat: ', d
-    p = app.socketPlayer d.sender
-    if p
-      Messages.add { body: d.body, player: p }
-    else
-      console.log 'unknown player sent chat:', d
-
-  socket.on 'names', (docs) ->
-    console.log 'names', docs
-    for obj in docs
-      p = new Player obj
+  socket.on 'names', (data) ->
+    console.log 'names', data
+    for nick in data.nicks
+      p = new Player nick: nick, id: nick
       Players.add p
+    p = Players.get data.self
+    p.set 'self', true
 
-  socket.on 'part', (doc) ->
-    console.log 'part', doc
-    Players.remove Players.get(doc._id)
+  socket.on 'part', (data) ->
+    console.log 'part', data.nick
+    Players.remove Players.get(data.nick)
 
   $('form.chat input').focus()
 

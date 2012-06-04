@@ -26,6 +26,7 @@ define [
       dispatcher.bind 'vote', this.vote, this
 
     vote: (player) ->
+      console.log 'vote', player
       _.each Players.models, (p) ->
         p.set 'selected', (p == player)
 
@@ -46,14 +47,7 @@ define [
 
     addPlayer: (player) ->
       view = new PlayerView { model: player }
-
-      if player.get 'self'
-        this.$("#self").html player.get('nick')
-      else
-        this.$("#opponents").append view.render().el
-
-    socketPlayer: (socketid) ->
-      Players.where({ socketid: socketid })[0]
+      this.$("#opponents").append view.render().el
 
     connect: ->
       console.log 'app connect'
@@ -65,3 +59,11 @@ define [
       this.connectedEl.html 'disconnected'
       this.connectedEl.removeClass 'label-success'
       this.connectedEl.addClass 'label-important'
+
+    chat: (data) ->
+      console.log 'chat: ', data
+      p = Players.get(data.sender)
+      if p
+        Messages.add { body: data.body, player: p }
+      else
+        console.log 'unknown player sent chat:', data

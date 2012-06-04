@@ -3,7 +3,7 @@ define [
 ], (Backbone) ->
 
   class Player extends Backbone.Model
-    idAttribute: "_id"
+    idAttribute: "id"
 
     defaults:
       nick: 'nobody'

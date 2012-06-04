@@ -44,3 +44,8 @@ input.nick {
     width: 100%;
 }
 
+.self a {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
