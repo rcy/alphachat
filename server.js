@@ -59,6 +59,8 @@ app.listen(port, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
+var ROUND_SECONDS = 60;
+var PLAYERS_NEEDED = 2;
 var ROOM_ID = "42";
 function create_game(id) {
   redis.flushdb();
@@ -74,12 +76,12 @@ io.sockets.on('connection', function(socket) {
   console.log('connection!', socket.id);
 
   socket.on('disconnect', function() {
-    socket.get('nick', function(err, nick) {
-      console.log('disconnect get nick: ', err, nick);
+    socket.get('player', function(err, player) {
       checkerr(err);
-      io.sockets.in(ROOM_ID).emit('part', {nick: nick, reason: 'disconnect'});
+      console.log('disconnect get nick: ', err, player.nick);
+      io.sockets.in(ROOM_ID).emit('part', {nick: player.nick, reason: 'disconnect'});
       redis.smove('room:'+ROOM_ID+':nicks:alive', 
-                  'room:'+ROOM_ID+':nicks:unused', nick, 
+                  'room:'+ROOM_ID+':nicks:unused', player.nick, 
                   function(err, data) {
                     checkerr(err);
                   });
@@ -89,31 +91,38 @@ io.sockets.on('connection', function(socket) {
   socket.on('join', function(data) {
     redis.spop('room:'+ROOM_ID+':nicks:unused', function(err, nick) {
       checkerr(err);
-      socket.set('nick', nick);
-      socket.set('state', 'alive');
-      redis.sadd('room:'+ROOM_ID+':nicks:alive', nick, function(err, data) {
-        checkerr(err);
-        redis.smembers('room:'+ROOM_ID+':nicks:alive', function(err, nicks) {
+      socket.set('player', {'nick': nick, 'state': 'alive'}, function(err) {
+        checkerr();
+        redis.sadd('room:'+ROOM_ID+':nicks:alive', nick, function(err, data) {
           checkerr(err);
-          io.sockets.in(ROOM_ID).emit('join', nick);
-          socket.emit('names', {nicks: nicks, self: nick});
-          socket.join(ROOM_ID);
+          redis.smembers('room:'+ROOM_ID+':nicks:alive', function(err, nicks) {
+            checkerr(err);
+            io.sockets.in(ROOM_ID).emit('join', nick);
+            socket.emit('names', {nicks: nicks, self: nick});
+            socket.join(ROOM_ID);
+            if (nicks.length + 1 >= PLAYERS_NEEDED) {
+              io.sockets.in(ROOM_ID).emit('start_timer', {seconds: ROUND_SECONDS});
+              setTimeout(function() {
+                io.sockets.in(ROOM_ID).emit('end_timer');
+              }, ROUND_SECONDS * 1000);
+            }
+          });
         });
       });
     });
   });
 
   socket.on('chat', function(data) {
-    socket.get('nick', function(err, nick) {
+    socket.get('player', function(err, player) {
       checkerr(err);
-      io.sockets.in(ROOM_ID).emit('chat', {sender: nick, body: data.body});
+      io.sockets.in(ROOM_ID).emit('chat', {sender: player.nick, body: data.body});
     });
   });
 
   socket.on('vote', function(id) {
-    socket.get('nick', function(err, nick) {
-      console.log(nick, 'voted for', id);
-      redis.set('room:'+ROOM_ID+':vote:'+nick, id, checkerr);
+    socket.get('player', function(err, player) {
+      console.log(player.nick, 'voted for', id);
+      redis.set('room:'+ROOM_ID+':vote:' + player.nick, id, checkerr);
       socket.emit('vote', id); // server confirms the vote
     })
   });
