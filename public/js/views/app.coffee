@@ -53,7 +53,6 @@ define [
       this.$("#opponents").append view.render().el
 
     connect: ->
-      console.log 'app connect'
       this.connectedEl.html 'connected'
       this.connectedEl.removeClass 'label-important'
       this.connectedEl.addClass 'label-success'
@@ -64,7 +63,6 @@ define [
       this.connectedEl.addClass 'label-important'
 
     chat: (data) ->
-      console.log 'chat: ', data
       p = Players.get(data.sender)
       if p
         Messages.add { body: data.body, player: p }
