@@ -10,4 +10,4 @@ define [
 
     initialize: ->
       console.log 'initialize Message'
-      this.set 'time', (new Date()).toString().split(/\s/)[4]
+      @set 'time', (new Date()).toString().split(/\s/)[4]

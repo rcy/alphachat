@@ -13,4 +13,4 @@ define [
       socketid: 0     # remove this
 
     initialize: ->
-      console.log 'initialize Player', this.attributes
+      console.log 'initialize Player', @attributes
