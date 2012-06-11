@@ -15,10 +15,11 @@ class Match extends Hookable
     @nicks = []
     @unused_nicks = ["Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta", "Iota", "Kappa", "Lambda", "Mu",
                      "Nu", "Xi", "Omicron", "Pi", "Rho", "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega"];
+    @state = 'waiting'
     super
 
   is_waiting_for_players: ->
-    @nicks.length < @options.num_players_needed
+    @state == 'waiting'
 
   add_player: (cb) ->
     nick = @unused_nicks.pop()
@@ -27,6 +28,7 @@ class Match extends Hookable
     @start_round() if @nicks.length == @options.num_players_needed
 
   start_round: ->
+    @state = 'playing'
     @trigger 'start_round', {seconds: @options.seconds_per_round}
     setTimeout (=> @end_round()), 1000 * @options.seconds_per_round
 
