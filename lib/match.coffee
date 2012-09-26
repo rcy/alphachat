@@ -27,6 +27,10 @@ class Match extends Hookable
     cb(nick) if cb
     @start_round() if @nicks.length == @options.num_players_needed
 
+  remove_player: (nick, cb) ->
+    index = @nicks.indexOf nick
+    @nicks.splice(index, 1) if index >= 0
+
   start_round: ->
     @state = 'playing'
     @trigger 'start_round', {seconds: @options.seconds_per_round}

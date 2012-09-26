@@ -9,11 +9,28 @@ class AlphaBot
 
     @socket.on 'names', (data) =>
       console.log 'names', data
+
+    @socket.on 'start_timer', (data) =>
+      @can_chat = true
       @tick()
 
+    @socket.on 'stop_timer', (data) =>
+      console.log 'stop_timer', data
+      @can_chat = false
+
+    @socket.on 'chat', (data) =>
+      console.log 'chat', data
+
+    @socket.on 'part', (data) =>
+      console.log 'part', data
+
+    @socket.on 'join', (data) =>
+      console.log 'join', data
+
   tick: () ->
-    @socket.emit 'chat', body: "annoying"
-    setTimeout (=> @tick()), 100 * Math.random()*100
+    if @can_chat
+      @socket.emit 'chat', body: "annoying"
+      setTimeout (=> @tick()), 100 * Math.random()*100
 
 
-a = new AlphaBot()
+new AlphaBot() for i in [0..0]

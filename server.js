@@ -44,8 +44,8 @@ app.get('/', function(req,res) {
   res.render('index');
 });
 
-app.get('/play', function(req,res) { 
-  res.render('play'); 
+app.get('/play', function(req,res) {
+  res.render('play');
 });
 
 var port = process.env.PORT || 3000;
@@ -63,8 +63,12 @@ io.sockets.on('connection', function(socket) {
     socket.get('player', function(err, player) {
       checkerr(err);
       if (player) {
-        console.log('disconnect get nick: ', err, player.nick);
-        io.sockets.in(player.match.id).emit('part', {nick: player.nick, reason: 'disconnect'});
+        var match = player.match;
+        var nick = player.nick;
+        console.log('disconnect get nick: ', err, nick);
+        match.remove_player(nick);
+        io.sockets.in(match.id).emit('part', {nick: nick, reason: 'disconnect'});
+        socket.leave(match.id);
       }
     });
   });
@@ -77,7 +81,7 @@ io.sockets.on('connection', function(socket) {
           socket.emit('names', {nicks: match.nicks, self: nick});
           io.sockets.in(match.id).emit('join', nick);
           socket.join(match.id);
-        });                                                                      
+        });
       });
     });
   });

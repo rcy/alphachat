@@ -27,6 +27,15 @@ describe 'Match', ->
         nick.should.match /^[A-Za-z]+$/
         done()
         
+  describe 'remove_player', ->
+    m = new Match
+
+    it 'should remove a player from the list', ->
+      m.add_player (joe) ->
+        m.add_player (ben) ->
+          m.remove_player joe, ->
+            m.nicks.length.should.equal 1
+
   describe 'options', ->
     it 'should set options to default values if not supplied', ->
       m = new Match
